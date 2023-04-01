@@ -1,0 +1,28 @@
+version: "3.7"
+
+services:
+    #api:
+    #    image: 68publishers/php:8.1-unit-dev-1.1.0
+    #    container_name: cmp-crawler-api
+    #    ports:
+    #        - 8888:8080
+    #    volumes:
+    #        - .:/var/www/html:cached
+    #    networks:
+    #        - backend
+
+    worker:
+        build:
+            context: .
+            dockerfile: Dockerfile
+            target: worker
+        container_name: cmp-crawler-worker
+        security_opt:
+            - seccomp=./.docker/chrome/chrome.json
+        volumes:
+            - .:/var/www/html:cached
+        networks:
+            - backend
+
+networks:
+    backend:

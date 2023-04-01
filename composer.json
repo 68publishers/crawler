@@ -1,0 +1,39 @@
+{
+    "name": "68publishers/cmp-crawler",
+    "description": "Consent Management Platform - Cookie Crawler",
+    "keywords": ["68publishers", "cmp", "cookie", "crawler"],
+    "type": "project",
+    "license": "proprietary",
+    "require": {
+        "php": "^8.1",
+        "ext-dom": "*",
+        "ext-json": "*",
+        "68publishers/environment": "^1.0",
+        "contributte/console": "^0.9.2",
+        "nette/bootstrap": "^3.2",
+        "nette/di": "^3.1",
+        "ramsey/uuid": "^4.7",
+        "spatie/crawler": "^7.1",
+        "tracy/tracy": "^2.10"
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.13",
+        "kubawerlos/php-cs-fixer-custom-fixers": "^3.11",
+        "phpstan/phpstan": "^1.9",
+        "phpstan/phpstan-nette": "^1.2",
+        "roave/security-advisories": "dev-latest",
+        "symplify/phpstan-rules": "^11.2"
+    },
+    "minimum-stability": "stable",
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "68publishers/environment": true
+        }
+    }
+}

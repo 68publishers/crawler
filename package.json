@@ -1,0 +1,20 @@
+{
+  "name": "amp",
+  "version": "1.0.0",
+  "description": "Consent Management Platform - Cookie Crawler",
+  "dependencies": {
+    "puppeteer": "^19.8.2",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/68publishers/consent-management-platform"
+  },
+  "author": "68publishers",
+  "license": "proprietary",
+  "bugs": {
+    "url": "https://github.com/68publishers/consent-management-platform/issues"
+  },
+  "homepage": "https://github.com/68publishers/consent-management-platform#readme"
+}

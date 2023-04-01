@@ -1,0 +1,9 @@
+services:
+    scenario_factory:
+        autowired: App\Scenario\ScenarioFactoryInterface
+        type: App\Scenario\ScenarioFactoryInterface
+        factory: @scenario_factory.default
+
+    scenario_factory.default:
+        autowired: no
+        factory: App\Scenario\ScenarioFactory
