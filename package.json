@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Consent Management Platform - Cookie Crawler",
   "dependencies": {
+    "crawlee": "^3.3.0",
     "puppeteer": "^19.8.2",
     "puppeteer-extra": "^3.3.6",
     "puppeteer-extra-plugin-stealth": "^2.11.2"

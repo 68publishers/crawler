@@ -49,17 +49,19 @@ const getOutput = async (page, request) => {
 
     const client = await page.target().createCDPSession();
 
-    await page.evaluate(([url, cookies]) => {
+    await page.evaluate(([url, cookies, consoleMessages]) => {
         const cookieCrawlerCookiesEl = document.createElement('cmp-crawler-cookies');
         cookieCrawlerCookiesEl.textContent = JSON.stringify({
             url: url,
             cookies: cookies,
+            consoleMessages: consoleMessages,
         });
 
         document.body.appendChild(cookieCrawlerCookiesEl);
     }, [
         page.url(),
-        (await client.send('Storage.getCookies')).cookies
+        (await client.send('Storage.getCookies')).cookies,
+        consoleMessages,
     ])
 
     output = await page[request.action](request.options);
@@ -377,24 +379,54 @@ const callChrome = async () => {
             try {
                 switch (scenarioAction.type) {
                     case 'click':
-                        await page.click(scenarioOptions.selector, {
+                        const clickOptions = {
                             button: scenarioOptions.button,
                             clickCount: scenarioOptions.clickCount,
                             delay: scenarioOptions.delay,
-                        });
+                        };
+
+                        if (scenarioOptions.xpath) {
+                            const [button] = await page.$x(scenarioOptions.selector);
+                            await button.click(clickOptions);
+                        } else {
+                            await page.click(scenarioOptions.selector, clickOptions);
+                        }
                         break;
                     case 'clickWithRedirect':
+                        if (scenarioOptions.xpath) {
+                            const [button] = await page.$x(scenarioOptions.selector);
+                            await Promise.all([
+                                page.waitForNavigation({
+                                    waitUntil: scenarioOptions.waitUntil,
+                                }),
+                                button.click({
+                                    delay: scenarioOptions.delay,
+                                }),
+                            ]);
+
+                            break;
+                        }
+
                         await Promise.all([
                             page.waitForNavigation({
                                 waitUntil: scenarioOptions.waitUntil,
                             }),
                             page.click(scenarioOptions.selector, {
-                                'delay': scenarioOptions.delay,
+                                delay: scenarioOptions.delay,
                             }),
                         ]);
                         break;
                     case 'delay':
                         await new Promise(r => setTimeout(r, scenarioOptions.delay));
+                        break;
+                    case 'focus':
+                        await page.focus(scenarioOptions.selector);
+                        break;
+                    case 'hover':
+                        await page.hover(scenarioOptions.selector);
+                        break;
+                    case 'keyboardPress':
+                        await page.keyboard.press(scenarioOptions.key);
                         break;
                     case 'screenshot':
                         await page.screenshot({
@@ -406,7 +438,7 @@ const callChrome = async () => {
                         break;
                     case 'type':
                         await page.type(scenarioOptions.selector, scenarioOptions.text, {
-                            'delay': scenarioOptions.delay,
+                            delay: scenarioOptions.delay,
                         });
                         break;
                     case 'waitForNavigation':

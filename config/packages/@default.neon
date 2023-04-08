@@ -1,3 +1,11 @@
 includes:
+    - 68publishers.architecture_bundle.neon
+    - 68publishers.doctrine_bridge.neon
     - 68publishers.environment.neon
+    - 68publishers.health_check.neon
+    - contributte.apitte.neon
     - contributte.console.neon
+    - nettrine.cache.neon
+    - nettrine.dbal.neon
+    - nettrine.migrations.neon
+    - nettrine.orm.neon

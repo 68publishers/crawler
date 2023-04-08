@@ -1,0 +1,3 @@
+services:
+    # /api/health-check
+    - App\Application\Api\Controller\HealthCheckController

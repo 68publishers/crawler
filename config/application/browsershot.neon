@@ -1,12 +1,12 @@
 services:
     browsershot_factory:
-        autowired: App\Browsershot\BrowsershotFactoryInterface
-        type: App\Browsershot\BrowsershotFactoryInterface
+        autowired: App\Application\Browsershot\BrowsershotFactoryInterface
+        type: App\Application\Browsershot\BrowsershotFactoryInterface
         factory: @browsershot_factory.default
 
     browsershot_factory.default:
         autowired: no
-        factory: App\Browsershot\BrowsershotFactory(
+        factory: App\Application\Browsershot\BrowsershotFactory(
             nodeBinary: ::env(NODE_BINARY, '/usr/bin/node')
             npmBinary: ::env(NPM_BINARY, '/usr/bin/npm')
             chromePath: ::env(CHROME_BINARY, '/usr/bin/chromium-browser')

@@ -1,4 +1,5 @@
 *
 !log/.gitkeep
+!postgres-data/.gitkeep
 !screenshots/.gitkeep
 !.gitignore

@@ -1,0 +1,388 @@
+{
+  "visitedUrls": [
+    "https:\/\/www.datart.cz\/?gclid=EAIaIQobChMI-5r9_bGW_gIVl5SyCh2AoQvfEAAYASAAEgJ_pfD_BwE"
+  ],
+  "visitErrors": [],
+  "consoleMessages": [
+    {
+      "type": "log",
+      "message": "Registration succeeded",
+      "location": {
+        "url": "https:\/\/www.datart.cz\/?gclid=EAIaIQobChMI-5r9_bGW_gIVl5SyCh2AoQvfEAAYASAAEgJ_pfD_BwE",
+        "lineNumber": 30,
+        "columnNumber": 28
+      }
+    },
+    {
+      "type": "log",
+      "message": "constructor:2_DopravaZdarma500_v7000_freeDelivery_060423",
+      "location": {
+        "url": "",
+        "lineNumber": 35,
+        "columnNumber": 11
+      }
+    }
+  ],
+  "cookies": [
+    {
+      "name": "AEC",
+      "domain": ".google.com",
+      "foundOnUrl": "https:\/\/www.datart.cz\/?gclid=EAIaIQobChMI-5r9_bGW_gIVl5SyCh2AoQvfEAAYASAAEgJ_pfD_BwE",
+      "httpOnly": true,
+      "secure": true,
+      "session": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "CONSENT",
+      "domain": ".google.com",
+      "foundOnUrl": "https:\/\/www.datart.cz\/?gclid=EAIaIQobChMI-5r9_bGW_gIVl5SyCh2AoQvfEAAYASAAEgJ_pfD_BwE",
+      "httpOnly": false,
+      "secure": true,
+      "session": false,
+      "sameSite": null
+    },
+    {
+      "name": "SOCS",
+      "domain": ".google.com",
+      "foundOnUrl": "https:\/\/www.datart.cz\/?gclid=EAIaIQobChMI-5r9_bGW_gIVl5SyCh2AoQvfEAAYASAAEgJ_pfD_BwE",
+      "httpOnly": false,
+      "secure": true,
+      "session": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "NID",
+      "domain": ".google.com",
+      "foundOnUrl": "https:\/\/www.datart.cz\/?gclid=EAIaIQobChMI-5r9_bGW_gIVl5SyCh2AoQvfEAAYASAAEgJ_pfD_BwE",
+      "httpOnly": true,
+      "secure": true,
+      "session": false,
+      "sameSite": "None"
+    },
+    {
+      "name": "_nss",
+      "domain": "www.datart.cz",
+      "foundOnUrl": "https:\/\/www.datart.cz\/?gclid=EAIaIQobChMI-5r9_bGW_gIVl5SyCh2AoQvfEAAYASAAEgJ_pfD_BwE",
+      "httpOnly": true,
+      "secure": false,
+      "session": true,
+      "sameSite": "Strict"
+    },
+    {
+      "name": "searchType",
+      "domain": "www.datart.cz",
+      "foundOnUrl": "https:\/\/www.datart.cz\/?gclid=EAIaIQobChMI-5r9_bGW_gIVl5SyCh2AoQvfEAAYASAAEgJ_pfD_BwE",
+      "httpOnly": false,
+      "secure": true,
+      "session": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "PHPSESSID",
+      "domain": "www.datart.cz",
+      "foundOnUrl": "https:\/\/www.datart.cz\/?gclid=EAIaIQobChMI-5r9_bGW_gIVl5SyCh2AoQvfEAAYASAAEgJ_pfD_BwE",
+      "httpOnly": true,
+      "secure": true,
+      "session": false,
+      "sameSite": null
+    },
+    {
+      "name": "BIGipServer3t3wiIEuw5VXuFXRhzAPLA",
+      "domain": "www.datart.cz",
+      "foundOnUrl": "https:\/\/www.datart.cz\/?gclid=EAIaIQobChMI-5r9_bGW_gIVl5SyCh2AoQvfEAAYASAAEgJ_pfD_BwE",
+      "httpOnly": true,
+      "secure": true,
+      "session": true,
+      "sameSite": null
+    },
+    {
+      "name": "TS847d137e027",
+      "domain": "www.datart.cz",
+      "foundOnUrl": "https:\/\/www.datart.cz\/?gclid=EAIaIQobChMI-5r9_bGW_gIVl5SyCh2AoQvfEAAYASAAEgJ_pfD_BwE",
+      "httpOnly": false,
+      "secure": false,
+      "session": true,
+      "sameSite": null
+    },
+    {
+      "name": "lux_uid",
+      "domain": "www.datart.cz",
+      "foundOnUrl": "https:\/\/www.datart.cz\/?gclid=EAIaIQobChMI-5r9_bGW_gIVl5SyCh2AoQvfEAAYASAAEgJ_pfD_BwE",
+      "httpOnly": false,
+      "secure": false,
+      "session": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "xnpe_aeb32f50-0652-11ec-bb4f-863dd5b8e706",
+      "domain": "ctd-api.datart.cz",
+      "foundOnUrl": "https:\/\/www.datart.cz\/?gclid=EAIaIQobChMI-5r9_bGW_gIVl5SyCh2AoQvfEAAYASAAEgJ_pfD_BwE",
+      "httpOnly": false,
+      "secure": true,
+      "session": false,
+      "sameSite": "None"
+    },
+    {
+      "name": "__exponea_etc__",
+      "domain": ".datart.cz",
+      "foundOnUrl": "https:\/\/www.datart.cz\/?gclid=EAIaIQobChMI-5r9_bGW_gIVl5SyCh2AoQvfEAAYASAAEgJ_pfD_BwE",
+      "httpOnly": false,
+      "secure": true,
+      "session": false,
+      "sameSite": "None"
+    },
+    {
+      "name": "__exponea_time2__",
+      "domain": ".datart.cz",
+      "foundOnUrl": "https:\/\/www.datart.cz\/?gclid=EAIaIQobChMI-5r9_bGW_gIVl5SyCh2AoQvfEAAYASAAEgJ_pfD_BwE",
+      "httpOnly": false,
+      "secure": true,
+      "session": false,
+      "sameSite": "None"
+    },
+    {
+      "name": "_gcl_aw",
+      "domain": ".datart.cz",
+      "foundOnUrl": "https:\/\/www.datart.cz\/?gclid=EAIaIQobChMI-5r9_bGW_gIVl5SyCh2AoQvfEAAYASAAEgJ_pfD_BwE",
+      "httpOnly": false,
+      "secure": false,
+      "session": false,
+      "sameSite": null
+    },
+    {
+      "name": "_gcl_au",
+      "domain": ".datart.cz",
+      "foundOnUrl": "https:\/\/www.datart.cz\/?gclid=EAIaIQobChMI-5r9_bGW_gIVl5SyCh2AoQvfEAAYASAAEgJ_pfD_BwE",
+      "httpOnly": false,
+      "secure": false,
+      "session": false,
+      "sameSite": null
+    },
+    {
+      "name": "_ranaCid",
+      "domain": ".datart.cz",
+      "foundOnUrl": "https:\/\/www.datart.cz\/?gclid=EAIaIQobChMI-5r9_bGW_gIVl5SyCh2AoQvfEAAYASAAEgJ_pfD_BwE",
+      "httpOnly": false,
+      "secure": false,
+      "session": false,
+      "sameSite": null
+    },
+    {
+      "name": "cc-settings",
+      "domain": ".datart.cz",
+      "foundOnUrl": "https:\/\/www.datart.cz\/?gclid=EAIaIQobChMI-5r9_bGW_gIVl5SyCh2AoQvfEAAYASAAEgJ_pfD_BwE",
+      "httpOnly": false,
+      "secure": true,
+      "session": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "_gid",
+      "domain": ".datart.cz",
+      "foundOnUrl": "https:\/\/www.datart.cz\/?gclid=EAIaIQobChMI-5r9_bGW_gIVl5SyCh2AoQvfEAAYASAAEgJ_pfD_BwE",
+      "httpOnly": false,
+      "secure": false,
+      "session": false,
+      "sameSite": null
+    },
+    {
+      "name": "_gac_UA-5139684-1",
+      "domain": ".datart.cz",
+      "foundOnUrl": "https:\/\/www.datart.cz\/?gclid=EAIaIQobChMI-5r9_bGW_gIVl5SyCh2AoQvfEAAYASAAEgJ_pfD_BwE",
+      "httpOnly": false,
+      "secure": false,
+      "session": false,
+      "sameSite": null
+    },
+    {
+      "name": "_dc_gtm_UA-5139684-1",
+      "domain": ".datart.cz",
+      "foundOnUrl": "https:\/\/www.datart.cz\/?gclid=EAIaIQobChMI-5r9_bGW_gIVl5SyCh2AoQvfEAAYASAAEgJ_pfD_BwE",
+      "httpOnly": false,
+      "secure": false,
+      "session": false,
+      "sameSite": null
+    },
+    {
+      "name": "_ga_0NHJLMQPVB",
+      "domain": ".datart.cz",
+      "foundOnUrl": "https:\/\/www.datart.cz\/?gclid=EAIaIQobChMI-5r9_bGW_gIVl5SyCh2AoQvfEAAYASAAEgJ_pfD_BwE",
+      "httpOnly": false,
+      "secure": false,
+      "session": false,
+      "sameSite": null
+    },
+    {
+      "name": "_ga",
+      "domain": ".datart.cz",
+      "foundOnUrl": "https:\/\/www.datart.cz\/?gclid=EAIaIQobChMI-5r9_bGW_gIVl5SyCh2AoQvfEAAYASAAEgJ_pfD_BwE",
+      "httpOnly": false,
+      "secure": false,
+      "session": false,
+      "sameSite": null
+    },
+    {
+      "name": "db_ui",
+      "domain": ".datart.cz",
+      "foundOnUrl": "https:\/\/www.datart.cz\/?gclid=EAIaIQobChMI-5r9_bGW_gIVl5SyCh2AoQvfEAAYASAAEgJ_pfD_BwE",
+      "httpOnly": false,
+      "secure": false,
+      "session": false,
+      "sameSite": null
+    },
+    {
+      "name": "u",
+      "domain": ".creativecdn.com",
+      "foundOnUrl": "https:\/\/www.datart.cz\/?gclid=EAIaIQobChMI-5r9_bGW_gIVl5SyCh2AoQvfEAAYASAAEgJ_pfD_BwE",
+      "httpOnly": false,
+      "secure": true,
+      "session": false,
+      "sameSite": "None"
+    },
+    {
+      "name": "ts",
+      "domain": ".creativecdn.com",
+      "foundOnUrl": "https:\/\/www.datart.cz\/?gclid=EAIaIQobChMI-5r9_bGW_gIVl5SyCh2AoQvfEAAYASAAEgJ_pfD_BwE",
+      "httpOnly": false,
+      "secure": true,
+      "session": false,
+      "sameSite": "None"
+    },
+    {
+      "name": "_uetsid",
+      "domain": ".datart.cz",
+      "foundOnUrl": "https:\/\/www.datart.cz\/?gclid=EAIaIQobChMI-5r9_bGW_gIVl5SyCh2AoQvfEAAYASAAEgJ_pfD_BwE",
+      "httpOnly": false,
+      "secure": false,
+      "session": false,
+      "sameSite": null
+    },
+    {
+      "name": "_uetvid",
+      "domain": ".datart.cz",
+      "foundOnUrl": "https:\/\/www.datart.cz\/?gclid=EAIaIQobChMI-5r9_bGW_gIVl5SyCh2AoQvfEAAYASAAEgJ_pfD_BwE",
+      "httpOnly": false,
+      "secure": false,
+      "session": false,
+      "sameSite": null
+    },
+    {
+      "name": "_fbp",
+      "domain": ".datart.cz",
+      "foundOnUrl": "https:\/\/www.datart.cz\/?gclid=EAIaIQobChMI-5r9_bGW_gIVl5SyCh2AoQvfEAAYASAAEgJ_pfD_BwE",
+      "httpOnly": false,
+      "secure": false,
+      "session": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "MUID",
+      "domain": ".bing.com",
+      "foundOnUrl": "https:\/\/www.datart.cz\/?gclid=EAIaIQobChMI-5r9_bGW_gIVl5SyCh2AoQvfEAAYASAAEgJ_pfD_BwE",
+      "httpOnly": false,
+      "secure": true,
+      "session": false,
+      "sameSite": "None"
+    },
+    {
+      "name": "_lb",
+      "domain": ".datart.cz",
+      "foundOnUrl": "https:\/\/www.datart.cz\/?gclid=EAIaIQobChMI-5r9_bGW_gIVl5SyCh2AoQvfEAAYASAAEgJ_pfD_BwE",
+      "httpOnly": false,
+      "secure": false,
+      "session": false,
+      "sameSite": null
+    },
+    {
+      "name": "_lb_ccc",
+      "domain": ".datart.cz",
+      "foundOnUrl": "https:\/\/www.datart.cz\/?gclid=EAIaIQobChMI-5r9_bGW_gIVl5SyCh2AoQvfEAAYASAAEgJ_pfD_BwE",
+      "httpOnly": false,
+      "secure": false,
+      "session": false,
+      "sameSite": null
+    },
+    {
+      "name": "db_abtest_homepage",
+      "domain": ".datart.cz",
+      "foundOnUrl": "https:\/\/www.datart.cz\/?gclid=EAIaIQobChMI-5r9_bGW_gIVl5SyCh2AoQvfEAAYASAAEgJ_pfD_BwE",
+      "httpOnly": false,
+      "secure": false,
+      "session": false,
+      "sameSite": null
+    },
+    {
+      "name": "IDE",
+      "domain": ".doubleclick.net",
+      "foundOnUrl": "https:\/\/www.datart.cz\/?gclid=EAIaIQobChMI-5r9_bGW_gIVl5SyCh2AoQvfEAAYASAAEgJ_pfD_BwE",
+      "httpOnly": true,
+      "secure": true,
+      "session": false,
+      "sameSite": "None"
+    },
+    {
+      "name": "uuid2",
+      "domain": ".adnxs.com",
+      "foundOnUrl": "https:\/\/www.datart.cz\/?gclid=EAIaIQobChMI-5r9_bGW_gIVl5SyCh2AoQvfEAAYASAAEgJ_pfD_BwE",
+      "httpOnly": true,
+      "secure": true,
+      "session": false,
+      "sameSite": "None"
+    },
+    {
+      "name": "db_ui",
+      "domain": "www.databreakers.com",
+      "foundOnUrl": "https:\/\/www.datart.cz\/?gclid=EAIaIQobChMI-5r9_bGW_gIVl5SyCh2AoQvfEAAYASAAEgJ_pfD_BwE",
+      "httpOnly": false,
+      "secure": true,
+      "session": false,
+      "sameSite": "None"
+    },
+    {
+      "name": "db_uicd",
+      "domain": ".datart.cz",
+      "foundOnUrl": "https:\/\/www.datart.cz\/?gclid=EAIaIQobChMI-5r9_bGW_gIVl5SyCh2AoQvfEAAYASAAEgJ_pfD_BwE",
+      "httpOnly": false,
+      "secure": false,
+      "session": false,
+      "sameSite": null
+    },
+    {
+      "name": "anj",
+      "domain": ".adnxs.com",
+      "foundOnUrl": "https:\/\/www.datart.cz\/?gclid=EAIaIQobChMI-5r9_bGW_gIVl5SyCh2AoQvfEAAYASAAEgJ_pfD_BwE",
+      "httpOnly": true,
+      "secure": true,
+      "session": false,
+      "sameSite": "None"
+    },
+    {
+      "name": "SL_C_23361dd035530_KEY",
+      "domain": ".datart.cz",
+      "foundOnUrl": "https:\/\/www.datart.cz\/?gclid=EAIaIQobChMI-5r9_bGW_gIVl5SyCh2AoQvfEAAYASAAEgJ_pfD_BwE",
+      "httpOnly": false,
+      "secure": true,
+      "session": false,
+      "sameSite": "Strict"
+    },
+    {
+      "name": "SL_C_23361dd035530_SID",
+      "domain": ".datart.cz",
+      "foundOnUrl": "https:\/\/www.datart.cz\/?gclid=EAIaIQobChMI-5r9_bGW_gIVl5SyCh2AoQvfEAAYASAAEgJ_pfD_BwE",
+      "httpOnly": false,
+      "secure": true,
+      "session": false,
+      "sameSite": "Strict"
+    },
+    {
+      "name": "SL_C_23361dd035530_VID",
+      "domain": ".datart.cz",
+      "foundOnUrl": "https:\/\/www.datart.cz\/?gclid=EAIaIQobChMI-5r9_bGW_gIVl5SyCh2AoQvfEAAYASAAEgJ_pfD_BwE",
+      "httpOnly": false,
+      "secure": true,
+      "session": false,
+      "sameSite": "Strict"
+    }
+  ]
+}

@@ -1,15 +1,18 @@
 version: "3.7"
 
 services:
-    #api:
-    #    image: 68publishers/php:8.1-unit-dev-1.1.0
-    #    container_name: cmp-crawler-api
-    #    ports:
-    #        - 8888:8080
-    #    volumes:
-    #        - .:/var/www/html:cached
-    #    networks:
-    #        - backend
+    api:
+        image: 68publishers/php:8.1-unit-dev-1.1.0
+        container_name: cmp-crawler-api
+        ports:
+            - 8888:8080
+        volumes:
+            - .:/var/www/html:cached
+        depends_on:
+            db:
+                condition: service_healthy
+        networks:
+            - backend
 
     worker:
         build:
@@ -21,6 +24,34 @@ services:
             - seccomp=./.docker/chrome/chrome.json
         volumes:
             - .:/var/www/html:cached
+        depends_on:
+            db:
+                condition: service_healthy
+        networks:
+            - backend
+
+    db:
+        image: postgres:14.6
+        container_name: cmp-crawler-db
+        ports:
+            - 5432:5432
+        volumes:
+            - ./.docker/postgres/postgres.conf:/etc/postgresql/postgresql.conf:delegated
+            - ./var/postgres-data:/var/lib/postgresql/data:cached
+        environment:
+            - PGDATA=/var/lib/postgresql/data/pgdata
+            - POSTGRES_USER=root
+            - POSTGRES_PASSWORD=root
+            - POSTGRES_DB=cmp-crawler
+        command:
+            - postgres
+            - -c
+            - 'config_file=/etc/postgresql/postgresql.conf'
+        healthcheck:
+            test: ["CMD-SHELL", "sh -c 'pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB'"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
         networks:
             - backend
 

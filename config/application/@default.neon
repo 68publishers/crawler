@@ -1,4 +1,5 @@
 includes:
+    - api.neon
     - browsershot.neon
     - command.neon
     - scenario.neon

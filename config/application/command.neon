@@ -1,2 +1,2 @@
 services:
-    - App\Command\CrawlCommand
+    - App\Application\Command\CrawlCommand
