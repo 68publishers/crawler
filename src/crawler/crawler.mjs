@@ -47,7 +47,7 @@ export class Crawler {
                 (crawlingContext, gotoOptions) => {
                     gotoOptions.waitUntil = 'networkidle0';
                 },
-            ]
+            ],
         };
 
         if ('maxRequests' in scenarioOptions) {

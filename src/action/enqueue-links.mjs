@@ -18,6 +18,10 @@ export class EnqueueLinks extends AbstractAction {
             yield `the option "strategy" is required and must be one of these ["${strategies.join('", "')}"]`;
         }
 
+        if ('selector' in options && 'string' !== typeof options.selector) {
+            yield 'the optional option "selector" must be a string';
+        }
+
         if ('exclude' in options && (!Array.isArray(options.exclude) || 0 < options.exclude.filter(e => 'string' !== typeof e))) {
             yield 'the optional option "exclude" must be an array of regular expressions';
         }
@@ -29,14 +33,17 @@ export class EnqueueLinks extends AbstractAction {
 
     async execute(options, { page, enqueueLinks }) {
         const enqueueLinksOptions = {
-            selector: 'a',
             strategy: options.strategy,
             label: 'FOR_EACH',
             baseUrl: (new URL(page.url())).origin,
         };
 
+        if ('selector' in options) {
+            enqueueLinksOptions.selector = options.selector;
+        }
+
         if ('exclude' in options) {
-            enqueueLinksOptions.exclude = options.exclude;
+            enqueueLinksOptions.exclude = options.exclude.map(pattern => new RegExp(pattern.toString()));
         }
 
         if ('limit' in options) {
