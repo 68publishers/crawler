@@ -15,8 +15,12 @@ stop:
 down:
 	docker compose --env-file .env down
 
+db-migrations:
+	docker exec -it cmp-crawler-app npm run migrations:up
+
 init:
 	make start
+	make db-migrations
 
 tests:
 	@echo "not implemented" >&2
