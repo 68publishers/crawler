@@ -5,6 +5,7 @@ services:
         build: .
         volumes:
             - .:/app
+            - /app/node_modules
         container_name: cmp-crawler-app
         restart: always
         expose:
