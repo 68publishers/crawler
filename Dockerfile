@@ -1,8 +1,8 @@
-FROM 68publishers/php:8.1-cli-dev-1.0.0 AS worker
+FROM node:19.8.1-alpine3.17
+
+WORKDIR /app
 
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
-
-RUN apk add --update --no-cache nodejs npm
 
 RUN apk add --update --no-cache --virtual \
     .build-deps \
@@ -11,12 +11,19 @@ RUN apk add --update --no-cache --virtual \
     chromium \
     ca-certificates
 
+COPY package*.json ./
+
+RUN npm install
+
+COPY . .
+COPY ./.docker/node/start-node.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/start-node.sh
+
 RUN addgroup -S app && adduser -S -g app -G app app \
     && mkdir -p /home/app/Downloads \
     && chown -R app:app /home/app \
-    && chown -R app:app /var/www/html
+    && chown -R app:app /app
 
 USER app
 
-RUN node -v
-RUN npm -v
+CMD ["start-node.sh"]

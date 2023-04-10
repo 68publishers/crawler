@@ -1,2 +1,0 @@
-extensions:
-    68publishers.environment: SixtyEightPublishers\Environment\Bridge\Nette\DI\EnvironmentExtension

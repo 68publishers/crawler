@@ -1,9 +1,0 @@
-includes:
-    - packages/@default.neon
-    - application/@default.neon
-
-php:
-    date.timezone: UTC
-
-tracy:
-    maxDepth: 6

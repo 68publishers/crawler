@@ -1,5 +1,4 @@
 # Application
-vendor/
 node_modules/
 
 # Local configuration
