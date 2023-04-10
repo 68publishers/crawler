@@ -16,7 +16,7 @@ export class ScenarioController {
         this.#crawler.crawl(scenarioId, req.body);
 
         res.status(202).json({
-            status: 'scheduled',
+            status: 'running',
             scenarioId: scenarioId,
         });
     }

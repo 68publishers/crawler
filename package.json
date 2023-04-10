@@ -8,7 +8,8 @@
   "scripts": {
     "start": "node index.mjs",
     "dev": "nodemon --ignore 'storage/*' index.mjs",
-    "migrate": "ts-node --project tsconfig.migrations.json node_modules/node-pg-migrate/bin/node-pg-migrate up -m src/model/migrations -d DB_URL"
+    "migrations:up": "ts-node --project tsconfig.migrations.json node_modules/node-pg-migrate/bin/node-pg-migrate up -m src/model/migrations -d DB_URL",
+    "migrations:create": "npx node-pg-migrate create -m ./src/model/migrations -d DB_URL -j ts"
   },
   "dependencies": {
     "awilix": "^8.0.1",

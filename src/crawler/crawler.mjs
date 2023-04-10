@@ -54,8 +54,8 @@ export class Crawler {
             crawlerOptions.maxRequestsPerCrawl = scenarioOptions.maxRequests;
         }
 
-        const saveResult = async (identity, result, mergeOnConflict = true) => {
-            await this.#scenarioRepository.addResult(scenarioId, identity, result, mergeOnConflict);
+        const saveResult = async (group, identity, data, mergeOnConflict = true) => {
+            await this.#scenarioRepository.addResult(scenarioId, group, identity, data, mergeOnConflict);
         };
 
         const executeActions = async (actions, page, saveSnapshot, enqueueLinks) => {
@@ -70,10 +70,14 @@ export class Crawler {
                 if (response.status() < 200 || response.status() >= 399) {
                     log.error(`Failed ${request.url}'`);
 
+                    await saveResult('visitedUrls', request.url, request.url, false);
+
                     return;
                 }
 
                 log.info(`Crawling ${page.url()}'`);
+
+                await saveResult('visitedUrls', page.url(), page.url(), false);
 
                 if ('FOR_EACH' !== request.label) {
                     await executeActions(scenario.startup || [], page, saveSnapshot, enqueueLinks);
@@ -84,6 +88,8 @@ export class Crawler {
 
             async failedRequestHandler({request, log}) {
                 log.error(`Failed ${request.url}'`);
+
+                await saveResult('visitedUrls', request.url, request.url, false);
             },
         });
 
