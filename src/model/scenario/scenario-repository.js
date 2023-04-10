@@ -41,43 +41,47 @@ export class ScenarioRepository {
         scenario.results = {};
 
         const scenarioResultRows = await this.#database.query(`
-            SELECT identity, result FROM scenario_result WHERE scenario_id = $1
+            SELECT "group", identity, data FROM scenario_result WHERE scenario_id = $1
         `, [
             scenarioId,
         ]);
 
         for (let resultRow of scenarioResultRows.rows) {
-            scenario.results[resultRow.identity] = resultRow.result;
+            if (!(resultRow.group in scenario.results)) {
+                scenario.results[resultRow.group] = [];
+            }
+
+            scenario.results[resultRow.group].push(resultRow.data);
         }
 
         return scenario;
     }
 
-    async addResult(scenarioId, identity, result, mergeOnConflict = true) {
+    async addResult(scenarioId, group, identity, data, mergeOnConflict = true) {
         const id = uuid();
 
         if (mergeOnConflict) {
             await this.#database.query(`
-              INSERT INTO scenario_result (id, scenario_id, identity, result) VALUES ($1, $2, $3, $4::jsonb)
-              ON CONFLICT (scenario_id, identity)
-              DO UPDATE SET result = (
-                SELECT array_agg(DISTINCT x) FROM unnest(scenario_result.result || excluded.result::jsonb) x
-              );
+              INSERT INTO scenario_result (id, scenario_id, "group", identity, data) VALUES ($1, $2, $3, $4, $5::jsonb)
+              ON CONFLICT (scenario_id, "group", identity)
+              DO UPDATE SET data = scenario_result.data || excluded.data::jsonb
             `, [
                 id,
                 scenarioId,
+                group,
                 identity,
-                result,
+                JSON.stringify(data),
             ]);
         } else {
             await this.#database.query(`
-              INSERT INTO scenario_result (id, scenario_id, identity, result) VALUES ($1, $2, $3, $4::jsonb)
-              ON CONFLICT (scenario_id, identity) DO NOTHING
+              INSERT INTO scenario_result (id, scenario_id, "group", identity, data) VALUES ($1, $2, $3, $4, $5::jsonb)
+              ON CONFLICT (scenario_id, "group", identity) DO NOTHING
             `, [
                 id,
                 scenarioId,
+                group,
                 identity,
-                result,
+                JSON.stringify(data),
             ]);
         }
     }

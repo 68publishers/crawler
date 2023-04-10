@@ -1,8 +1,9 @@
-/* eslint-disable camelcase */
+/* eslint-disable @typescript-eslint/naming-convention */
+import { MigrationBuilder, ColumnDefinitions } from 'node-pg-migrate';
 
-exports.shorthands = undefined;
+export const shorthands: ColumnDefinitions | undefined = undefined;
 
-exports.up = pgm => {
+export async function up(pgm: MigrationBuilder): Promise<void> {
     pgm.createTable('scenario', {
         id: {
             type: 'uuid',
@@ -36,13 +37,17 @@ exports.up = pgm => {
             type: 'uuid',
             notNull: true,
             references: 'scenario',
-            onDelete: 'cascade',
+            onDelete: 'CASCADE',
         },
         identity: {
             type: 'varchar(255)',
             notNull: true,
         },
-        result: {
+        group: {
+            type: 'varchar(255)',
+            notNull: true,
+        },
+        data: {
             type: 'jsonb',
             notNull: true,
         },
@@ -51,13 +56,14 @@ exports.up = pgm => {
     pgm.createIndex('scenario_result', 'scenario_id', {
         name: 'idx_sr_scenario_id'
     });
-    pgm.createIndex('scenario_result', ['scenario_id', 'identity'], {
-        name: 'uniq_sr_scenario_id_identity',
+
+    pgm.createIndex('scenario_result', ['scenario_id', 'group', 'identity'], {
+        name: 'uniq_sr_scenario_id_group_identity',
         unique: true,
     });
-};
+}
 
-exports.down = pgm => {
+export async function down(pgm: MigrationBuilder): Promise<void> {
     pgm.dropTable('scenario_result');
     pgm.dropTable('scenario');
-};
+}

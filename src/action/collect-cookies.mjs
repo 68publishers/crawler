@@ -15,7 +15,7 @@ export class CollectCookies extends AbstractAction {
         for (let cookie of cookies) {
             const identity = cookie.name + '__' + cookie.domain;
 
-            await saveResult(identity, {
+            await saveResult('cookies', identity, {
                 name: cookie.name,
                 domain: cookie.domain,
                 foundOnUrl: pageUrl,
