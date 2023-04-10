@@ -1,8 +1,0 @@
-extensions:
-    contributte.console: Contributte\Console\DI\ConsoleExtension(%consoleMode%)
-
-contributte.console:
-    name: 'CMP Crawler'
-    version: 1.0
-    url: null
-    lazy: false

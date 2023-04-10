@@ -1,29 +1,23 @@
 version: "3.7"
 
 services:
-    api:
-        image: 68publishers/php:8.1-unit-dev-1.1.0
-        container_name: cmp-crawler-api
-        ports:
-            - 8888:8080
+    app:
+        build: .
         volumes:
-            - .:/var/www/html:cached
-        depends_on:
-            db:
-                condition: service_healthy
-        networks:
-            - backend
-
-    worker:
-        build:
-            context: .
-            dockerfile: Dockerfile
-            target: worker
-        container_name: cmp-crawler-worker
+            - .:/app
+        container_name: cmp-crawler-app
+        restart: always
+        expose:
+            - "${APP_PORT}"
+        ports:
+            - "${APP_PORT}:${APP_INTERNAL_PORT}"
+        command:
+            - sh
+            - -c
+            - start-node.sh
+        env_file: .env
         security_opt:
             - seccomp=./.docker/chrome/chrome.json
-        volumes:
-            - .:/var/www/html:cached
         depends_on:
             db:
                 condition: service_healthy
@@ -34,19 +28,19 @@ services:
         image: postgres:14.6
         container_name: cmp-crawler-db
         ports:
-            - 5432:5432
+            - "${DB_PORT}:${DB_PORT}"
         volumes:
             - ./.docker/postgres/postgres.conf:/etc/postgresql/postgresql.conf:delegated
             - ./var/postgres-data:/var/lib/postgresql/data:cached
         environment:
             - PGDATA=/var/lib/postgresql/data/pgdata
-            - POSTGRES_USER=root
-            - POSTGRES_PASSWORD=root
-            - POSTGRES_DB=cmp-crawler
+            - POSTGRES_USER=${DB_USER}
+            - POSTGRES_PASSWORD=${DB_PASSWORD}
+            - POSTGRES_DB=${DB_NAME}
         command:
             - postgres
             - -c
-            - 'config_file=/etc/postgresql/postgresql.conf'
+            - "config_file=/etc/postgresql/postgresql.conf"
         healthcheck:
             test: ["CMD-SHELL", "sh -c 'pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB'"]
             interval: 10s

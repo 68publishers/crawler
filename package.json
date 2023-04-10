@@ -1,18 +1,41 @@
 {
-  "name": "amp",
+  "name": "cmp-crawler",
   "version": "1.0.0",
+  "author": "68publishers",
   "description": "Consent Management Platform - Cookie Crawler",
+  "main": "index.mjs",
+  "type": "module",
+  "scripts": {
+    "start": "node index.mjs",
+    "dev": "nodemon --ignore 'storage/*' index.mjs",
+    "migrate": "ts-node --project tsconfig.migrations.json node_modules/node-pg-migrate/bin/node-pg-migrate up -m src/model/migrations -d DB_URL"
+  },
   "dependencies": {
+    "awilix": "^8.0.1",
+    "body-parser": "^1.20.2",
     "crawlee": "^3.3.0",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "express-validator": "^6.15.0",
+    "method-override": "^3.0.0",
+    "node-pg-migrate": "^6.2.2",
+    "pg": "^8.10.0",
     "puppeteer": "^19.8.2",
     "puppeteer-extra": "^3.3.6",
-    "puppeteer-extra-plugin-stealth": "^2.11.2"
+    "puppeteer-extra-plugin-stealth": "^2.11.2",
+    "ts-node": "^10.9.1",
+    "uuid": "^9.0.0",
+    "validator": "^13.9.0",
+    "winston": "^3.8.2",
+    "winston-daily-rotate-file": "^4.7.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/68publishers/consent-management-platform"
+    "url": "https://github.com/68publishers/cmp-crawler"
   },
-  "author": "68publishers",
   "license": "proprietary",
   "bugs": {
     "url": "https://github.com/68publishers/consent-management-platform/issues"

@@ -1,2 +1,0 @@
-extensions:
-    68publishers.doctrine_bridge: SixtyEightPublishers\DoctrineBridge\Bridge\Nette\DI\DoctrineBridgeExtension

@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "module": "CommonJS",
+    "moduleResolution": "Node"
+  },
+  "ts-node": {
+    "moduleTypes": {
+      "src/model/migrations": "cjs"
+    }
+  },
+  "include": ["src/model/migrations"]
+}
