@@ -1,13 +1,13 @@
 export class AbstractLogger {
-    info(message) {
+    async info(message) {
         this.#throwMissingImplementationError('info');
     }
 
-    warning(message) {
+    async warning(message) {
         this.#throwMissingImplementationError('warning');
     }
 
-    error(message) {
+    async error(message) {
         this.#throwMissingImplementationError('error');
     }
 

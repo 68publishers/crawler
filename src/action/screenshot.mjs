@@ -1,8 +1,15 @@
-import {AbstractAction} from './abstract-action.mjs';
+import { AbstractAction } from './abstract-action.mjs';
+import { v4 as uuid } from 'uuid';
+import { existsSync, mkdirSync } from 'fs';
+import { URL } from 'url';
 
 export class Screenshot extends AbstractAction {
-    constructor() {
+    #applicationUrl;
+
+    constructor({ applicationUrl }) {
         super('screenshot');
+
+        this.#applicationUrl = applicationUrl;
     }
 
     *_doValidateOptions(options) {
@@ -11,11 +18,29 @@ export class Screenshot extends AbstractAction {
         }
     }
 
-    async execute(options, { page, saveSnapshot }) {
-        await saveSnapshot({
-            key: options.name.replace('%url%', page.url().replace(/[^a-zA-Z0-9!\-_.'()]/g, '-')),
-            saveScreenshot: true,
-            saveHtml: false,
+    async execute(options, { page, saveResult, scenarioId }) {
+        const screenshotId = uuid();
+        const directory = `public/screenshots/${scenarioId}`;
+
+        if (!existsSync(directory)) {
+            mkdirSync(directory, {
+                recursive: true,
+            });
+        }
+
+        await page.screenshot({
+            quality: 100,
+            path: `${directory}/${screenshotId}.jpg`,
         });
+
+        const pageUrl = page.url();
+        const screenshotUrl = new URL(this.#applicationUrl);
+        screenshotUrl.pathname = `static/screenshots/${scenarioId}/${screenshotId}.jpg`
+
+        await saveResult('screenshots', screenshotId, {
+            name: options.name.replace('%url%', pageUrl),
+            screenshotUrl: screenshotUrl.toString(),
+            pageUrl: pageUrl,
+        }, false);
     }
 }

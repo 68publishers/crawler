@@ -22,6 +22,8 @@ services:
         depends_on:
             db:
                 condition: service_healthy
+            redis:
+                condition: service_started
         networks:
             - backend
 
@@ -47,6 +49,15 @@ services:
             interval: 10s
             timeout: 5s
             retries: 5
+        networks:
+            - backend
+
+    redis:
+        image: redis:7.0.10-alpine
+        container_name: cmp-crawler-redis
+        command: redis-server --loglevel warning --requirepass redis_pass --maxmemory-policy noeviction
+        ports:
+            - "6379:6379"
         networks:
             - backend
 

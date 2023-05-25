@@ -1,37 +1,80 @@
-import {v4 as uuid} from 'uuid';
+import { v4 as uuid } from 'uuid';
+import { validationResult } from "express-validator";
 
 export class ScenarioController {
-    #crawler;
     #scenarioRepository;
+    #scenarioValidator;
+    #scenarioQueue;
 
-    constructor({ crawler, scenarioRepository }) {
-        this.#crawler = crawler;
+    constructor({ scenarioRepository, scenarioValidator, scenarioQueue }) {
         this.#scenarioRepository = scenarioRepository;
+        this.#scenarioValidator = scenarioValidator;
+        this.#scenarioQueue = scenarioQueue;
     }
 
-    scheduleScenario(req, res) {
-        const scenarioId = uuid();
+    scheduleScenario() {
+        return [
+            ...this.#scenarioValidator.postScenarioValidator(),
+            async (req, res) => {
+                const errors = validationResult(req);
 
-        // noinspection JSIgnoredPromiseFromCall
-        this.#crawler.crawl(scenarioId, req.body);
+                if (!errors.isEmpty()) {
+                    return res.status(422).json({
+                        errors: errors.array(),
+                    });
+                }
 
-        res.status(202).json({
-            status: 'running',
-            scenarioId: scenarioId,
-        });
+                const scenarioId = uuid();
+
+                await this.#scenarioRepository.create(scenarioId, req.body);
+                await this.#scenarioQueue.addRunScenarioJob(scenarioId, req.body);
+
+                res.status(202).json({
+                    status: 'running',
+                    scenarioId: scenarioId,
+                });
+            },
+        ];
     }
 
-    async getScenario(req, res) {
-        const scenario = await this.#scenarioRepository.get(req.params.scenarioId);
+    validateScenario() {
+        return [
+            ...this.#scenarioValidator.postScenarioValidator(),
+            async (req, res) => {
+                const errors = validationResult(req);
 
-        if (null === scenario) {
-            res.status(404).json({
-                error: 'Scenario not found.',
-            });
+                res.status(200).json({
+                    valid: errors.isEmpty(),
+                    errors: errors.array(),
+                });
+            },
+        ];
+    }
 
-            return;
-        }
+    getScenario() {
+        return [
+            ...this.#scenarioValidator.getScenarioValidator(),
+            async (req, res) => {
+                const errors = validationResult(req);
 
-        res.status(200).json(scenario);
+                if (!errors.isEmpty()) {
+                    return res.status(400).json({
+                        errors: errors.array(),
+                    });
+                }
+
+                const scenario = await this.#scenarioRepository.get(req.params.scenarioId);
+
+                if (null === scenario) {
+                    res.status(404).json({
+                        error: 'Scenario not found.',
+                    });
+
+                    return;
+                }
+
+                res.status(200).json(scenario);
+            },
+        ];
     }
 }

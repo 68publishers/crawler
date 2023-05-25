@@ -21,7 +21,7 @@ export class AbstractAction {
         return true;
     }
 
-    async execute(options, { page, saveSnapshot, enqueueLinks, saveResult }) {
+    async execute(options, { page, enqueueLinks, saveResult, scenarioId, logger }) {
         throw new Error(`Method ${this.constructor.name}::execute() must be redeclared.`);
     }
 }

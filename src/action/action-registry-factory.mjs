@@ -12,7 +12,7 @@ import {Select} from './select.mjs';
 import {Type} from './type.mjs';
 import {WaitForSelector} from './wait-for-selector.mjs';
 
-export function createActionRegistry() {
+export function createActionRegistry({ applicationUrl }) {
     const registry = new ActionRegistry();
 
     registry.addAction(new Click());
@@ -23,7 +23,7 @@ export function createActionRegistry() {
     registry.addAction(new Focus());
     registry.addAction(new Hover());
     registry.addAction(new KeyboardPress());
-    registry.addAction(new Screenshot());
+    registry.addAction(new Screenshot({ applicationUrl }));
     registry.addAction(new Select());
     registry.addAction(new Type());
     registry.addAction(new WaitForSelector());
