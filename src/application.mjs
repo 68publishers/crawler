@@ -5,17 +5,29 @@ import methodOverride from 'method-override';
 export class Application {
     #routerFactory;
     #logger;
+    #worker;
     #applicationPort;
     #developmentMode;
 
-    constructor({ routerFactory, logger, applicationPort, developmentMode }) {
+    constructor({ routerFactory, logger, worker, applicationPort, developmentMode }) {
         this.#routerFactory = routerFactory;
         this.#logger = logger;
+        this.#worker = worker;
         this.#applicationPort = applicationPort;
         this.#developmentMode = developmentMode;
     }
 
     run() {
+        process.on('uncaughtException', async (err) => {
+            await this.#logger.error(`Uncaught exception ${err.name}: ${err.message}\nStack: ${JSON.stringify(err.stack)}`);
+
+            process.exit(1);
+        });
+
+        process.on('unhandledRejection', async (reason) => {
+            await this.#logger.error(`Unhandled Rejection at: Promise. ${reason}`);
+        });
+
         const app = express();
 
         app.use(bodyParser.json());
@@ -33,8 +45,8 @@ export class Application {
         });
 
         // error handler
-        app.use((err, req, res, next) => {
-            this.#logger.error(JSON.stringify(err.stack));
+        app.use(async (err, req, res, next) => {
+            await this.#logger.error(`${err.name}: ${err.message}\nStack: ${JSON.stringify(err.stack)}`)
 
             res.status(err.status || 500);
             res.json({
@@ -43,8 +55,20 @@ export class Application {
             });
         });
 
-        app.listen(this.#applicationPort, () => {
+        this.#worker.run();
+
+        const server = app.listen(this.#applicationPort, () => {
             console.log(`app listening on port ${this.#applicationPort}!`)
         });
+
+        process.on('SIGTERM', () => {
+            console.log('SIGTERM signal received: closing the application server.');
+
+            server.close(async () => {
+                await this.#worker.close();
+
+                process.exit(0);
+            })
+        })
     }
 }

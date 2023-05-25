@@ -22,6 +22,12 @@ init:
 	make start
 	make db-migrations
 
+eslint:
+	docker exec -it cmp-crawler-app npm run eslint
+
+eslint.fix:
+	docker exec -it cmp-crawler-app npm run eslint:fix
+
 tests:
 	@echo "not implemented" >&2
 

@@ -17,11 +17,20 @@ export class ScenarioRepository {
         ]);
     }
 
+    async fail(scenarioId) {
+        await this.#database.query(`
+            UPDATE scenario SET status = $1 WHERE id = $2
+        `, [
+            'failed',
+            scenarioId,
+        ]);
+    }
+
     async complete(scenarioId) {
         await this.#database.query(`
             UPDATE scenario SET status = $1 WHERE id = $2
         `, [
-            'done',
+            'completed',
             scenarioId,
         ]);
     }

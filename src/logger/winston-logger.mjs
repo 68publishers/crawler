@@ -17,7 +17,7 @@ export class WinstonLogger extends AbstractLogger {
                     maxFiles: '14d'
                 }),
                 new DailyRotateFile({
-                    level: 'warning',
+                    level: 'warn',
                     filename: `${logDir}/warning.%DATE%.log`,
                     datePattern: 'YYYY-MM-DD',
                     maxFiles: '14d'
@@ -38,15 +38,15 @@ export class WinstonLogger extends AbstractLogger {
         }
     }
 
-    info(message) {
+    async info(message) {
         this.logger.info(message);
     }
 
-    warning(message) {
-        this.logger.warning(message);
+    async warning(message) {
+        this.logger.warn(message);
     }
 
-    error(message) {
+    async error(message) {
         this.logger.error(message);
     }
 }
