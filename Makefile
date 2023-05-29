@@ -16,17 +16,17 @@ down:
 	docker compose --env-file .env down
 
 db-migrations:
-	docker exec -it cmp-crawler-app npm run migrations:up
+	docker exec -it crawler-app npm run migrations:up
 
 init:
 	make start
 	make db-migrations
 
 eslint:
-	docker exec -it cmp-crawler-app npm run eslint
+	docker exec -it crawler-app npm run eslint
 
 eslint.fix:
-	docker exec -it cmp-crawler-app npm run eslint:fix
+	docker exec -it crawler-app npm run eslint:fix
 
 tests:
 	@echo "not implemented" >&2

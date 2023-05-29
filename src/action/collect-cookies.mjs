@@ -1,28 +1,28 @@
 import {AbstractAction} from './abstract-action.mjs';
+import { sha256 } from '../helper/hash.mjs';
 
 export class CollectCookies extends AbstractAction {
     constructor() {
         super('collectCookies');
     }
 
-    *_doValidateOptions(options) {}
+    *_doValidateOptions({ options }) {}
 
-    async execute(options, { page, saveResult }) {
+    async execute(options, { request, page, saveResult }) {
         const client = await page.target().createCDPSession();
         const cookies = (await client.send('Storage.getCookies')).cookies;
-        const pageUrl = page.url();
 
         for (let cookie of cookies) {
-            const identity = cookie.name + '__' + cookie.domain;
+            const identity = sha256(cookie.name + '__' + cookie.domain);
 
             await saveResult('cookies', identity, {
                 name: cookie.name,
                 domain: cookie.domain,
-                foundOnUrl: pageUrl,
                 httpOnly: cookie.httpOnly || false,
                 secure: cookie.secure || false,
                 session: cookie.session || false,
                 sameSite: cookie.sameSite || null,
+                foundOnUrl: request.userData.currentUrl,
             }, false);
         }
     }

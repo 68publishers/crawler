@@ -6,7 +6,7 @@ services:
         volumes:
             - .:/app
             - /app/node_modules
-        container_name: cmp-crawler-app
+        container_name: crawler-app
         restart: always
         expose:
             - "${APP_PORT}"
@@ -29,7 +29,7 @@ services:
 
     db:
         image: postgres:14.6
-        container_name: cmp-crawler-db
+        container_name: crawler-db
         ports:
             - "5432:5432"
         volumes:
@@ -39,7 +39,7 @@ services:
             - PGDATA=/var/lib/postgresql/data/pgdata
             - POSTGRES_USER=root
             - POSTGRES_PASSWORD=root
-            - POSTGRES_DB=cmp-crawler
+            - POSTGRES_DB=crawler
         command:
             - postgres
             - -c
@@ -54,7 +54,7 @@ services:
 
     redis:
         image: redis:7.0.10-alpine
-        container_name: cmp-crawler-redis
+        container_name: crawler-redis
         command: redis-server --loglevel warning --requirepass redis_pass --maxmemory-policy noeviction
         ports:
             - "6379:6379"

@@ -14,14 +14,22 @@ export class EnqueueLinks extends AbstractAction {
         super('enqueueLinks');
     }
 
-    *_doValidateOptions(options) {
+    *_doValidateOptions({ options, sceneNames }) {
         if (!('strategy' in options) || 'string' !== typeof options.strategy || !strategies.includes(options.strategy)) {
             yield `the option "strategy" is required and must be one of these ["${strategies.join('", "')}"]`;
         }
 
+        if (('scene' in options) && 'string' === typeof options.scene) {
+            if (!sceneNames.includes(options.scene)) {
+                yield `the option "scene" contains undefined scene name "${options.scene}"`;
+            }
+        } else {
+            yield `the option "scene" is required and must be a scene name`;
+        }
+
         if ('manual' === options.strategy) {
             if (!('urls' in options) || (!Array.isArray(options.urls) || 0 < options.urls.filter(e => 'string' !== typeof e))) {
-                yield `the option "urls" is required for the manual strategy and must be an array of urls.`;
+                yield `the option "urls" is required for the manual strategy and must be an array of urls`;
             }
         } else {
             if ('selector' in options && 'string' !== typeof options.selector) {
@@ -36,24 +44,42 @@ export class EnqueueLinks extends AbstractAction {
                 yield 'the optional option "limit" must be a positive int';
             }
         }
+
+        if ('baseUrl' in options && 'string' !== typeof options.baseUrl) {
+            yield 'the optional option "baseUrl" must be a string';
+        }
     }
 
-    async execute(options, { page, enqueueLinks }) {
-        await enqueueLinks(this.#createEnqueueLinksOptions(page, options));
+    async execute(options, { request, page, enqueueLinks }) {
+        await enqueueLinks(
+            await this.#createEnqueueLinksOptions(request, page, options)
+        );
     }
 
-    #createEnqueueLinksOptions(page, options) {
+    async #createEnqueueLinksOptions(request, page, options) {
+        const previousCookies = await page.cookies();
+
         if ('manual' === options.strategy) {
             return {
                 urls: options.urls,
-                label: 'FOR_EACH',
+                userData: {
+                    scene: options.scene,
+                    previousCookies: previousCookies,
+                    previousUrl: request.userData.currentUrl,
+                    identity: request.userData.identity,
+                },
             };
         }
 
         const enqueueLinksOptions = {
             strategy: options.strategy,
-            label: 'FOR_EACH',
-            baseUrl: (new URL(page.url())).origin,
+            userData: {
+                scene: options.scene,
+                previousCookies: previousCookies,
+                previousUrl: request.userData.currentUrl,
+                identity: request.userData.identity,
+            },
+            baseUrl: options.baseUrl || (new URL(page.url())).origin,
         };
 
         if ('selector' in options) {

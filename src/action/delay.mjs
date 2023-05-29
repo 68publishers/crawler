@@ -5,7 +5,7 @@ export class Delay extends AbstractAction {
         super('delay');
     }
 
-    *_doValidateOptions(options) {
+    *_doValidateOptions({ options }) {
         if (!Number.isInteger(options.delay) || 0 > options.delay) {
             yield 'the option "delay" is required and must be a positive int';
         }

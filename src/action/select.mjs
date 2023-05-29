@@ -5,7 +5,7 @@ export class Select extends AbstractAction {
         super('select');
     }
 
-    *_doValidateOptions(options) {
+    *_doValidateOptions({ options }) {
         if (!('selector' in options) || 'string' !== typeof options.selector || '' === options.selector) {
             yield 'the option "selector" is required and must be a non empty string';
         }

@@ -26,8 +26,21 @@ module.exports = async (job) => {
 
         if (job.data.scenario.hasOwnProperty('callbackUri') && 'string' === typeof job.data.scenario.callbackUri) {
             const notifier = container.resolve('callbackUriNotifier');
+            const userRepository = container.resolve('userRepository');
+            let user = null;
 
-            await notifier.notify(job.data.scenario.callbackUri, result, logger);
+            try {
+                user = await userRepository.findById(job.data.userId);
+            } catch (err) {
+                await logger.error('Unable to send callback uri notification, user not found.');
+
+                return result;
+            }
+
+            await notifier.notify(job.data.scenario.callbackUri, result, logger, null !== user ? [
+                user.username,
+                user.callback_uri_token,
+            ] : undefined);
         }
 
         return result;

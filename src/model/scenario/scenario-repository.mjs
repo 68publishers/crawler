@@ -1,4 +1,4 @@
-import {v4 as uuid} from 'uuid';
+import { v4 as uuid } from 'uuid';
 
 export class ScenarioRepository {
     #database;
@@ -47,6 +47,7 @@ export class ScenarioRepository {
         }
 
         const scenario = scenarioRows.rows[0];
+        scenario.stats = {};
         scenario.results = {};
 
         const scenarioResultRows = await this.#database.query(`
@@ -58,9 +59,16 @@ export class ScenarioRepository {
         for (let resultRow of scenarioResultRows.rows) {
             if (!(resultRow.group in scenario.results)) {
                 scenario.results[resultRow.group] = [];
+                scenario.stats[resultRow.group] = 0;
             }
 
-            scenario.results[resultRow.group].push(resultRow.data);
+            const data = {
+                _identity: resultRow.identity,
+                ...resultRow.data
+            };
+
+            scenario.results[resultRow.group].push(data);
+            ++scenario.stats[resultRow.group];
         }
 
         return scenario;

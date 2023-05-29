@@ -52,7 +52,7 @@ export class Worker {
         };
 
         const __dirname = path.dirname(fileURLToPath(import.meta.url));
-        const scenarioQueueProcessorPath = path.join(__dirname, 'processor', 'scenario-queue-processor');
+        const scenarioQueueProcessorPath = path.join(__dirname, 'processor', 'scenario-queue-processor.cjs');
 
         for (let i = 0; i < this.#numberOfWorkerProcesses; i++) {
             const worker = new BullWorker(

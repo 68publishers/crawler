@@ -22,8 +22,9 @@ export class ScenarioQueue {
         this.queue = new Queue(QUEUE_NAME, options);
     }
 
-    async addRunScenarioJob(scenarioId, scenario) {
+    async addRunScenarioJob(userId, scenarioId, scenario) {
         await this.queue.add('run_scenario', {
+            userId: userId,
             scenarioId: scenarioId,
             scenario: scenario,
         });

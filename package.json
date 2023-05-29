@@ -1,5 +1,5 @@
 {
-  "name": "cmp-crawler",
+  "name": "crawler",
   "version": "1.0.0",
   "author": "68publishers",
   "description": "Consent Management Platform - Cookie Crawler",
@@ -7,29 +7,37 @@
   "scripts": {
     "start": "node index.mjs",
     "dev": "nodemon --ignore 'var/*' --ignore 'public/*' index.mjs",
-    "migrations:up": "ts-node --project tsconfig.migrations.json node_modules/node-pg-migrate/bin/node-pg-migrate up -m src/model/migrations -d DB_URL",
-    "migrations:create": "npx node-pg-migrate create -m ./src/model/migrations -d DB_URL -j ts",
+    "migrations:up": "node-pg-migrate up -m ./src/model/migrations -d DB_URL",
+    "migrations:create": "node-pg-migrate create -m ./src/model/migrations -d DB_URL -j js",
     "eslint:fix": "eslint ./index.mjs ./src --ext .js,.mjs --fix",
-    "eslint": "eslint ./index.mjs ./src --ext .js,.mjs"
+    "eslint": "eslint ./index.mjs ./src --ext .js,.mjs",
+    "user:list": "node ./src/console/console.mjs user:list",
+    "user:create": "node ./src/console/console.mjs user:create",
+    "user:delete": "node ./src/console/console.mjs user:delete"
   },
   "dependencies": {
     "@bull-board/api": "^5.2.0",
     "@bull-board/express": "^5.2.0",
     "awilix": "^8.0.1",
+    "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.2",
     "bullmq": "^3.14.0",
+    "cli-table3": "^0.6.3",
+    "commander": "^10.0.1",
     "crawlee": "^3.3.2",
     "dotenv": "^16.0.3",
     "eslint": "^8.41.0",
     "express": "^4.18.2",
     "express-validator": "^6.15.0",
+    "inquirer": "^9.2.6",
     "method-override": "^3.0.0",
     "node-pg-migrate": "^6.2.2",
+    "passport": "^0.6.0",
+    "passport-http": "^0.3.0",
     "pg": "^8.10.0",
     "puppeteer": "^20.1.0",
     "puppeteer-extra": "^3.3.6",
     "puppeteer-extra-plugin-stealth": "^2.11.2",
-    "ts-node": "^10.9.1",
     "uuid": "^9.0.0",
     "validator": "^13.9.0",
     "winston": "^3.8.2",
@@ -40,11 +48,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/68publishers/cmp-crawler"
+    "url": "https://github.com/68publishers/crawler"
   },
   "license": "proprietary",
   "bugs": {
-    "url": "https://github.com/68publishers/cmp-crawler/issues"
+    "url": "https://github.com/68publishers/crawler/issues"
   },
-  "homepage": "https://github.com/68publishers/cmp-crawler#readme"
+  "homepage": "https://github.com/68publishers/crawler#readme"
 }

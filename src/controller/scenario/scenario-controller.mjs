@@ -27,7 +27,7 @@ export class ScenarioController {
                 const scenarioId = uuid();
 
                 await this.#scenarioRepository.create(scenarioId, req.body);
-                await this.#scenarioQueue.addRunScenarioJob(scenarioId, req.body);
+                await this.#scenarioQueue.addRunScenarioJob(req.user.id, scenarioId, req.body);
 
                 res.status(202).json({
                     status: 'running',
