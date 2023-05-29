@@ -60,7 +60,7 @@ export class Crawler {
             await logger.info(`Scenario ${scenarioId} completed`);
         } catch (err) {
             await logger.error(`Scenario ${scenarioId} failed, reason: ${err.message}`);
-            await this.#scenarioRepository.fail(scenarioId);
+            await this.#scenarioRepository.fail(scenarioId, err.toString());
 
             throw err;
         }
