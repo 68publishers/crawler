@@ -4,7 +4,7 @@ import StealthPlugin from 'puppeteer-extra-plugin-stealth';
 import { AbstractLogger } from '../logger/abstract-logger.mjs';
 import { ExecutionContext } from '../action/execution-context.mjs';
 import { sha256 } from '../helper/hash.mjs';
-import { existsSync, rmdirSync } from 'fs';
+import { existsSync, rmSync } from 'fs';
 import path from 'path';
 
 puppeteerExtra.use(StealthPlugin());
@@ -233,7 +233,7 @@ export class Crawler {
             path.resolve(this.#varDir, `crawlee/request_queues/${scenarioId}`),
         ]) {
             if (existsSync(storeDir)) {
-                rmdirSync(storeDir, {
+                rmSync(storeDir, {
                     recursive: true,
                 });
             }
