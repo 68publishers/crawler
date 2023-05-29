@@ -17,11 +17,12 @@ export class ScenarioRepository {
         ]);
     }
 
-    async fail(scenarioId) {
+    async fail(scenarioId, error) {
         await this.#database.query(`
-            UPDATE scenario SET status = $1 WHERE id = $2
+            UPDATE scenario SET status = $1, error = $2 WHERE id = $3
         `, [
             'failed',
+            error,
             scenarioId,
         ]);
     }
@@ -37,7 +38,7 @@ export class ScenarioRepository {
 
     async get(scenarioId) {
         const scenarioRows = await this.#database.query(`
-            SELECT id, created_at, status FROM scenario WHERE id = $1 LIMIT 1
+            SELECT id, created_at, status, error FROM scenario WHERE id = $1 LIMIT 1
         `, [
             scenarioId,
         ]);
