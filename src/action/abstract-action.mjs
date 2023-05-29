@@ -3,7 +3,7 @@ export class AbstractAction {
         this.name = name;
     }
 
-    *_doValidateOptions(options) {
+    *_doValidateOptions({ options, sceneNames }) {
         throw new Error(`Method ${this.constructor.name}::_doValidateOptions() must be redeclared.`);
     }
 
@@ -21,7 +21,7 @@ export class AbstractAction {
         return true;
     }
 
-    async execute(options, { page, enqueueLinks, saveResult, scenarioId, logger }) {
+    async execute(options, executionContext) {
         throw new Error(`Method ${this.constructor.name}::execute() must be redeclared.`);
     }
 }

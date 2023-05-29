@@ -5,7 +5,7 @@ export class KeyboardPress extends AbstractAction {
         super('keyboardPress');
     }
 
-    *_doValidateOptions(options) {
+    *_doValidateOptions({ options }) {
         if (!('key' in options) || 'string' !== typeof options.key || '' === options.key) {
             yield 'the option "key" is required and must be a non empty string';
         }

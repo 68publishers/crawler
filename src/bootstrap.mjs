@@ -13,6 +13,7 @@ import { ScenarioValidator } from './controller/scenario/scenario-validator.mjs'
 
 import { Database } from './model/database.mjs';
 import { ScenarioRepository } from './model/scenario/scenario-repository.mjs';
+import { UserRepository } from './model/user/user-repository.mjs';
 
 import { ScenarioQueue } from './queue/scenario-queue.mjs';
 import { Worker } from './worker/worker.mjs';
@@ -58,6 +59,7 @@ export class Bootstrap {
             scenarioValidator: asClass(ScenarioValidator).singleton(),
             database: asClass(Database).singleton(),
             scenarioRepository: asClass(ScenarioRepository).singleton(),
+            userRepository: asClass(UserRepository).singleton(),
             scenarioQueue: asClass(ScenarioQueue).singleton(),
             worker: asClass(Worker).singleton(),
         });

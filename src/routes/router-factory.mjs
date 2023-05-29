@@ -2,17 +2,23 @@ import express, { Router } from 'express';
 import { createBullBoard } from '@bull-board/api';
 import { BullMQAdapter } from '@bull-board/api/bullMQAdapter.js';
 import { ExpressAdapter } from '@bull-board/express';
+import { comparePassword } from '../helper/password.mjs';
+import { BasicStrategy } from 'passport-http';
+import passport from 'passport';
 
 export class RouterFactory {
     #scenarioController;
     #scenarioQueue;
+    #userRepository;
 
     constructor({
         scenarioController,
         scenarioQueue,
+        userRepository,
     }) {
         this.#scenarioController = scenarioController;
         this.#scenarioQueue = scenarioQueue;
+        this.#userRepository = userRepository;
     }
 
     create() {
@@ -21,6 +27,27 @@ export class RouterFactory {
         const apiRouter = Router();
         const scenarioRouter = Router();
         const adminRouter = Router();
+
+        passport.use('basic', new BasicStrategy(
+            async (username, password, done) => {
+                let user = null;
+
+                try {
+                    user = await this.#userRepository.findByUsername(username);
+                } catch (err) {
+                    return done(err);
+                }
+
+                if (null === user || !comparePassword(password, user.password)) {
+                    return done(null, false);
+                }
+
+                return done(null, user);
+            }
+        ));
+
+        adminRouter.use(passport.authenticate('basic', { session: false }, undefined));
+        apiRouter.use(passport.authenticate('basic', { session: false }, undefined));
 
         router.use('/static', express.static('public'))
         router.use('/admin', adminRouter);

@@ -1,9 +1,7 @@
-/* eslint-disable @typescript-eslint/naming-convention */
-import { MigrationBuilder, ColumnDefinitions } from 'node-pg-migrate';
+/* eslint-disable camelcase */
+exports.shorthands = undefined;
 
-export const shorthands: ColumnDefinitions | undefined = undefined;
-
-export async function up(pgm: MigrationBuilder): Promise<void> {
+exports.up = pgm => {
     pgm.createTable('scenario', {
         id: {
             type: 'uuid',
@@ -63,7 +61,7 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
     });
 }
 
-export async function down(pgm: MigrationBuilder): Promise<void> {
+exports.down = pgm => {
     pgm.dropTable('scenario_result');
     pgm.dropTable('scenario');
 }

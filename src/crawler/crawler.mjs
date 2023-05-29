@@ -1,20 +1,56 @@
-import {PuppeteerCrawler, Configuration, purgeDefaultStorages } from 'crawlee';
+import {PuppeteerCrawler, Configuration } from 'crawlee';
 import puppeteerExtra from 'puppeteer-extra';
 import StealthPlugin from 'puppeteer-extra-plugin-stealth';
+import { AbstractLogger } from '../logger/abstract-logger.mjs';
+import { ExecutionContext } from '../action/execution-context.mjs';
+import { sha256 } from '../helper/hash.mjs';
+import { existsSync, rmdirSync } from 'fs';
+import path from 'path';
 
 puppeteerExtra.use(StealthPlugin());
 
+/**
+ * @callback updateProgressHandlerCallback
+ * @param {number} progress
+ */
 export class Crawler {
     #actionRegistry;
     #chromePath;
     #scenarioRepository;
+    #varDir;
 
-    constructor({ actionRegistry, chromePath, scenarioRepository }) {
+    constructor({ actionRegistry, chromePath, scenarioRepository, varDir }) {
         this.#actionRegistry = actionRegistry;
         this.#chromePath = chromePath;
         this.#scenarioRepository = scenarioRepository;
+        this.#varDir = varDir;
     }
 
+    /**
+     * @param {string} scenarioId
+     * @param {{
+     *     entrypoint: {
+     *         url: string,
+     *         scene: string,
+     *     },
+     *     callbackUri?: string,
+     *     options?: {
+     *         maxRequests?: number,
+     *         viewport?: {
+     *             width?: number,
+     *             height?: number,
+     *         },
+     *     },
+     *     scenes: Object.<string, array<{
+     *         action: string,
+     *         options: object,
+     *     }>>,
+     * }} scenario
+     * @param {AbstractLogger} logger
+     * @param {updateProgressHandlerCallback} updateProgressHandler
+     *
+     * @returns {Promise<*>}
+     */
     async crawl(scenarioId, scenario, logger, updateProgressHandler = undefined) {
         await logger.info(`Running scenario ${scenarioId}`);
 
@@ -35,10 +71,8 @@ export class Crawler {
     async #doCrawl(scenarioId, scenario, logger, updateProgressHandler) {
         const scenarioOptions = scenario.options || {};
         const scenarioViewport = scenarioOptions.viewport || {};
-        const requests = [scenario.url];
         const maxRequests = 'maxRequests' in scenarioOptions ? scenarioOptions.maxRequests : undefined;
         let viewportOptions = null;
-        let startupCookies = null;
 
         if ('width' in scenarioViewport && 'height' in scenarioViewport) {
             viewportOptions = {
@@ -48,7 +82,7 @@ export class Crawler {
         }
 
         const crawlerOptions = {
-            maxRequestRetries: 0,
+            maxRequestRetries: scenarioOptions.maxRequestRetries || 0,
             launchContext: {
                 launcher: puppeteerExtra,
                 launchOptions: {
@@ -56,21 +90,23 @@ export class Crawler {
                     ignoreHTTPSErrors: true,
                     executablePath: this.#chromePath,
                     args: [
-                        '--disable-web-security'
+                        '--disable-web-security',
+                        '--no-sandbox',
+                        '--disable-setuid-sandbox'
                     ],
                 },
             },
             preNavigationHooks: [
                 async (crawlingContext, gotoOptions) => {
-                    const { page } = crawlingContext;
+                    const { page, request } = crawlingContext;
                     gotoOptions.waitUntil = 'networkidle0';
 
                     if (viewportOptions) {
                         page.setViewport(viewportOptions);
                     }
 
-                    if (startupCookies) {
-                        page.setCookie.apply(page, startupCookies);
+                    if (request.userData.previousCookies) {
+                        page.setCookie.apply(page, request.userData.previousCookies);
                     }
                 },
             ],
@@ -84,17 +120,19 @@ export class Crawler {
             await this.#scenarioRepository.addResult(scenarioId, group, identity, data, mergeOnConflict);
         };
 
-        const executeActions = async (actions, page, enqueueLinks, isStartup) => {
-            for (let action of actions) {
-                const actionHandler = this.#actionRegistry.get(action.action);
-
-                if (isStartup && 'enqueueLinks' === actionHandler.name) {
-                    startupCookies = await page.cookies();
-                }
-
-                await actionHandler.execute(action.options, { page, enqueueLinks, saveResult, scenarioId, logger })
-            }
-        }
+        const saveVisitedUrl = async (previousUrl, currentUrl, statusCode, error) => {
+            await saveResult(
+                'visitedUrls',
+                sha256(`${previousUrl || 'null'}=>${currentUrl}`),
+                {
+                    url: currentUrl,
+                    statusCode: statusCode,
+                    error: error,
+                    foundOnUrl: previousUrl,
+                },
+                false,
+            );
+        };
 
         const updateProgress = async (crawler) => {
             if (undefined === updateProgressHandler) {
@@ -115,46 +153,90 @@ export class Crawler {
             updateProgressHandler(progress > 100 ? 100 : progress);
         }
 
+        const actionRegistry = this.#actionRegistry;
         const configuration = Configuration.getGlobalConfig();
 
         configuration.set('defaultKeyValueStoreId', scenarioId);
         configuration.set('defaultRequestQueueId', scenarioId);
-        configuration.set('persistStorage', false);
 
         const crawler = new PuppeteerCrawler({
             ...crawlerOptions,
             async requestHandler({ request, response, page, enqueueLinks, crawler }) {
-                if (response.status() < 200 || response.status() > 399) {
-                    await logger.warning(`Failed to crawl URL ${request.url}, status code is ${response.status()}`);
-                    await saveResult('visitedUrls', request.url, request.url, false);
+                const statusCode = response.status();
+                const scene = request.userData.scene;
+                let previousUrl = request.userData.previousUrl;
+
+                if (statusCode < 200 || statusCode > 399) {
+                    await logger.warning(`Failed to crawl URL ${request.url} (scene "${scene}"), status code is ${statusCode}`);
+                    await saveVisitedUrl(previousUrl, request.url, statusCode, response.statusText());
 
                     return;
                 }
 
-                await logger.info(`Starting to crawl URL ${page.url()}`);
-                await saveResult('visitedUrls', page.url(), page.url(), false);
+                request.userData.currentUrl = page.url();
 
-                if ('FOR_EACH' !== request.label) {
-                    await executeActions(scenario.startup || [], page, enqueueLinks, true);
-                    startupCookies = await page.cookies();
+                await logger.info(`Starting to crawl URL ${request.userData.currentUrl} (scene "${scene}")`);
+                await saveVisitedUrl(previousUrl, request.userData.currentUrl, statusCode, null);
+
+                for (let action of scenario.scenes[scene] || []) {
+                    await actionRegistry.get(action.action).execute(
+                        action.options,
+                        new ExecutionContext({
+                            request,
+                            page,
+                            scenarioId,
+                            enqueueLinks,
+                            saveResult,
+                            logger,
+                        })
+                    );
+                    const afterActionUrl = await page.evaluate(() => location.href);
+
+                    if (afterActionUrl !== request.userData.currentUrl) {
+                        request.userData.previousUrl = request.userData.currentUrl;
+                        request.userData.currentUrl = afterActionUrl;
+
+                        await saveVisitedUrl(request.userData.previousUrl, request.userData.currentUrl, statusCode, null);
+                    }
                 }
 
-                await executeActions(scenario.forEach || [], page, enqueueLinks, false);
                 await updateProgress(crawler);
             },
 
-            async failedRequestHandler({ request, crawler }) {
-                await logger.error(`Failed to crawl URL ${request.url}`);
-                await saveResult('visitedUrls', request.url, request.url, false);
+            async failedRequestHandler({ request, response, crawler }, err) {
+                const scene = request.userData.scene || '?';
+                const previousUrl = request.userData.currentUrl;
+                const currentUrl = request.url;
+
+                await logger.error(`Failed to crawl URL ${currentUrl} (scene "${scene}")`);
+                await saveVisitedUrl(previousUrl, currentUrl, response ? response.status() : 500, response ? response.statusText() : 'unknown');
                 await updateProgress(crawler);
             },
-
-            async errorHandler({}, error) {
-                await logger.error(error.toString());
-            }
         }, configuration);
 
-        await crawler.run(requests);
+        await crawler.run([
+            {
+                url: scenario.entrypoint.url,
+                userData: {
+                    scene: scenario.entrypoint.scene,
+                    previousCookies: null,
+                    previousUrl: null,
+                    identity: null,
+                }
+            }
+        ]);
         await updateProgress(crawler);
+
+        // cleanup
+        for (let storeDir of [
+            path.resolve(this.#varDir, `crawlee/key_value_stores/${scenarioId}`),
+            path.resolve(this.#varDir, `crawlee/request_queues/${scenarioId}`),
+        ]) {
+            if (existsSync(storeDir)) {
+                rmdirSync(storeDir, {
+                    recursive: true,
+                });
+            }
+        }
     }
 }

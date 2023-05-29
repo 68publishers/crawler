@@ -14,7 +14,9 @@ export class ScenarioValidator {
     }
 
     postScenarioValidator() {
-        const validateAction = (value) => {
+        let sceneNames = [];
+
+        const validateAction = value => {
             const action = value.action;
             const options = value.options;
 
@@ -26,19 +28,30 @@ export class ScenarioValidator {
                 throw new Error('Options must be an object.');
             }
 
-            return this.#actionRegistry.get(action).validateOptions(options);
+            return this.#actionRegistry.get(action).validateOptions({ options, sceneNames });
         }
 
         return [
-            body('url', 'The value must be a valid URL.').isURL(),
             body('callbackUri', 'The value must be a valid URL.').optional().isURL(),
             body('options.maxRequests', 'The value must be an int (>= 1) or undefined.').optional().isInt({ min: 1 }),
+            body('options.maxRequestRetries', 'The value must be an int (>= 0) or undefined.').optional().isInt({ min: 0 }),
             body('options.viewport.width', 'The value must be an int (>= 200) or undefined.').optional().isInt({ min: 200 }),
             body('options.viewport.height', 'The value must be an int (>= 200) or undefined.').optional().isInt({ min: 200 }),
-            body('startup', 'The value must be an array of actions.').optional().isArray(),
-            body('forEach', 'The value must be an array of actions.').optional().isArray(),
-            body('startup[*]').isObject().bail().custom(validateAction),
-            body('forEach[*]').isObject().bail().custom(validateAction),
+            body('scenes', 'The value must be a non empty object with string keys.').isObject().bail().custom(scenes => {
+                sceneNames = Object.keys(scenes);
+
+                return 0 < sceneNames.length && sceneNames.filter(k => 'string' === typeof k).length === sceneNames.length;
+            }),
+            body('scenes[*]').isArray().notEmpty(),
+            body('scenes[*][*]').isObject().bail().custom(validateAction),
+            body('entrypoint.url', 'The value must be a valid URL.').isURL(),
+            body('entrypoint.scene', 'The value must be a string.').isString().bail().custom(scene => {
+                if (!sceneNames.includes(scene)) {
+                    throw new Error(`Scene with the name "${scene}" is not defined.`);
+                }
+
+                return true;
+            }),
         ];
     }
 }
