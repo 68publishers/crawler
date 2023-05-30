@@ -6,13 +6,15 @@ export class Application {
     #routerFactory;
     #logger;
     #worker;
+    #scheduler;
     #applicationPort;
     #developmentMode;
 
-    constructor({ routerFactory, logger, worker, applicationPort, developmentMode }) {
+    constructor({ routerFactory, logger, worker, scheduler, applicationPort, developmentMode }) {
         this.#routerFactory = routerFactory;
         this.#logger = logger;
         this.#worker = worker;
+        this.#scheduler = scheduler;
         this.#applicationPort = applicationPort;
         this.#developmentMode = developmentMode;
     }
@@ -56,6 +58,7 @@ export class Application {
         });
 
         this.#worker.run();
+        this.#scheduler.run();
 
         const server = app.listen(this.#applicationPort, () => {
             console.log(`app listening on port ${this.#applicationPort}!`)
@@ -66,6 +69,7 @@ export class Application {
 
             server.close(async () => {
                 await this.#worker.close();
+                await this.#scheduler.close();
 
                 process.exit(0);
             })

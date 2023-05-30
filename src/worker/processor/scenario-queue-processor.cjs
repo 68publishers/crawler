@@ -30,7 +30,7 @@ module.exports = async (job) => {
             let user = null;
 
             try {
-                user = await userRepository.findById(job.data.userId);
+                user = await userRepository.getById(job.data.userId);
             } catch (err) {
                 await logger.error('Unable to send callback uri notification, user not found.');
 

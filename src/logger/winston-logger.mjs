@@ -8,7 +8,12 @@ export class WinstonLogger extends AbstractLogger {
 
         this.logger = Winston.createLogger({
             level: 'info',
-            format: Winston.format.json(),
+            format: Winston.format.combine(
+                Winston.format.timestamp({
+                    format: "YYYY-MM-DD HH:mm:ss",
+                }),
+                Winston.format.json()
+            ),
             transports: [
                 new DailyRotateFile({
                     level: 'error',
