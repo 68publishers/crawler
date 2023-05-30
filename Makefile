@@ -6,7 +6,7 @@ endif
 .PHONY: test
 
 start:
-	docker-compose --env-file .env up -d
+	docker compose --env-file .env up -d
 	@echo "Visit http://localhost:$(APP_PORT)"
 
 stop:
@@ -15,12 +15,8 @@ stop:
 down:
 	docker compose --env-file .env down
 
-db-migrations:
-	docker exec -it crawler-app npm run migrations:up
-
 init:
 	make start
-	make db-migrations
 
 eslint:
 	docker exec -it crawler-app npm run eslint

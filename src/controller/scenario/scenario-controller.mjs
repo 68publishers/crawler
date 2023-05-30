@@ -1,5 +1,6 @@
 import { v4 as uuid } from 'uuid';
 import { validationResult } from "express-validator";
+import { paginatedResultMiddleware } from '../middleware/paginated-result-middleware.mjs';
 
 export class ScenarioController {
     #scenarioRepository;
@@ -12,7 +13,7 @@ export class ScenarioController {
         this.#scenarioQueue = scenarioQueue;
     }
 
-    scheduleScenario() {
+    runScenario() {
         return [
             ...this.#scenarioValidator.postScenarioValidator(),
             async (req, res) => {
@@ -48,6 +49,16 @@ export class ScenarioController {
                     errors: errors.array(),
                 });
             },
+        ];
+    }
+
+    listScenarios() {
+        return [
+            ...this.#scenarioValidator.listScenariosValidator(),
+            paginatedResultMiddleware(
+                this.#scenarioRepository.count.bind(this.#scenarioRepository),
+                this.#scenarioRepository.list.bind(this.#scenarioRepository),
+            ),
         ];
     }
 

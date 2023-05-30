@@ -49,6 +49,7 @@ export class Worker {
             removeOnFail: {
                 count: 1000,
             },
+            useWorkerThreads: true,
         };
 
         const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -65,7 +66,7 @@ export class Worker {
                 await this.#logger.error(`${err.name}: ${err.message}\nStack: ${JSON.stringify(err.stack)}`);
             });
 
-            this.#workers.push();
+            this.#workers.push(worker);
         }
 
         this.#running = true;

@@ -8,15 +8,18 @@ import passport from 'passport';
 
 export class RouterFactory {
     #scenarioController;
+    #scenarioSchedulerController;
     #scenarioQueue;
     #userRepository;
 
     constructor({
         scenarioController,
+        scenarioSchedulerController,
         scenarioQueue,
         userRepository,
     }) {
         this.#scenarioController = scenarioController;
+        this.#scenarioSchedulerController = scenarioSchedulerController;
         this.#scenarioQueue = scenarioQueue;
         this.#userRepository = userRepository;
     }
@@ -25,7 +28,8 @@ export class RouterFactory {
         const router = Router();
 
         const apiRouter = Router();
-        const scenarioRouter = Router();
+        const scenariosRouter = Router();
+        const scenarioSchedulersRouter = Router();
         const adminRouter = Router();
 
         passport.use('basic', new BasicStrategy(
@@ -33,7 +37,7 @@ export class RouterFactory {
                 let user = null;
 
                 try {
-                    user = await this.#userRepository.findByUsername(username);
+                    user = await this.#userRepository.getByUsername(username);
                 } catch (err) {
                     return done(err);
                 }
@@ -52,12 +56,28 @@ export class RouterFactory {
         router.use('/static', express.static('public'))
         router.use('/admin', adminRouter);
         router.use('/api', apiRouter);
-        apiRouter.use('/scenario', scenarioRouter);
+        apiRouter.use('/scenarios', scenariosRouter);
+        apiRouter.use('/scenario-schedulers', scenarioSchedulersRouter);
 
-        scenarioRouter.get('/:scenarioId', this.#scenarioController.getScenario());
-        scenarioRouter.post('/', this.#scenarioController.scheduleScenario());
-        scenarioRouter.post('/validate', this.#scenarioController.validateScenario());
+        // scenario
+        scenariosRouter.get('/', this.#scenarioController.listScenarios());
+        scenariosRouter.get('/:scenarioId', this.#scenarioController.getScenario());
 
+        scenariosRouter.post('/', this.#scenarioController.runScenario());
+        scenariosRouter.post('/validate', this.#scenarioController.validateScenario());
+
+        // scenario scheduler
+        scenarioSchedulersRouter.get('/', this.#scenarioSchedulerController.listScenarioSchedulers());
+        scenarioSchedulersRouter.get('/:scenarioSchedulerId', this.#scenarioSchedulerController.getScenarioScheduler());
+
+        scenarioSchedulersRouter.post('/', this.#scenarioSchedulerController.createScenarioScheduler());
+        scenarioSchedulersRouter.post('/validate', this.#scenarioSchedulerController.validateScenarioScheduler());
+
+        scenarioSchedulersRouter.put('/:scenarioSchedulerId', this.#scenarioSchedulerController.updateScenarioScheduler());
+
+        scenarioSchedulersRouter.delete('/:scenarioSchedulerId', this.#scenarioSchedulerController.deleteScenarioScheduler());
+
+        // admin/queues
         adminRouter.use('/queues', this.#createAdminQueuesRouter('/admin/queues'));
 
         return router;

@@ -1,64 +1,63 @@
-import { v4 as uuid, validate as validateUuid } from 'uuid';
+import { v4 as uuid } from 'uuid';
 import { hashPassword } from '../../helper/password.mjs';
 import { randomBytes } from 'node:crypto';
 
 export class UserRepository {
-    #database;
+    #databaseClient;
 
-    constructor({ database }) {
-        this.#database = database;
+    constructor({ databaseClient }) {
+        this.#databaseClient = databaseClient;
     }
 
     async create(username, password) {
-        await this.#database.query(`
-            INSERT INTO "user" (id, username, password, callback_uri_token) VALUES ($1, $2, $3, $4)
-        `, [
-            uuid(),
-            username,
-            hashPassword(password),
-            randomBytes(24).toString('hex'),
-        ]);
+        const id = uuid();
+        const hashedPassword = hashPassword(password);
+        const callbackUriToken = randomBytes(24).toString('hex');
+
+        await this.#databaseClient('user')
+            .insert({
+                id: id,
+                username: username,
+                password: hashedPassword,
+                callback_uri_token: callbackUriToken,
+            });
+
+        return id;
     }
 
-    async findById(id) {
-        if (!validateUuid(id)) {
-            return null;
+    async getById(id) {
+        const result = await this.#databaseClient('user')
+            .select('id', 'created_at', 'username', 'password', 'callback_uri_token')
+            .where('id', id)
+            .limit(1);
+
+        return 0 >= result.length ? null : result[0];
+    }
+
+    async getByUsername(username) {
+        const result = await this.#databaseClient('user')
+            .select('id', 'created_at', 'username', 'password', 'callback_uri_token')
+            .where('username', username)
+            .limit(1);
+
+        return 0 >= result.length ? null : result[0];
+    }
+
+    async delete(id, transaction = undefined) {
+        let qb = this.#databaseClient('user')
+            .where('id', id)
+            .delete();
+
+        if (transaction) {
+            qb = qb.transacting(transaction);
         }
 
-        const result = await this.#database.query(`
-            SELECT id, created_at, username, password, callback_uri_token FROM "user" WHERE id = $1 LIMIT 1
-        `, [
-            id,
-        ]);
-
-        return 0 >= result.rows.length ? null : result.rows[0];
-    }
-
-    async findByUsername(username) {
-        const result = await this.#database.query(`
-            SELECT id, created_at, username, password, callback_uri_token FROM "user" WHERE username = $1 LIMIT 1
-        `, [
-            username,
-        ]);
-
-        return 0 >= result.rows.length ? null : result.rows[0];
-    }
-
-    async delete(id) {
-        if (!validateUuid(id)) {
-            return 0;
-        }
-
-        return 0 < (await this.#database.query(`
-            DELETE FROM "user" WHERE id = $1
-        `, [
-            id,
-        ])).rowCount;
+        return 0 < (await qb);
     }
 
     async list() {
-        return (await this.#database.query(`
-            SELECT id, created_at, username, callback_uri_token FROM "user"
-        `)).rows;
+        return this.#databaseClient('user')
+            .select('id', 'created_at', 'username', 'callback_uri_token')
+            .orderBy('created_at', 'DESC');
     }
 }

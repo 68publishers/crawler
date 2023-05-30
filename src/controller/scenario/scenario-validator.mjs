@@ -1,4 +1,4 @@
-import { body, param } from 'express-validator';
+import { body, param, query } from 'express-validator';
 
 export class ScenarioValidator {
     #actionRegistry;
@@ -13,7 +13,17 @@ export class ScenarioValidator {
         ];
     }
 
-    postScenarioValidator() {
+    listScenariosValidator() {
+        return [
+            query('filter').optional().isObject(),
+            query('filter.id').optional().isUUID(),
+            query('filter.status').optional().isString(),
+            query('limit').isInt({ min: 1 }),
+            query('page').isInt({ min: 1 }),
+        ];
+    }
+
+    postScenarioValidator(callbackUriRequired = false) {
         let sceneNames = [];
 
         const validateAction = value => {
@@ -32,7 +42,9 @@ export class ScenarioValidator {
         }
 
         return [
-            body('callbackUri', 'The value must be a valid URL.').optional().isURL(),
+            callbackUriRequired
+                ? body('callbackUri', 'The value must be a valid URL.').isURL()
+                : body('callbackUri', 'The value must be a valid URL.').optional().isURL(),
             body('options.maxRequests', 'The value must be an int (>= 1) or undefined.').optional().isInt({ min: 1 }),
             body('options.maxRequestRetries', 'The value must be an int (>= 0) or undefined.').optional().isInt({ min: 0 }),
             body('options.viewport.width', 'The value must be an int (>= 200) or undefined.').optional().isInt({ min: 200 }),

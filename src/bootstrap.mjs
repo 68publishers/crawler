@@ -11,12 +11,18 @@ import { CallbackUriNotifier } from './notification/callback-uri-notifier.mjs';
 import { ScenarioController } from './controller/scenario/scenario-controller.mjs';
 import { ScenarioValidator } from './controller/scenario/scenario-validator.mjs';
 
-import { Database } from './model/database.mjs';
+import { ScenarioSchedulerController } from './controller/scenario/scenario-scheduler-controller.mjs';
+import { ScenarioSchedulerValidator } from './controller/scenario/scenario-scheduler-validator.mjs';
+
+import { createDatabaseClient } from './model/database-client-factory.mjs';
 import { ScenarioRepository } from './model/scenario/scenario-repository.mjs';
+import { ScenarioSchedulerRepository } from './model/scenario/scenario-scheduler-repository.mjs';
 import { UserRepository } from './model/user/user-repository.mjs';
 
 import { ScenarioQueue } from './queue/scenario-queue.mjs';
 import { Worker } from './worker/worker.mjs';
+
+import { Scheduler } from './scheduler/scheduler.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -57,11 +63,15 @@ export class Bootstrap {
             callbackUriNotifier: asClass(CallbackUriNotifier).singleton(),
             scenarioController: asClass(ScenarioController).singleton(),
             scenarioValidator: asClass(ScenarioValidator).singleton(),
-            database: asClass(Database).singleton(),
+            scenarioSchedulerController: asClass(ScenarioSchedulerController).singleton(),
+            scenarioSchedulerValidator: asClass(ScenarioSchedulerValidator).singleton(),
+            databaseClient: asFunction(createDatabaseClient).singleton(),
             scenarioRepository: asClass(ScenarioRepository).singleton(),
+            scenarioSchedulerRepository: asClass(ScenarioSchedulerRepository).singleton(),
             userRepository: asClass(UserRepository).singleton(),
             scenarioQueue: asClass(ScenarioQueue).singleton(),
             worker: asClass(Worker).singleton(),
+            scheduler: asClass(Scheduler).singleton(),
         });
 
         return container;
