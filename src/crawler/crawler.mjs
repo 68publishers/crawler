@@ -1,11 +1,10 @@
 import {PuppeteerCrawler, Configuration } from 'crawlee';
 import puppeteerExtra from 'puppeteer-extra';
 import StealthPlugin from 'puppeteer-extra-plugin-stealth';
-import { AbstractLogger } from '../logger/abstract-logger.mjs';
 import { ExecutionContext } from '../action/execution-context.mjs';
 import { sha256 } from '../helper/hash.mjs';
-import { existsSync, rmSync } from 'fs';
-import path from 'path';
+import { existsSync, rmSync } from 'node:fs';
+import path from 'node:path';
 
 puppeteerExtra.use(StealthPlugin());
 
@@ -45,17 +44,17 @@ export class Crawler {
      *         action: string,
      *         options: object,
      *     }>>,
-     * }} scenario
-     * @param {AbstractLogger} logger
+     * }} config
+     * @param {object} logger
      * @param {updateProgressHandlerCallback} updateProgressHandler
      *
      * @returns {Promise<*>}
      */
-    async crawl(scenarioId, scenario, logger, updateProgressHandler = undefined) {
+    async crawl(scenarioId, config, logger, updateProgressHandler = undefined) {
         await logger.info(`Running scenario ${scenarioId}`);
 
         try {
-            await this.#doCrawl(scenarioId, scenario, logger, updateProgressHandler);
+            await this.#doCrawl(scenarioId, config, logger, updateProgressHandler);
             await this.#scenarioRepository.complete(scenarioId);
             await logger.info(`Scenario ${scenarioId} completed`);
         } catch (err) {
@@ -68,8 +67,8 @@ export class Crawler {
         return await this.#scenarioRepository.get(scenarioId);
     }
 
-    async #doCrawl(scenarioId, scenario, logger, updateProgressHandler) {
-        const scenarioOptions = scenario.options || {};
+    async #doCrawl(scenarioId, config, logger, updateProgressHandler) {
+        const scenarioOptions = config.options || {};
         const scenarioViewport = scenarioOptions.viewport || {};
         const maxRequests = 'maxRequests' in scenarioOptions ? scenarioOptions.maxRequests : undefined;
         let viewportOptions = null;
@@ -92,7 +91,7 @@ export class Crawler {
                     args: [
                         '--disable-web-security',
                         '--no-sandbox',
-                        '--disable-setuid-sandbox'
+                        '--disable-setuid-sandbox',
                     ],
                 },
             },
@@ -147,7 +146,7 @@ export class Crawler {
             }
 
             const progress = 0 < total ? parseFloat(
-                (info.handledRequestCount / total * 100).toFixed(1)
+                (info.handledRequestCount / total * 100).toFixed(1),
             ) : 0;
 
             updateProgressHandler(progress > 100 ? 100 : progress);
@@ -178,7 +177,7 @@ export class Crawler {
                 await logger.info(`Starting to crawl URL ${request.userData.currentUrl} (scene "${scene}")`);
                 await saveVisitedUrl(previousUrl, request.userData.currentUrl, statusCode, null);
 
-                for (let action of scenario.scenes[scene] || []) {
+                for (let action of config.scenes[scene] || []) {
                     await actionRegistry.get(action.action).execute(
                         action.options,
                         new ExecutionContext({
@@ -188,7 +187,7 @@ export class Crawler {
                             enqueueLinks,
                             saveResult,
                             logger,
-                        })
+                        }),
                     );
                     const afterActionUrl = await page.evaluate(() => location.href);
 
@@ -203,7 +202,7 @@ export class Crawler {
                 await updateProgress(crawler);
             },
 
-            async failedRequestHandler({ request, response, crawler }, err) {
+            async failedRequestHandler({ request, response, crawler }) {
                 const scene = request.userData.scene || '?';
                 const previousUrl = request.userData.currentUrl;
                 const currentUrl = request.url;
@@ -216,14 +215,14 @@ export class Crawler {
 
         await crawler.run([
             {
-                url: scenario.entrypoint.url,
+                url: config.entrypoint.url,
                 userData: {
-                    scene: scenario.entrypoint.scene,
+                    scene: config.entrypoint.scene,
                     previousCookies: null,
                     previousUrl: null,
                     identity: null,
-                }
-            }
+                },
+            },
         ]);
         await updateProgress(crawler);
 

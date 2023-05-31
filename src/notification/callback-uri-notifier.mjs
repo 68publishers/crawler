@@ -1,6 +1,6 @@
-import { request as httpRequest } from 'http';
-import { request as httpsRequest } from 'https';
-import { URL } from 'url';
+import { request as httpRequest } from 'node:http';
+import { request as httpsRequest } from 'node:https';
+import { URL } from 'node:url';
 
 export class CallbackUriNotifier {
     async notify(callbackUri, requestBody, logger, authCredentials = undefined) {

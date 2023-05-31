@@ -1,4 +1,5 @@
-import {AbstractAction} from './abstract-action.mjs';
+import { AbstractAction } from './abstract-action.mjs';
+import { placeholderReplacer } from '../helper/placeholder-replacer.mjs';
 
 export class SetIdentity extends AbstractAction {
     constructor() {
@@ -8,11 +9,10 @@ export class SetIdentity extends AbstractAction {
     static get STRATEGIES() {
         return [
             'static',
-            'location.pathname',
             'selector.innerText',
             'selector.attribute',
         ];
-    };
+    }
 
     *_doValidateOptions({ options }) {
         if (!('strategy' in options) || 'string' !== typeof options.strategy || !SetIdentity.STRATEGIES.includes(options.strategy)) {
@@ -37,10 +37,7 @@ export class SetIdentity extends AbstractAction {
 
         switch (options.strategy) {
             case 'static':
-                identity = options.identity.replace('%url%', request.userData.currentUrl);
-                break;
-            case 'location.pathname':
-                identity = await page.evaluate(() => location.href);
+                identity = await placeholderReplacer(options.identity, page);
                 break;
             case 'selector.innerText':
                 identity = await page.evaluate(options => {

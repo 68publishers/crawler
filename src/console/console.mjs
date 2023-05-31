@@ -25,8 +25,8 @@ program
             table.push([
                 user.id,
                 user.username,
-                user.created_at.toISOString(),
-                user.callback_uri_token,
+                user.createdAt.toISOString(),
+                user.callbackUriToken,
             ]);
         }
 
@@ -71,8 +71,8 @@ program
         table.push([
             existingUser.id,
             existingUser.username,
-            existingUser.created_at.toISOString(),
-            existingUser.callback_uri_token,
+            existingUser.createdAt.toISOString(),
+            existingUser.callbackUriToken,
         ]);
 
         console.log(chalk.bgGreen(`User "${username}" has been successfully created.`));
@@ -99,7 +99,7 @@ program
                 {
                     type: 'confirm',
                     name: 'moveScenarioSchedulers',
-                    message: `The user "${username}" has ${usersScenarioSchedulers.length} association${1 === usersScenarioSchedulers.length ? '' : 's'} to scenario schedulers. Do you want to move schedulers under another user?`
+                    message: `The user "${username}" has ${usersScenarioSchedulers.length} association${1 === usersScenarioSchedulers.length ? '' : 's'} to scenario schedulers. Do you want to move schedulers under another user?`,
                 },
             ]);
 

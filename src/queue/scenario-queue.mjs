@@ -9,14 +9,14 @@ export class ScenarioQueue {
         scenarioRepository,
         redisHost,
         redisPort,
-        redisAuth = undefined
+        redisAuth = undefined,
     }) {
         this.#scenarioRepository = scenarioRepository;
         const options = {
             connection: {
                 host: redisHost,
-                port: parseInt(redisPort)
-            }
+                port: parseInt(redisPort),
+            },
         };
 
         if ('string' === typeof redisAuth) {
@@ -34,11 +34,9 @@ export class ScenarioQueue {
         });
     }
 
-    async addRunScenarioJob(userId, scenarioId, scenario) {
+    async addRunScenarioJob(scenarioId) {
         await this.queue.add('run_scenario', {
-            userId: userId,
             scenarioId: scenarioId,
-            scenario: scenario,
         });
     }
 }

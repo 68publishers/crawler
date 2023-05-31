@@ -20,20 +20,21 @@ export class ScenarioController {
                 const errors = validationResult(req);
 
                 if (!errors.isEmpty()) {
-                    return res.status(422).json({
+                    return res.status(400).json({
                         errors: errors.array(),
                     });
                 }
 
                 const scenarioId = uuid();
+                const userId = req.user.id;
+                const { name, flags, config } = req.body;
 
-                await this.#scenarioRepository.create(scenarioId, req.body);
-                await this.#scenarioQueue.addRunScenarioJob(req.user.id, scenarioId, req.body);
+                await this.#scenarioRepository.create(scenarioId, userId, name, flags || {}, config);
+                await this.#scenarioQueue.addRunScenarioJob(scenarioId);
 
-                res.status(202).json({
-                    status: 'running',
-                    scenarioId: scenarioId,
-                });
+                res.status(202)
+                    .header('Location', `${req.originalUrl}/${scenarioId}`)
+                    .json(await this.#scenarioRepository.get(scenarioId, false));
             },
         ];
     }

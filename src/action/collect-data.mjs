@@ -1,4 +1,5 @@
-import {AbstractAction} from './abstract-action.mjs';
+import { AbstractAction } from './abstract-action.mjs';
+import { placeholderReplacer } from '../helper/placeholder-replacer.mjs';
 
 export class CollectData extends AbstractAction {
     constructor() {
@@ -11,7 +12,7 @@ export class CollectData extends AbstractAction {
             'selector.innerText',
             'selector.attribute',
         ];
-    };
+    }
 
     *_doValidateOptions({ options }) {
         for (let dataKey in options) {
@@ -77,7 +78,7 @@ export class CollectData extends AbstractAction {
     async #getDataValue(dataDef, request, page) {
         switch (dataDef.strategy) {
             case 'static':
-                return dataDef.value.replace('%url%', request.userData.currentUrl);
+                return placeholderReplacer(dataDef.value, page);
             case 'selector.innerText':
                 return await page.evaluate(dataDef => {
                     const elements = dataDef.multiple ? document.querySelectorAll(dataDef.selector) : [document.querySelector(dataDef.selector)];

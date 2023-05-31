@@ -1,5 +1,6 @@
 import { validationResult } from "express-validator";
 import { paginatedResultMiddleware } from '../middleware/paginated-result-middleware.mjs';
+import etag from 'etag';
 
 export class ScenarioSchedulerController {
     #scenarioSchedulerRepository;
@@ -19,24 +20,26 @@ export class ScenarioSchedulerController {
                 const errors = validationResult(req);
 
                 if (!errors.isEmpty()) {
-                    return res.status(422).json({
+                    return res.status(400).json({
                         errors: errors.array(),
                     });
                 }
 
-                const scenario = req.body;
-                const { expression } = scenario;
                 const userId = req.user.id;
+                const { name, flags, config, expression } = req.body;
 
-                delete scenario.expression;
-
-                const scenarioSchedulerId = await this.#scenarioSchedulerRepository.create(userId, expression, scenario);
+                const scenarioSchedulerId = await this.#scenarioSchedulerRepository.create(userId, name, flags || {}, expression, config);
 
                 await this.#scheduler.refresh();
 
-                res.status(201).json({
-                    scenarioSchedulerId: scenarioSchedulerId,
-                });
+                const scenarioScheduler = await this.#scenarioSchedulerRepository.get(scenarioSchedulerId);
+
+                res.status(201)
+                    .header('ETag', etag(JSON.stringify(scenarioScheduler), {
+                        weak: false,
+                    }))
+                    .header('Location', `${req.originalUrl}/${scenarioSchedulerId}`)
+                    .json(scenarioScheduler);
             },
         ];
     }
@@ -48,31 +51,48 @@ export class ScenarioSchedulerController {
                 const errors = validationResult(req);
 
                 if (!errors.isEmpty()) {
-                    return res.status(422).json({
+                    return res.status(400).json({
                         errors: errors.array(),
                     });
                 }
 
                 const scenarioSchedulerId = req.params.scenarioSchedulerId;
-                const scenario = req.body;
-                const { expression } = scenario;
                 const userId = req.user.id;
+                const { name, flags, config, expression } = req.body;
+                let scenarioScheduler = await this.#scenarioSchedulerRepository.get(scenarioSchedulerId);
 
-                delete scenario.expression;
+                if (null !== scenarioScheduler) {
+                    const ifMatch = req.header('if-match');
 
-                if ((await this.#scenarioSchedulerRepository.exists(scenarioSchedulerId))) {
-                    await this.#scenarioSchedulerRepository.update(scenarioSchedulerId, userId, expression, scenario);
-                    await this.#scheduler.refresh();
+                    if (!ifMatch) {
+                        return res.status(428).end();
+                    }
 
-                    res.status(204).end();
-                } else {
-                    await this.#scenarioSchedulerRepository.create(userId, expression, scenario, scenarioSchedulerId);
-                    await this.#scheduler.refresh();
-
-                    res.status(201).json({
-                        scenarioSchedulerId: scenarioSchedulerId,
+                    const entityTag = etag(JSON.stringify(scenarioScheduler), {
+                        weak: false,
                     });
+
+                    if (entityTag !== ifMatch) {
+                        return res.status(412).end();
+                    }
+
+                    await this.#scenarioSchedulerRepository.update(scenarioSchedulerId, userId, name, flags || {}, expression, config);
+
+                    res.status(200);
+                } else {
+                    await this.#scenarioSchedulerRepository.create(userId, name, flags || {}, expression, config, scenarioSchedulerId);
+
+                    res.status(201)
+                        .header('Location', `${req.originalUrl}/${scenarioSchedulerId}`);
                 }
+
+                await this.#scheduler.refresh();
+
+                scenarioScheduler = await this.#scenarioSchedulerRepository.get(scenarioSchedulerId);
+
+                res.header('ETag', etag(JSON.stringify(scenarioScheduler), {
+                    weak: false,
+                })).json(scenarioScheduler);
             },
         ];
     }
@@ -149,7 +169,11 @@ export class ScenarioSchedulerController {
                     return;
                 }
 
-                res.status(200).json(scenarioScheduler);
+                res.status(200)
+                    .header('ETag', etag(JSON.stringify(scenarioScheduler), {
+                        weak: false,
+                    }))
+                    .json(scenarioScheduler);
             },
         ];
     }

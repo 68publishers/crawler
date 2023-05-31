@@ -47,6 +47,7 @@ export class Application {
         });
 
         // error handler
+        // eslint-disable-next-line no-unused-vars
         app.use(async (err, req, res, next) => {
             await this.#logger.error(`${err.name}: ${err.message}\nStack: ${JSON.stringify(err.stack)}`)
 

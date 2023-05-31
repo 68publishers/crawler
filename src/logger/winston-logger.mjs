@@ -12,26 +12,26 @@ export class WinstonLogger extends AbstractLogger {
                 Winston.format.timestamp({
                     format: "YYYY-MM-DD HH:mm:ss",
                 }),
-                Winston.format.json()
+                Winston.format.json(),
             ),
             transports: [
                 new DailyRotateFile({
                     level: 'error',
                     filename: `${logDir}/error.%DATE%.log`,
                     datePattern: 'YYYY-MM-DD',
-                    maxFiles: '14d'
+                    maxFiles: '14d',
                 }),
                 new DailyRotateFile({
                     level: 'warn',
                     filename: `${logDir}/warning.%DATE%.log`,
                     datePattern: 'YYYY-MM-DD',
-                    maxFiles: '14d'
+                    maxFiles: '14d',
                 }),
                 new DailyRotateFile({
                     level: 'info',
                     filename: `${logDir}/info.%DATE%.log`,
                     datePattern: 'YYYY-MM-DD',
-                    maxFiles: '14d'
+                    maxFiles: '14d',
                 }),
             ],
         });
