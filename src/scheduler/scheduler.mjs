@@ -89,9 +89,19 @@ export class Scheduler {
         this.#tasks[scheduler.id] = {
             scheduler: scheduler,
             task: scheduleTask(scheduler.expression, async () => {
+                const currentScheduler = await this.#scenarioSchedulerRepository.get(scheduler.id);
+
+                if (null === currentScheduler || (new Date(scheduler.updatedAt)) < (new Date(currentScheduler.updatedAt))) {
+                    await this.refresh();
+                }
+
+                if (null === currentScheduler) {
+                    return;
+                }
+
                 const scenarioId = uuid();
 
-                await this.#scenarioRepository.create(scenarioId, scheduler.userId, scheduler.name, scheduler.flags, scheduler.config);
+                await this.#scenarioRepository.create(scenarioId, currentScheduler.userId, currentScheduler.name, currentScheduler.flags, currentScheduler.config);
                 await this.#scenarioQueue.addRunScenarioJob(scenarioId);
             }),
         };

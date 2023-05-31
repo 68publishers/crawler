@@ -124,7 +124,7 @@ program
             await databaseClient.transaction(async trx => {
                 if (newUser) {
                     for (let scenarioScheduler of usersScenarioSchedulers) {
-                        await scenarioSchedulerRepository.update(scenarioScheduler.id, newUser.id, scenarioScheduler.expression, scenarioScheduler.config, trx);
+                        await scenarioSchedulerRepository.update(scenarioScheduler.id, newUser.id, scenarioScheduler.name, scenarioScheduler.flags, scenarioScheduler.expression, scenarioScheduler.config, trx);
                     }
                 }
 
