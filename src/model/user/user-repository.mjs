@@ -27,7 +27,13 @@ export class UserRepository {
 
     async getById(id) {
         const result = await this.#databaseClient('user')
-            .select('id', 'created_at', 'username', 'password', 'callback_uri_token')
+            .select(
+                'id',
+                'created_at AS createdAt',
+                'username',
+                'password',
+                'callback_uri_token AS callbackUriToken',
+            )
             .where('id', id)
             .limit(1);
 
@@ -36,7 +42,13 @@ export class UserRepository {
 
     async getByUsername(username) {
         const result = await this.#databaseClient('user')
-            .select('id', 'created_at', 'username', 'password', 'callback_uri_token')
+            .select(
+                'id',
+                'created_at AS createdAt',
+                'username',
+                'password',
+                'callback_uri_token AS callbackUriToken',
+            )
             .where('username', username)
             .limit(1);
 
@@ -56,8 +68,14 @@ export class UserRepository {
     }
 
     async list() {
-        return this.#databaseClient('user')
-            .select('id', 'created_at', 'username', 'callback_uri_token')
-            .orderBy('created_at', 'DESC');
+        return (await this.#databaseClient('user')
+            .select(
+                'id',
+                'created_at AS createdAt',
+                'username',
+                'callback_uri_token AS callbackUriToken',
+            )
+            .orderBy('created_at', 'DESC')
+        );
     }
 }

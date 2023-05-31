@@ -1,7 +1,8 @@
 {
   "env": {
     "node": true,
-    "es6": true
+    "es6": true,
+    "browser": true
   },
   "extends": "eslint:recommended",
   "overrides": [],
@@ -10,7 +11,7 @@
     "sourceType": "module"
   },
   "rules": {
-    "indent": ["error", 4],
+    "indent": ["error", 4, { "SwitchCase": 1 }],
     "comma-dangle": ["error", "always-multiline"],
     "comma-spacing": ["error", { "before": false, "after": true }],
     "no-trailing-spaces": "error",

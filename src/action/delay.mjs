@@ -11,7 +11,7 @@ export class Delay extends AbstractAction {
         }
     }
 
-    async execute(options, {}) {
+    async execute(options) {
         await new Promise(r => setTimeout(r, options.delay));
     }
 }

@@ -18,28 +18,42 @@ module.exports = async (job) => {
     });
 
     if ('run_scenario' === job.name) {
+        const scenarioRepository = container.resolve('scenarioRepository');
         const crawler = container.resolve('crawler');
 
-        const result = await crawler.crawl(job.data.scenarioId, job.data.scenario, logger, (progress) => {
+        const scenario = await scenarioRepository.get(job.data.scenarioId, false);
+
+        if (null === scenario) {
+            const err = new Error(`Unable to process scenario ${job.data.scenarioId}. The scenario not found in the database.`);
+            await logger.error(err.toString());
+
+            throw err;
+        }
+
+        const config = scenario.config;
+        const userId = scenario.userId;
+        const callbackUri = config.callbackUri || null;
+
+        const result = await crawler.crawl(job.data.scenarioId, config, logger, (progress) => {
             job.updateProgress(progress);
         });
 
-        if (job.data.scenario.hasOwnProperty('callbackUri') && 'string' === typeof job.data.scenario.callbackUri) {
+        if (userId && 'string' === typeof callbackUri) {
             const notifier = container.resolve('callbackUriNotifier');
             const userRepository = container.resolve('userRepository');
             let user = null;
 
             try {
-                user = await userRepository.getById(job.data.userId);
+                user = await userRepository.getById(userId);
             } catch (err) {
                 await logger.error('Unable to send callback uri notification, user not found.');
 
                 return result;
             }
 
-            await notifier.notify(job.data.scenario.callbackUri, result, logger, null !== user ? [
+            await notifier.notify(callbackUri, result, logger, null !== user ? [
                 user.username,
-                user.callback_uri_token,
+                user.callbackUriToken,
             ] : undefined);
         }
 

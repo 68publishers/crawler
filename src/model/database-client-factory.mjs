@@ -7,6 +7,6 @@ export function createDatabaseClient({ dbUrl }) {
         pool: {
             min: 2,
             max: 10,
-        }
+        },
     });
 }

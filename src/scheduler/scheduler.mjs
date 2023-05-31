@@ -27,7 +27,7 @@ export class Scheduler {
             filter: {},
             limit: null,
             offset: null,
-        });
+        }, true);
 
         for (let scheduler of schedulers) {
             await this.#schedule(scheduler);
@@ -45,7 +45,7 @@ export class Scheduler {
             filter: {},
             limit: null,
             offset: null,
-        });
+        }, true);
         const keep = [];
 
         for (let scheduler of schedulers) {
@@ -53,7 +53,7 @@ export class Scheduler {
 
             if (!task) {
                 await this.#schedule(scheduler);
-            } else if ((new Date(task.scheduler.updated_at)) < (new Date(scheduler.updated_at))) {
+            } else if ((new Date(task.scheduler.updatedAt)) < (new Date(scheduler.updatedAt))) {
                 await this.#destroy(scheduler.id);
                 await this.#schedule(scheduler);
             }
@@ -91,8 +91,8 @@ export class Scheduler {
             task: scheduleTask(scheduler.expression, async () => {
                 const scenarioId = uuid();
 
-                await this.#scenarioRepository.create(scenarioId, scheduler.config);
-                await this.#scenarioQueue.addRunScenarioJob(scheduler.user_id, scenarioId, scheduler.config);
+                await this.#scenarioRepository.create(scenarioId, scheduler.userId, scheduler.name, scheduler.flags, scheduler.config);
+                await this.#scenarioQueue.addRunScenarioJob(scenarioId);
             }),
         };
 

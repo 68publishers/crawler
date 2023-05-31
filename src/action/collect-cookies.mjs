@@ -6,8 +6,6 @@ export class CollectCookies extends AbstractAction {
         super('collectCookies');
     }
 
-    *_doValidateOptions({ options }) {}
-
     async execute(options, { request, page, saveResult }) {
         const client = await page.target().createCDPSession();
         const cookies = (await client.send('Storage.getCookies')).cookies;

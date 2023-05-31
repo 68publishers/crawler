@@ -47,7 +47,7 @@ export class RouterFactory {
                 }
 
                 return done(null, user);
-            }
+            },
         ));
 
         adminRouter.use(passport.authenticate('basic', { session: false }, undefined));

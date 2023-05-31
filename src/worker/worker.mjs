@@ -1,5 +1,5 @@
-import path from 'path';
-import { fileURLToPath } from 'url';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { Worker as BullWorker } from 'bullmq';
 import { QUEUE_NAME as SCENARIO_QUEUE_NAME } from '../queue/scenario-queue.mjs';
 
@@ -15,7 +15,7 @@ export class Worker {
         numberOfWorkerProcesses,
         redisHost,
         redisPort,
-        redisAuth = undefined
+        redisAuth = undefined,
     }) {
         if (1 > numberOfWorkerProcesses) {
             throw new Error('Argument "numberOfWorkerProcesses" must be integer greater than or equal to 1.');
@@ -25,7 +25,7 @@ export class Worker {
         this.#numberOfWorkerProcesses = numberOfWorkerProcesses;
         this.#redisConfig = {
             host: redisHost,
-            port: parseInt(redisPort)
+            port: parseInt(redisPort),
         };
 
         if ('string' === typeof redisAuth) {

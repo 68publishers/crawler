@@ -3,9 +3,8 @@ export class AbstractAction {
         this.name = name;
     }
 
-    *_doValidateOptions({ options, sceneNames }) {
-        throw new Error(`Method ${this.constructor.name}::_doValidateOptions() must be redeclared.`);
-    }
+    // eslint-disable-next-line no-unused-vars
+    *_doValidateOptions({ options, sceneNames }) {}
 
     validateOptions(options) {
         const errors = [];
@@ -21,6 +20,7 @@ export class AbstractAction {
         return true;
     }
 
+    // eslint-disable-next-line no-unused-vars
     async execute(options, executionContext) {
         throw new Error(`Method ${this.constructor.name}::execute() must be redeclared.`);
     }

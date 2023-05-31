@@ -7,27 +7,31 @@ export class ScenarioSchedulerRepository {
         this.#databaseClient = databaseClient;
     }
 
-    async create(userId, expression, config, scenarioSchedulerId = undefined) {
+    async create(userId, name, flags, expression, config, scenarioSchedulerId = undefined) {
         scenarioSchedulerId = scenarioSchedulerId || uuid();
 
         await this.#databaseClient('scenario_scheduler')
             .insert({
                 id: scenarioSchedulerId,
                 user_id: userId,
+                name: name,
+                flags: JSON.stringify(flags),
                 expression: expression,
-                config: this.#databaseClient.raw('?::jsonb', [ JSON.stringify(config) ]),
+                config: JSON.stringify(config),
             });
 
         return scenarioSchedulerId;
     }
 
-    async update(scenarioSchedulerId, userId, expression, config, transaction = undefined) {
+    async update(scenarioSchedulerId, userId, name, flags, expression, config, transaction = undefined) {
         let qb = this.#databaseClient('scenario_scheduler')
             .update({
                 user_id: userId,
+                name: name,
+                flags: flags,
                 expression: expression,
                 updated_at: this.#databaseClient.raw('CURRENT_TIMESTAMP'),
-                config: this.#databaseClient.raw('?::jsonb', [ JSON.stringify(config) ]),
+                config: JSON.stringify(config),
             })
             .where('id', scenarioSchedulerId)
             .returning(['id']);
@@ -49,8 +53,19 @@ export class ScenarioSchedulerRepository {
 
     async get(scenarioSchedulerId) {
         const scenarioSchedulerRows = await this.#databaseClient('scenario_scheduler')
-            .select('id', 'user_id', 'created_at', 'updated_at', 'expression', 'config')
-            .where('id', scenarioSchedulerId)
+            .select(
+                'scenario_scheduler.id',
+                'user.id AS userId',
+                'user.username AS username',
+                'scenario_scheduler.name',
+                'scenario_scheduler.created_at AS createdAt',
+                'scenario_scheduler.updated_at AS updatedAt',
+                'scenario_scheduler.expression',
+                'scenario_scheduler.flags',
+                'scenario_scheduler.config',
+            )
+            .join('user', 'scenario_scheduler.user_id', '=', 'user.id')
+            .where('scenario_scheduler.id', scenarioSchedulerId)
             .limit(1);
 
         return !scenarioSchedulerRows.length ? null : scenarioSchedulerRows[0];
@@ -58,40 +73,67 @@ export class ScenarioSchedulerRepository {
 
     async findByUserId(userId) {
         return await this.#databaseClient('scenario_scheduler')
-            .select('id', 'user_id', 'created_at', 'updated_at', 'expression', 'config')
-            .where('user_id', userId);
+            .select(
+                'scenario_scheduler.id',
+                'user.id AS userId',
+                'user.username AS username',
+                'scenario_scheduler.name',
+                'scenario_scheduler.created_at AS createdAt',
+                'scenario_scheduler.updated_at AS updatedAt',
+                'scenario_scheduler.expression',
+                'scenario_scheduler.flags',
+                'scenario_scheduler.config',
+            )
+            .join('user', 'scenario_scheduler.user_id', '=', 'user.id')
+            .where('scenario_scheduler.user_id', userId);
     }
 
-    async exists(scenarioSchedulerId) {
-        const existsRows = await this.#databaseClient('scenario_scheduler')
-            .select(this.#databaseClient.raw('1'))
-            .where('id', scenarioSchedulerId)
-            .limit(1);
+    async list({ filter, limit, offset }, withConfigs = false) {
+        const columns = [
+            'scenario_scheduler.id',
+            'user.id AS userId',
+            'user.username AS username',
+            'scenario_scheduler.name',
+            'scenario_scheduler.created_at AS createdAt',
+            'scenario_scheduler.updated_at AS updatedAt',
+            'scenario_scheduler.expression',
+            'scenario_scheduler.flags',
+        ];
 
-        return !!existsRows.length
-    }
+        if (withConfigs) {
+            columns.push('scenario_scheduler.config');
+        }
 
-    async list({ filter, limit, offset }) {
         let qb = this.#databaseClient('scenario_scheduler')
-            .select('id', 'user_id', 'created_at', 'updated_at', 'expression', 'config')
-            .orderBy('created_at', 'DESC');
+            .select(...columns)
+            .join('user', 'scenario_scheduler.user_id', '=', 'user.id')
+            .orderBy('scenario_scheduler.created_at', 'DESC');
 
-        if ('id' in filter && validateUuid(filter.id)) {
-            qb = qb.andWhere('id', filter.id);
-        }
+        qb = this.#applyFilter(qb, filter || {});
 
-        if (Number.isInteger(limit)) {
-            qb = qb.limit(limit);
-        }
+        Number.isInteger(limit) && (qb = qb.limit(limit));
+        Number.isInteger(offset) && (qb = qb.offset(offset));
 
-        if (Number.isInteger(offset)) {
-            qb = qb.offset(offset);
-        }
+        return (await qb);
+    }
+
+    async count({ filter }) {
+        let qb = this.#databaseClient('scenario_scheduler')
+            .join('user', 'scenario_scheduler.user_id', '=', 'user.id')
+            .count('scenario_scheduler.id', { as: 'cnt' });
+
+        qb = this.#applyFilter(qb, filter || {});
+
+        return Number((await qb)[0].cnt);
+    }
+
+    #applyFilter(qb, filter) {
+        ('id' in filter && validateUuid(filter.id)) && (qb = qb.andWhere('scenario_scheduler.id', filter.id));
+        ('userId' in filter && validateUuid(filter.userId)) && (qb = qb.andWhere('user.id', filter.userId));
+        ('username' in filter) && (qb = qb.andWhereILike('user.username', `%${filter.username}%`));
+        ('name' in filter) && (qb = qb.andWhereILike('scenario_scheduler.name', `%${filter.name}%`));
+        ('flags' in filter) && (qb = qb.whereJsonSupersetOf('scenario_scheduler.flags', filter.flags));
 
         return qb;
-    }
-
-    async count() {
-        return Number((await this.#databaseClient('scenario_scheduler').count('id', { as: 'cnt' }))[0].cnt);
     }
 }

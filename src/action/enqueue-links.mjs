@@ -1,22 +1,25 @@
 import {AbstractAction} from './abstract-action.mjs';
 import { EnqueueStrategy } from 'crawlee';
-
-const strategies = [
-    EnqueueStrategy.All,
-    EnqueueStrategy.SameHostname,
-    EnqueueStrategy.SameDomain,
-    EnqueueStrategy.SameOrigin,
-    'manual',
-];
+import { placeholderReplacer } from '../helper/placeholder-replacer.mjs';
 
 export class EnqueueLinks extends AbstractAction {
     constructor() {
         super('enqueueLinks');
     }
 
+    static get STRATEGIES() {
+        return [
+            EnqueueStrategy.All,
+            EnqueueStrategy.SameHostname,
+            EnqueueStrategy.SameDomain,
+            EnqueueStrategy.SameOrigin,
+            'manual',
+        ];
+    }
+
     *_doValidateOptions({ options, sceneNames }) {
-        if (!('strategy' in options) || 'string' !== typeof options.strategy || !strategies.includes(options.strategy)) {
-            yield `the option "strategy" is required and must be one of these ["${strategies.join('", "')}"]`;
+        if (!('strategy' in options) || 'string' !== typeof options.strategy || !EnqueueLinks.STRATEGIES.includes(options.strategy)) {
+            yield `the option "strategy" is required and must be one of these ["${EnqueueLinks.STRATEGIES.join('", "')}"]`;
         }
 
         if (('scene' in options) && 'string' === typeof options.scene) {
@@ -52,7 +55,7 @@ export class EnqueueLinks extends AbstractAction {
 
     async execute(options, { request, page, enqueueLinks }) {
         await enqueueLinks(
-            await this.#createEnqueueLinksOptions(request, page, options)
+            await this.#createEnqueueLinksOptions(request, page, options),
         );
     }
 
@@ -79,7 +82,9 @@ export class EnqueueLinks extends AbstractAction {
                 previousUrl: request.userData.currentUrl,
                 identity: request.userData.identity,
             },
-            baseUrl: options.baseUrl || (new URL(page.url())).origin,
+            baseUrl: options.baseUrl
+                ? (await placeholderReplacer(options.baseUrl, page))
+                : (new URL(page.url())).origin,
         };
 
         if ('selector' in options) {

@@ -7,6 +7,11 @@ export class ExecutionContext {
         saveResult,
         logger,
     }) {
-        Object.assign(this, arguments[0]);
+        this.request = request;
+        this.page = page;
+        this.scenarioId = scenarioId;
+        this.enqueueLinks = enqueueLinks;
+        this.saveResult = saveResult;
+        this.logger = logger;
     }
 }

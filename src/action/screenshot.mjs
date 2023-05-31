@@ -1,7 +1,8 @@
 import { AbstractAction } from './abstract-action.mjs';
+import { placeholderReplacer } from '../helper/placeholder-replacer.mjs';
 import { v4 as uuid } from 'uuid';
-import { existsSync, mkdirSync } from 'fs';
-import { URL } from 'url';
+import { existsSync, mkdirSync } from 'node:fs';
+import { URL } from 'node:url';
 
 export class Screenshot extends AbstractAction {
     #applicationUrl;
@@ -39,7 +40,7 @@ export class Screenshot extends AbstractAction {
         screenshotUrl.pathname = `static/screenshots/${scenarioId}/${screenshotId}.jpg`
 
         await saveResult('screenshots', screenshotId, {
-            name: options.name.replace('%url%', currentUrl),
+            name: placeholderReplacer(options.name, page),
             screenshot: screenshotUrl.toString(),
             foundOnUrl: currentUrl,
         }, false);

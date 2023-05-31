@@ -7,12 +7,15 @@ export class ScenarioRepository {
         this.#databaseClient = databaseClient;
     }
 
-    async create(scenarioId, config) {
+    async create(scenarioId, userId, name, flags, config) {
         await this.#databaseClient('scenario')
             .insert({
                 id: scenarioId,
+                user_id: userId,
                 status: 'running',
-                config: this.#databaseClient.raw('?::jsonb', [ JSON.stringify(config) ]),
+                name: name,
+                flags: JSON.stringify(flags),
+                config: JSON.stringify(config),
             });
     }
 
@@ -33,10 +36,21 @@ export class ScenarioRepository {
             .where('id', scenarioId);
     }
 
-    async get(scenarioId) {
+    async get(scenarioId, withResults = true) {
         const scenarioRows = await this.#databaseClient('scenario')
-            .select('id', 'created_at', 'status', 'error', 'config')
-            .where('id', scenarioId)
+            .select(
+                'scenario.id',
+                'user.id AS userId',
+                'user.username AS username',
+                'scenario.name',
+                'scenario.created_at AS createdAt',
+                'scenario.status',
+                'scenario.error',
+                'scenario.flags',
+                'scenario.config',
+            )
+            .leftJoin('user', 'scenario.user_id', '=', 'user.id')
+            .where('scenario.id', scenarioId)
             .limit(1);
 
         if (!scenarioRows.length) {
@@ -46,6 +60,10 @@ export class ScenarioRepository {
         const scenario = scenarioRows[0];
         scenario.stats = {};
         scenario.results = {};
+
+        if (!withResults) {
+            return scenario;
+        }
 
         const scenarioResultRows = await this.#databaseClient('scenario_result')
             .select('group', 'identity', 'data')
@@ -59,7 +77,7 @@ export class ScenarioRepository {
 
             const data = {
                 _identity: resultRow.identity,
-                ...resultRow.data
+                ...resultRow.data,
             };
 
             scenario.results[resultRow.group].push(data);
@@ -71,30 +89,35 @@ export class ScenarioRepository {
 
     async list({ filter, limit, offset }) {
         let qb = this.#databaseClient('scenario')
-            .select('id', 'created_at', 'status', 'error')
-            .orderBy('created_at', 'DESC');
+            .select(
+                'scenario.id',
+                'user.id AS userId',
+                'user.username AS username',
+                'scenario.name',
+                'scenario.created_at AS createdAt',
+                'scenario.status',
+                'scenario.error',
+                'scenario.flags',
+            )
+            .leftJoin('user', 'scenario.user_id', '=', 'user.id')
+            .orderBy('scenario.created_at', 'DESC');
 
-        if ('id' in filter && validateUuid(filter.id)) {
-            qb = qb.andWhere('id', filter.id);
-        }
+        qb = this.#applyFilter(qb, filter || {});
 
-        if ('status' in filter) {
-            qb = qb.andWhere('status', filter.status);
-        }
-
-        if (Number.isInteger(limit)) {
-            qb = qb.limit(limit);
-        }
-
-        if (Number.isInteger(offset)) {
-            qb = qb.offset(offset);
-        }
+        Number.isInteger(limit) && (qb = qb.limit(limit));
+        Number.isInteger(offset) && (qb = qb.offset(offset));
 
         return qb;
     }
 
-    async count() {
-        return Number((await this.#databaseClient('scenario').count('id', { as: 'cnt' }))[0].cnt);
+    async count({ filter }) {
+        let qb = this.#databaseClient('scenario')
+            .leftJoin('user', 'scenario.user_id', '=', 'user.id')
+            .count('scenario.id', { as: 'cnt' });
+
+        qb = this.#applyFilter(qb, filter || {});
+
+        return Number((await qb)[0].cnt);
     }
 
     async addResult(scenarioId, group, identity, data, mergeOnConflict = true) {
@@ -105,7 +128,7 @@ export class ScenarioRepository {
                 scenario_id: scenarioId,
                 group: group,
                 identity: identity,
-                data: this.#databaseClient.raw('?::jsonb', [ JSON.stringify(data) ]),
+                data: JSON.stringify(data),
             });
 
         if (mergeOnConflict) {
@@ -119,5 +142,16 @@ export class ScenarioRepository {
         }
 
         await qb;
+    }
+
+    #applyFilter(qb, filter) {
+        ('id' in filter && validateUuid(filter.id)) && (qb = qb.andWhere('scenario.id', filter.id));
+        ('userId' in filter && validateUuid(filter.userId)) && (qb = qb.andWhere('user.id', filter.userId));
+        ('username' in filter) && (qb = qb.andWhereILike('user.username', `%${filter.username}%`));
+        ('name' in filter) && (qb = qb.andWhereILike('scenario.name', `%${filter.name}%`));
+        ('status' in filter) && (qb = qb.andWhere('scenario.status', filter.status));
+        ('flags' in filter) && (qb = qb.whereJsonSupersetOf('scenario.flags', filter.flags));
+
+        return qb;
     }
 }

@@ -1,5 +1,5 @@
-import path from 'path';
-import { fileURLToPath } from 'url';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { createContainer, asClass, asValue, InjectionMode, asFunction } from 'awilix';
 import { Application } from './application.mjs';
 import { WinstonLogger } from './logger/winston-logger.mjs';
@@ -37,7 +37,7 @@ const requireEnv = name => {
 export class Bootstrap {
     static boot() {
         const container = createContainer({
-            injectionMode: InjectionMode.PROXY
+            injectionMode: InjectionMode.PROXY,
         });
 
         container.register({
