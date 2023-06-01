@@ -2,21 +2,22 @@ version: "3.7"
 
 services:
     app:
-        build: .
+        build:
+            context: .
+            target: dev
         volumes:
             - .:/app
             - /app/node_modules
         container_name: crawler-app
         restart: always
-        expose:
-            - "${APP_PORT}"
         ports:
-            - "${APP_PORT}:${APP_INTERNAL_PORT}"
-        command:
-            - sh
-            - -c
-            - start-node.sh
-        env_file: .env
+            - "3000:3000"
+        environment:
+            APP_URL: http://localhost:3000
+            DB_URL: postgres://root:root@db:5432/crawler
+            REDIS_HOST: redis
+            REDIS_PORT: 6379
+            REDIS_AUTH: redis_pass
         security_opt:
             - seccomp=./.docker/chrome/chrome.json
         depends_on:

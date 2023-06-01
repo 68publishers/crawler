@@ -6,11 +6,13 @@ export class ScenarioSchedulerController {
     #scenarioSchedulerRepository;
     #scenarioSchedulerValidator;
     #scheduler;
+    #applicationUrl;
 
-    constructor({ scenarioSchedulerRepository, scenarioSchedulerValidator, scheduler }) {
+    constructor({ scenarioSchedulerRepository, scenarioSchedulerValidator, scheduler, applicationUrl }) {
         this.#scenarioSchedulerRepository = scenarioSchedulerRepository;
         this.#scenarioSchedulerValidator = scenarioSchedulerValidator;
         this.#scheduler = scheduler;
+        this.#applicationUrl = applicationUrl;
     }
 
     createScenarioScheduler() {
@@ -117,6 +119,7 @@ export class ScenarioSchedulerController {
             paginatedResultMiddleware(
                 this.#scenarioSchedulerRepository.count.bind(this.#scenarioSchedulerRepository),
                 this.#scenarioSchedulerRepository.list.bind(this.#scenarioSchedulerRepository),
+                this.#applicationUrl,
             ),
         ];
     }

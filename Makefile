@@ -1,19 +1,12 @@
-ifneq (,$(wildcard ./.env))
-    include .env
-    export
-endif
-
-.PHONY: test
-
 start:
-	docker compose --env-file .env up -d
-	@echo "Visit http://localhost:$(APP_PORT)"
+	docker compose up -d
+	@echo "Visit http://localhost:3000"
 
 stop:
-	docker compose --env-file .env stop
+	docker compose stop
 
 down:
-	docker compose --env-file .env down
+	docker compose down
 
 init:
 	make start
@@ -24,6 +17,7 @@ eslint:
 eslint.fix:
 	docker exec -it crawler-app npm run eslint:fix
 
+.PHONY: tests
 tests:
 	@echo "not implemented" >&2
 

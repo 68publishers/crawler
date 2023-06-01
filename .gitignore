@@ -1,9 +1,6 @@
 # Application
 node_modules/
 
-# Local configuration
-.env
-
 # Project files etc.
 .idea
 

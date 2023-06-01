@@ -1,11 +1,8 @@
-import { config as runDotenv } from 'dotenv';
 import { Bootstrap } from '../bootstrap.mjs';
 import { program } from 'commander';
 import Table from 'cli-table3';
 import inquirer from 'inquirer';
 import chalk from 'chalk';
-
-runDotenv();
 
 const container = Bootstrap.boot();
 const userRepository = container.resolve('userRepository');

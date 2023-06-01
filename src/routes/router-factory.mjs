@@ -5,6 +5,7 @@ import { ExpressAdapter } from '@bull-board/express';
 import { comparePassword } from '../helper/password.mjs';
 import { BasicStrategy } from 'passport-http';
 import passport from 'passport';
+import cors from 'cors';
 
 export class RouterFactory {
     #scenarioController;
@@ -49,6 +50,8 @@ export class RouterFactory {
                 return done(null, user);
             },
         ));
+
+        apiRouter.use(cors());
 
         adminRouter.use(passport.authenticate('basic', { session: false }, undefined));
         apiRouter.use(passport.authenticate('basic', { session: false }, undefined));

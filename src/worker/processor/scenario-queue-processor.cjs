@@ -1,7 +1,3 @@
-const dotenv = require('dotenv').config;
-
-dotenv();
-
 module.exports = async (job) => {
     const container = (await import('../../bootstrap.mjs')).Bootstrap.boot();
     const LoggerChain = (await import('../../logger/logger-chain.mjs')).LoggerChain;

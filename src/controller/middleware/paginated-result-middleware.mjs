@@ -1,7 +1,7 @@
 import { validationResult } from "express-validator";
 import { URL } from 'node:url';
 
-export const paginatedResultMiddleware = (calculateTotalCountCallback, getResultCallback) => {
+export const paginatedResultMiddleware = (calculateTotalCountCallback, getResultCallback, applicationUrl) => {
     return async (req, res) => {
         const errors = validationResult(req);
 
@@ -16,7 +16,7 @@ export const paginatedResultMiddleware = (calculateTotalCountCallback, getResult
         const limit = parseInt(req.query.limit);
         const offset = (page - 1) * limit;
         const totalCount = await calculateTotalCountCallback({ filter });
-        const currentUrl = `${req.protocol}://${req.get('host')}${req.originalUrl}`;
+        const currentUrl = new URL(req.originalUrl, applicationUrl);
 
         const result = {
             totalCount: totalCount,
@@ -25,7 +25,7 @@ export const paginatedResultMiddleware = (calculateTotalCountCallback, getResult
         };
 
         if ((page * limit) < totalCount) {
-            const nextUrl = new URL(currentUrl);
+            const nextUrl = new URL(currentUrl.toString());
             nextUrl.searchParams.set('page', (page + 1).toString());
             nextUrl.searchParams.set('limit', limit.toString());
 
@@ -33,7 +33,7 @@ export const paginatedResultMiddleware = (calculateTotalCountCallback, getResult
         }
 
         if (offset > 0) {
-            const previousUrl = new URL(currentUrl);
+            const previousUrl = new URL(currentUrl.toString());
             previousUrl.searchParams.set('page', (page - 1).toString());
             previousUrl.searchParams.set('limit', limit.toString());
 
