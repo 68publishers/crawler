@@ -1,0 +1,5 @@
+apps:
+  - name: crawler
+    script: ./index.mjs
+    exec_mode: cluster
+    instances: max

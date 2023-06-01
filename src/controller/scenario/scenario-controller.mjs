@@ -6,11 +6,13 @@ export class ScenarioController {
     #scenarioRepository;
     #scenarioValidator;
     #scenarioQueue;
+    #applicationUrl;
 
-    constructor({ scenarioRepository, scenarioValidator, scenarioQueue }) {
+    constructor({ scenarioRepository, scenarioValidator, scenarioQueue, applicationUrl }) {
         this.#scenarioRepository = scenarioRepository;
         this.#scenarioValidator = scenarioValidator;
         this.#scenarioQueue = scenarioQueue;
+        this.#applicationUrl = applicationUrl;
     }
 
     runScenario() {
@@ -59,6 +61,7 @@ export class ScenarioController {
             paginatedResultMiddleware(
                 this.#scenarioRepository.count.bind(this.#scenarioRepository),
                 this.#scenarioRepository.list.bind(this.#scenarioRepository),
+                this.#applicationUrl,
             ),
         ];
     }

@@ -16,13 +16,13 @@ export class Crawler {
     #actionRegistry;
     #chromePath;
     #scenarioRepository;
-    #varDir;
+    #crawleeStorageDir;
 
-    constructor({ actionRegistry, chromePath, scenarioRepository, varDir }) {
+    constructor({ actionRegistry, chromePath, scenarioRepository, crawleeStorageDir }) {
         this.#actionRegistry = actionRegistry;
         this.#chromePath = chromePath;
         this.#scenarioRepository = scenarioRepository;
-        this.#varDir = varDir;
+        this.#crawleeStorageDir = crawleeStorageDir;
     }
 
     /**
@@ -71,6 +71,7 @@ export class Crawler {
         const scenarioOptions = config.options || {};
         const scenarioViewport = scenarioOptions.viewport || {};
         const maxRequests = 'maxRequests' in scenarioOptions ? scenarioOptions.maxRequests : undefined;
+        const userDataDir = `/tmp/puppeteer_dev_profile_${scenarioId}`;
         let viewportOptions = null;
 
         if ('width' in scenarioViewport && 'height' in scenarioViewport) {
@@ -90,9 +91,8 @@ export class Crawler {
                     executablePath: this.#chromePath,
                     args: [
                         '--disable-web-security',
-                        '--no-sandbox',
-                        '--disable-setuid-sandbox',
                     ],
+                    userDataDir: userDataDir,
                 },
             },
             preNavigationHooks: [
@@ -228,8 +228,9 @@ export class Crawler {
 
         // cleanup
         for (let storeDir of [
-            path.resolve(this.#varDir, `crawlee/key_value_stores/${scenarioId}`),
-            path.resolve(this.#varDir, `crawlee/request_queues/${scenarioId}`),
+            userDataDir,
+            path.resolve(this.#crawleeStorageDir, `key_value_stores/${scenarioId}`),
+            path.resolve(this.#crawleeStorageDir, `request_queues/${scenarioId}`),
         ]) {
             if (existsSync(storeDir)) {
                 rmSync(storeDir, {

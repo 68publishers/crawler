@@ -44,14 +44,15 @@ export class Bootstrap {
             varDir: asValue(path.resolve(__dirname, '..', 'var')),
             logDir: asValue(path.resolve(__dirname, '..', 'var', 'log')),
             developmentMode: asValue(process.env.NODE_ENV !== 'production'),
-            applicationPort: asValue(process.env.APP_INTERNAL_PORT || 3030),
-            applicationUrl: asValue(process.env.APP_URL || 'http://localhost:3000'),
-            chromePath: asValue(process.env.CHROME_PATH || '/usr/bin/chromium-browser'),
+            applicationUrl: asValue(requireEnv('APP_URL')),
+            applicationPort: asValue(requireEnv('APP_PORT')),
+            chromePath: asValue(requireEnv('CHROME_PATH')),
             dbUrl: asValue(requireEnv('DB_URL')),
             redisHost: asValue(requireEnv('REDIS_HOST')),
             redisPort: asValue(requireEnv('REDIS_PORT')),
             redisAuth: asValue(requireEnv('REDIS_AUTH')),
-            numberOfWorkerProcesses: asValue(parseInt(process.env.WORKER_PROCESSES || 1)),
+            crawleeStorageDir: asValue(requireEnv('CRAWLEE_STORAGE_DIR')),
+            numberOfWorkerProcesses: asValue(parseInt(requireEnv('WORKER_PROCESSES'))),
         });
 
         container.register({
