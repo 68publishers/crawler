@@ -1,4 +1,5 @@
 import { AbstractAction } from './abstract-action.mjs';
+import { ScenarioResultGroups } from '../model/scenario/scenario-result-groups.mjs';
 import { placeholderReplacer } from '../helper/placeholder-replacer.mjs';
 
 export class CollectData extends AbstractAction {
@@ -14,8 +15,19 @@ export class CollectData extends AbstractAction {
         ];
     }
 
+    static get RESERVED_KEYS() {
+        return [
+            'identity',
+            'foundOnUrl',
+        ];
+    }
+
     *_doValidateOptions({ options }) {
         for (let dataKey in options) {
+            if (CollectData.RESERVED_KEYS.includes(dataKey)) {
+                yield `the key "${dataKey}" is reserved for internal use, please choose a different key`;
+            }
+
             const dataDef = options[dataKey];
 
             if ('object' !== typeof dataDef) {
@@ -57,7 +69,9 @@ export class CollectData extends AbstractAction {
             options = [];
         }
 
-        const data = {};
+        const data = {
+            foundOnUrl: {},
+        };
 
         for (let dataKey in options) {
             const dataDef = options[dataKey];
@@ -68,17 +82,18 @@ export class CollectData extends AbstractAction {
             }
 
             data[dataKey] = value;
+            data.foundOnUrl[dataKey] = request.userData.currentUrl;
         }
 
-        if (0 < Object.keys(data).length) {
-            await saveResult('data', request.userData.identity, data, true);
+        if (1 < Object.keys(data).length) {
+            await saveResult(ScenarioResultGroups.DATA, request.userData.identity, data, true);
         }
     }
 
     async #getDataValue(dataDef, request, page) {
         switch (dataDef.strategy) {
             case 'static':
-                return placeholderReplacer(dataDef.value, page);
+                return await placeholderReplacer(dataDef.value, page);
             case 'selector.innerText':
                 return await page.evaluate(dataDef => {
                     const elements = dataDef.multiple ? document.querySelectorAll(dataDef.selector) : [document.querySelector(dataDef.selector)];

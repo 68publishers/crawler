@@ -1,5 +1,6 @@
 import { AbstractAction } from './abstract-action.mjs';
 import { placeholderReplacer } from '../helper/placeholder-replacer.mjs';
+import { ScenarioResultGroups } from '../model/scenario/scenario-result-groups.mjs';
 import { v4 as uuid } from 'uuid';
 import { existsSync, mkdirSync } from 'node:fs';
 import { URL } from 'node:url';
@@ -39,8 +40,8 @@ export class Screenshot extends AbstractAction {
         const screenshotUrl = new URL(this.#applicationUrl);
         screenshotUrl.pathname = `static/screenshots/${scenarioId}/${screenshotId}.jpg`
 
-        await saveResult('screenshots', screenshotId, {
-            name: placeholderReplacer(options.name, page),
+        await saveResult(ScenarioResultGroups.SCREENSHOTS, screenshotId, {
+            name: await placeholderReplacer(options.name, page),
             screenshot: screenshotUrl.toString(),
             foundOnUrl: currentUrl,
         }, false);

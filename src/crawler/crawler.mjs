@@ -2,6 +2,7 @@ import {PuppeteerCrawler, Configuration } from 'crawlee';
 import puppeteerExtra from 'puppeteer-extra';
 import StealthPlugin from 'puppeteer-extra-plugin-stealth';
 import { ExecutionContext } from '../action/execution-context.mjs';
+import { ScenarioResultGroups } from '../model/scenario/scenario-result-groups.mjs';
 import { sha256 } from '../helper/hash.mjs';
 import { existsSync, rmSync } from 'node:fs';
 import path from 'node:path';
@@ -121,7 +122,7 @@ export class Crawler {
 
         const saveVisitedUrl = async (previousUrl, currentUrl, statusCode, error) => {
             await saveResult(
-                'visitedUrls',
+                ScenarioResultGroups.VISITED_URLS,
                 sha256(`${previousUrl || 'null'}=>${currentUrl}`),
                 {
                     url: currentUrl,

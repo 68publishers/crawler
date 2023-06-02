@@ -1,4 +1,5 @@
 import { v4 as uuid, validate as validateUuid } from 'uuid';
+import { ScenarioResultGroups } from './scenario-result-groups.mjs';
 
 export class ScenarioRepository {
     #databaseClient;
@@ -58,8 +59,8 @@ export class ScenarioRepository {
         }
 
         const scenario = scenarioRows[0];
-        scenario.stats = {};
-        scenario.results = {};
+        scenario.stats = ScenarioResultGroups.ALL.reduce((accumulator, value) => ({...accumulator, [value]: 0}), {});
+        scenario.results = ScenarioResultGroups.ALL.reduce((accumulator, value) => ({...accumulator, [value]: []}), {});
 
         if (!withResults) {
             return scenario;
@@ -67,16 +68,12 @@ export class ScenarioRepository {
 
         const scenarioResultRows = await this.#databaseClient('scenario_result')
             .select('group', 'identity', 'data')
-            .where('scenario_id', scenarioId);
+            .where('scenario_id', scenarioId)
+            .orderBy('created_at', 'ASC');
 
         for (let resultRow of scenarioResultRows) {
-            if (!(resultRow.group in scenario.results)) {
-                scenario.results[resultRow.group] = [];
-                scenario.stats[resultRow.group] = 0;
-            }
-
             const data = {
-                _identity: resultRow.identity,
+                identity: resultRow.identity,
                 ...resultRow.data,
             };
 
@@ -134,7 +131,7 @@ export class ScenarioRepository {
         if (mergeOnConflict) {
             qb = qb.onConflict(['scenario_id', 'group', 'identity'])
                 .merge({
-                    data: this.#databaseClient.raw('scenario_result.data || excluded.data::jsonb'),
+                    data: this.#databaseClient.raw('jsonb_merge_with_arrays(scenario_result.data, excluded.data::jsonb)'),
                 });
         } else {
             qb = qb.onConflict(['scenario_id', 'group', 'identity'])
