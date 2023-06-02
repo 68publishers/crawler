@@ -1,10 +1,11 @@
 {
   "name": "crawler",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "author": "68publishers",
   "description": "Consent Management Platform - Cookie Crawler",
   "main": "index.mjs",
   "type": "module",
+  "private": true,
   "scripts": {
     "dev": "npm run migrations:up && nodemon --ignore 'var/*' --ignore 'public/*' index.mjs",
     "migrations:up": "./node_modules/.bin/knex --knexfile ./knexfile.mjs migrate:latest",
