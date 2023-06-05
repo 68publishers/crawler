@@ -60,14 +60,11 @@ export class EnqueueLinks extends AbstractAction {
     }
 
     async #createEnqueueLinksOptions(request, page, options) {
-        const previousCookies = await page.cookies();
-
         if ('manual' === options.strategy) {
             return {
                 urls: options.urls,
                 userData: {
                     scene: options.scene,
-                    previousCookies: previousCookies,
                     previousUrl: request.userData.currentUrl,
                     identity: request.userData.identity,
                 },
@@ -78,7 +75,6 @@ export class EnqueueLinks extends AbstractAction {
             strategy: options.strategy,
             userData: {
                 scene: options.scene,
-                previousCookies: previousCookies,
                 previousUrl: request.userData.currentUrl,
                 identity: request.userData.identity,
             },

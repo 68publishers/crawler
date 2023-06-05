@@ -24,14 +24,6 @@ export class ScenarioQueue {
         }
 
         this.queue = new Queue(QUEUE_NAME, options);
-
-        this.queue.on('failed', async (job, error) => {
-            const scenarioId = job.data.scenarioId;
-
-            if (scenarioId) {
-                await this.#scenarioRepository.fail(scenarioId, error.toString());
-            }
-        });
     }
 
     async addRunScenarioJob(scenarioId) {

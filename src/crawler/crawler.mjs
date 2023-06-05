@@ -84,6 +84,8 @@ export class Crawler {
 
         const crawlerOptions = {
             maxRequestRetries: scenarioOptions.maxRequestRetries || 0,
+            persistCookiesPerSession: true,
+            useSessionPool: true,
             launchContext: {
                 launcher: puppeteerExtra,
                 launchOptions: {
@@ -98,15 +100,11 @@ export class Crawler {
             },
             preNavigationHooks: [
                 async (crawlingContext, gotoOptions) => {
-                    const { page, request } = crawlingContext;
+                    const { page } = crawlingContext;
                     gotoOptions.waitUntil = 'networkidle0';
 
                     if (viewportOptions) {
-                        page.setViewport(viewportOptions);
-                    }
-
-                    if (request.userData.previousCookies) {
-                        page.setCookie.apply(page, request.userData.previousCookies);
+                        await page.setViewport(viewportOptions);
                     }
                 },
             ],
@@ -156,6 +154,7 @@ export class Crawler {
         const actionRegistry = this.#actionRegistry;
         const configuration = Configuration.getGlobalConfig();
 
+        configuration.set('purgeOnStart', false);
         configuration.set('defaultKeyValueStoreId', scenarioId);
         configuration.set('defaultRequestQueueId', scenarioId);
 
@@ -203,13 +202,13 @@ export class Crawler {
                 await updateProgress(crawler);
             },
 
-            async failedRequestHandler({ request, response, crawler }) {
+            async failedRequestHandler({ request, response, crawler }, err) {
                 const scene = request.userData.scene || '?';
                 const previousUrl = request.userData.currentUrl;
                 const currentUrl = request.url;
 
-                await logger.error(`Failed to crawl URL ${currentUrl} (scene "${scene}")`);
-                await saveVisitedUrl(previousUrl, currentUrl, response ? response.status() : 500, response ? response.statusText() : 'unknown');
+                await logger.error(`Failed to crawl URL ${currentUrl} (scene "${scene}"). ${err.toString()}`);
+                await saveVisitedUrl(previousUrl, currentUrl, response ? response.status() : 500, err.toString());
                 await updateProgress(crawler);
             },
         }, configuration);
@@ -219,7 +218,6 @@ export class Crawler {
                 url: config.entrypoint.url,
                 userData: {
                     scene: config.entrypoint.scene,
-                    previousCookies: null,
                     previousUrl: null,
                     identity: null,
                 },

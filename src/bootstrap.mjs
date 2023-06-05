@@ -20,6 +20,7 @@ import { ScenarioSchedulerRepository } from './model/scenario/scenario-scheduler
 import { UserRepository } from './model/user/user-repository.mjs';
 
 import { ScenarioQueue } from './queue/scenario-queue.mjs';
+import { ScenarioWorkerFactory } from './worker/scenario-worker-factory.mjs';
 import { Worker } from './worker/worker.mjs';
 
 import { Scheduler } from './scheduler/scheduler.mjs';
@@ -71,6 +72,7 @@ export class Bootstrap {
             scenarioSchedulerRepository: asClass(ScenarioSchedulerRepository).singleton(),
             userRepository: asClass(UserRepository).singleton(),
             scenarioQueue: asClass(ScenarioQueue).singleton(),
+            scenarioWorkerFactory: asClass(ScenarioWorkerFactory).singleton(),
             worker: asClass(Worker).singleton(),
             scheduler: asClass(Scheduler).singleton(),
         });

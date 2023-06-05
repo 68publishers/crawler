@@ -1,9 +1,5 @@
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-import { Worker as BullWorker } from 'bullmq';
-import { QUEUE_NAME as SCENARIO_QUEUE_NAME } from '../queue/scenario-queue.mjs';
-
 export class Worker {
+    #scenarioWorkerFactory;
     #logger;
     #numberOfWorkerProcesses;
     #redisConfig;
@@ -11,6 +7,7 @@ export class Worker {
     #running;
 
     constructor({
+        scenarioWorkerFactory,
         logger,
         numberOfWorkerProcesses,
         redisHost,
@@ -21,6 +18,7 @@ export class Worker {
             throw new Error('Argument "numberOfWorkerProcesses" must be integer greater than or equal to 1.');
         }
 
+        this.#scenarioWorkerFactory = scenarioWorkerFactory;
         this.#logger = logger;
         this.#numberOfWorkerProcesses = numberOfWorkerProcesses;
         this.#redisConfig = {
@@ -50,20 +48,19 @@ export class Worker {
                 count: 1000,
             },
             useWorkerThreads: true,
+            lockDuration: 120000,
+            maxStalledCount: 0,
         };
 
-        const __dirname = path.dirname(fileURLToPath(import.meta.url));
-        const scenarioQueueProcessorPath = path.join(__dirname, 'processor', 'scenario-queue-processor.cjs');
-
         for (let i = 0; i < this.#numberOfWorkerProcesses; i++) {
-            const worker = new BullWorker(
-                SCENARIO_QUEUE_NAME,
-                scenarioQueueProcessorPath,
-                options,
-            );
+            const worker = this.#scenarioWorkerFactory.create(options);
 
-            worker.on("error", async (err) => {
+            worker.on('error', async (err) => {
                 await this.#logger.error(`${err.name}: ${err.message}\nStack: ${JSON.stringify(err.stack)}`);
+            });
+
+            worker.on('failed', async ({ job, failedReason }) => {
+                await this.#logger.error(`Job ${job ? job.id : 'unknown'} failed. ${failedReason}`);
             });
 
             this.#workers.push(worker);
