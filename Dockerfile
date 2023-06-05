@@ -47,6 +47,6 @@ RUN chown -R node:node /app
 
 USER node
 
-RUN npm i --omit=dev
+RUN npm ci --omit=dev
 
 ENTRYPOINT ["pm2-runtime", "./process.yml"]
