@@ -91,6 +91,7 @@ jobs:
           context: .
           file: Dockerfile
           target: prod
+          push: true
           platforms: linux/arm64/v8,linux/amd64
           tags: ${{ steps.docker_meta_crawler.outputs.tags }}
           labels: ${{ steps.docker_meta_crawler.outputs.labels }}
