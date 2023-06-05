@@ -1,6 +1,6 @@
 {
   "name": "@68publishers/crawler",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "author": "68publishers",
   "description": "Consent Management Platform - Cookie Crawler",
   "main": "index.mjs",
