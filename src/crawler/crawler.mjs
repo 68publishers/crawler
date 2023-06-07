@@ -128,7 +128,7 @@ export class Crawler {
                     error: error,
                     foundOnUrl: previousUrl,
                 },
-                false,
+                true,
             );
         };
 
@@ -204,7 +204,7 @@ export class Crawler {
 
             async failedRequestHandler({ request, response, crawler }, err) {
                 const scene = request.userData.scene || '?';
-                const previousUrl = request.userData.currentUrl;
+                const previousUrl = request.userData.previousUrl;
                 const currentUrl = request.url;
 
                 await logger.error(`Failed to crawl URL ${currentUrl} (scene "${scene}"). ${err.toString()}`);

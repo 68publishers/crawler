@@ -1,6 +1,5 @@
 import {AbstractAction} from './abstract-action.mjs';
 import { EnqueueStrategy } from 'crawlee';
-import { placeholderReplacer } from '../helper/placeholder-replacer.mjs';
 
 export class EnqueueLinks extends AbstractAction {
     constructor() {
@@ -47,10 +46,6 @@ export class EnqueueLinks extends AbstractAction {
                 yield 'the optional option "limit" must be a positive int';
             }
         }
-
-        if ('baseUrl' in options && 'string' !== typeof options.baseUrl) {
-            yield 'the optional option "baseUrl" must be a string';
-        }
     }
 
     async execute(options, { request, page, enqueueLinks }) {
@@ -78,9 +73,6 @@ export class EnqueueLinks extends AbstractAction {
                 previousUrl: request.userData.currentUrl,
                 identity: request.userData.identity,
             },
-            baseUrl: options.baseUrl
-                ? (await placeholderReplacer(options.baseUrl, page))
-                : (new URL(page.url())).origin,
         };
 
         if ('selector' in options) {
