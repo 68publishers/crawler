@@ -18,11 +18,12 @@ export class ScenarioController {
     runScenario() {
         return [
             ...this.#scenarioValidator.postScenarioValidator(),
-            async (req, res) => {
+            async (req, res, next) => {
                 const errors = validationResult(req);
 
                 if (!errors.isEmpty()) {
                     return res.status(400).json({
+                        message: 'The request data is not valid',
                         errors: errors.array(),
                     });
                 }
@@ -31,12 +32,16 @@ export class ScenarioController {
                 const userId = req.user.id;
                 const { name, flags, config } = req.body;
 
-                await this.#scenarioRepository.create(scenarioId, userId, name, flags || {}, config);
-                await this.#scenarioQueue.addRunScenarioJob(scenarioId);
+                try {
+                    await this.#scenarioRepository.create(scenarioId, userId, name, flags || {}, config);
+                    await this.#scenarioQueue.addRunScenarioJob(scenarioId);
 
-                res.status(202)
-                    .header('Location', `${req.originalUrl}/${scenarioId}`)
-                    .json(await this.#scenarioRepository.get(scenarioId, false));
+                    res.status(202)
+                        .header('Location', `${req.originalUrl}/${scenarioId}`)
+                        .json(await this.#scenarioRepository.get(scenarioId, false));
+                } catch (err) {
+                    next(err);
+                }
             },
         ];
     }
@@ -49,6 +54,7 @@ export class ScenarioController {
 
                 res.status(200).json({
                     valid: errors.isEmpty(),
+                    message: errors.isEmpty() ? 'OK' : 'The request data is not valid',
                     errors: errors.array(),
                 });
             },
@@ -69,20 +75,27 @@ export class ScenarioController {
     getScenario() {
         return [
             ...this.#scenarioValidator.getScenarioValidator(),
-            async (req, res) => {
+            async (req, res, next) => {
                 const errors = validationResult(req);
 
                 if (!errors.isEmpty()) {
                     return res.status(400).json({
+                        message: 'The request data is not valid',
                         errors: errors.array(),
                     });
                 }
 
-                const scenario = await this.#scenarioRepository.get(req.params.scenarioId);
+                let scenario = null;
+
+                try {
+                    scenario = await this.#scenarioRepository.get(req.params.scenarioId);
+                } catch (err) {
+                    return next(err);
+                }
 
                 if (null === scenario) {
                     res.status(404).json({
-                        error: 'Scenario not found.',
+                        message: 'Scenario not found',
                     });
 
                     return;

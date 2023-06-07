@@ -40,7 +40,7 @@ export class Application {
 
         // catch 404
         app.use((req, res, next) => {
-            const err = new Error('Not Found');
+            const err = new Error('Endpoint not found');
             err.status = 404;
 
             next(err);
@@ -49,12 +49,16 @@ export class Application {
         // error handler
         // eslint-disable-next-line no-unused-vars
         app.use(async (err, req, res, next) => {
-            await this.#logger.error(`${err.name}: ${err.message}\nStack: ${JSON.stringify(err.stack)}`)
+            await this.#logger.error(`${err.name}: ${err.message}\nStack: ${err.stack}`)
+
+            if (res.headersSent) {
+                return next(err)
+            }
 
             res.status(err.status || 500);
             res.json({
-                message: err.message,
-                error: !this.#developmentMode ? {} : err,
+                message: err.message || 'Something went wrong',
+                stack: !this.#developmentMode ? '' : err.stack,
             });
         });
 

@@ -70,6 +70,7 @@ export class CollectData extends AbstractAction {
         }
 
         const data = {
+            values: {},
             foundOnUrl: {},
         };
 
@@ -81,7 +82,7 @@ export class CollectData extends AbstractAction {
                 await logger.warning(`Unable to collect value for "${request.userData.identity}"."${dataKey}"`);
             }
 
-            data[dataKey] = value;
+            data.values[dataKey] = value;
             data.foundOnUrl[dataKey] = request.userData.currentUrl;
         }
 

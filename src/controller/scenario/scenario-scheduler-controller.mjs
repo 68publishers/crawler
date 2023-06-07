@@ -18,11 +18,12 @@ export class ScenarioSchedulerController {
     createScenarioScheduler() {
         return [
             ...this.#scenarioSchedulerValidator.createScenarioSchedulerValidator(),
-            async (req, res) => {
+            async (req, res, next) => {
                 const errors = validationResult(req);
 
                 if (!errors.isEmpty()) {
                     return res.status(400).json({
+                        message: 'The request data is not valid',
                         errors: errors.array(),
                     });
                 }
@@ -30,18 +31,22 @@ export class ScenarioSchedulerController {
                 const userId = req.user.id;
                 const { name, flags, config, expression } = req.body;
 
-                const scenarioSchedulerId = await this.#scenarioSchedulerRepository.create(userId, name, flags || {}, expression, config);
+                try {
+                    const scenarioSchedulerId = await this.#scenarioSchedulerRepository.create(userId, name, flags || {}, expression, config);
 
-                await this.#scheduler.refresh();
+                    await this.#scheduler.refresh();
 
-                const scenarioScheduler = await this.#scenarioSchedulerRepository.get(scenarioSchedulerId);
+                    const scenarioScheduler = await this.#scenarioSchedulerRepository.get(scenarioSchedulerId);
 
-                res.status(201)
-                    .header('ETag', etag(JSON.stringify(scenarioScheduler), {
-                        weak: false,
-                    }))
-                    .header('Location', `${req.originalUrl}/${scenarioSchedulerId}`)
-                    .json(scenarioScheduler);
+                    res.status(201)
+                        .header('ETag', etag(JSON.stringify(scenarioScheduler), {
+                            weak: false,
+                        }))
+                        .header('Location', `${req.originalUrl}/${scenarioSchedulerId}`)
+                        .json(scenarioScheduler);
+                } catch (err) {
+                    next(err);
+                }
             },
         ];
     }
@@ -49,52 +54,61 @@ export class ScenarioSchedulerController {
     updateScenarioScheduler() {
         return [
             ...this.#scenarioSchedulerValidator.updateScenarioSchedulerValidator(),
-            async (req, res) => {
+            async (req, res, next) => {
                 const errors = validationResult(req);
 
                 if (!errors.isEmpty()) {
                     return res.status(400).json({
+                        message: 'The request data is not valid',
                         errors: errors.array(),
                     });
                 }
 
-                const scenarioSchedulerId = req.params.scenarioSchedulerId;
-                const userId = req.user.id;
-                const { name, flags, config, expression } = req.body;
-                let scenarioScheduler = await this.#scenarioSchedulerRepository.get(scenarioSchedulerId);
+                try {
+                    const scenarioSchedulerId = req.params.scenarioSchedulerId;
+                    const userId = req.user.id;
+                    const { name, flags, config, expression } = req.body;
+                    let scenarioScheduler = await this.#scenarioSchedulerRepository.get(scenarioSchedulerId);
 
-                if (null !== scenarioScheduler) {
-                    const ifMatch = req.header('if-match');
+                    if (null !== scenarioScheduler) {
+                        const ifMatch = req.header('if-match');
 
-                    if (!ifMatch) {
-                        return res.status(428).end();
+                        if (!ifMatch) {
+                            return res.status(428).json({
+                                message: 'Precondition required, please specify the "If-Match" header',
+                            });
+                        }
+
+                        const entityTag = etag(JSON.stringify(scenarioScheduler), {
+                            weak: false,
+                        });
+
+                        if (entityTag !== ifMatch) {
+                            return res.status(412).json({
+                                message: 'Precondition failed',
+                            });
+                        }
+
+                        await this.#scenarioSchedulerRepository.update(scenarioSchedulerId, userId, name, flags || {}, expression, config);
+
+                        res.status(200);
+                    } else {
+                        await this.#scenarioSchedulerRepository.create(userId, name, flags || {}, expression, config, scenarioSchedulerId);
+
+                        res.status(201)
+                            .header('Location', `${req.originalUrl}/${scenarioSchedulerId}`);
                     }
 
-                    const entityTag = etag(JSON.stringify(scenarioScheduler), {
+                    await this.#scheduler.refresh();
+
+                    scenarioScheduler = await this.#scenarioSchedulerRepository.get(scenarioSchedulerId);
+
+                    res.header('ETag', etag(JSON.stringify(scenarioScheduler), {
                         weak: false,
-                    });
-
-                    if (entityTag !== ifMatch) {
-                        return res.status(412).end();
-                    }
-
-                    await this.#scenarioSchedulerRepository.update(scenarioSchedulerId, userId, name, flags || {}, expression, config);
-
-                    res.status(200);
-                } else {
-                    await this.#scenarioSchedulerRepository.create(userId, name, flags || {}, expression, config, scenarioSchedulerId);
-
-                    res.status(201)
-                        .header('Location', `${req.originalUrl}/${scenarioSchedulerId}`);
+                    })).json(scenarioScheduler);
+                } catch (err) {
+                    next(err);
                 }
-
-                await this.#scheduler.refresh();
-
-                scenarioScheduler = await this.#scenarioSchedulerRepository.get(scenarioSchedulerId);
-
-                res.header('ETag', etag(JSON.stringify(scenarioScheduler), {
-                    weak: false,
-                })).json(scenarioScheduler);
             },
         ];
     }
@@ -107,6 +121,7 @@ export class ScenarioSchedulerController {
 
                 res.status(200).json({
                     valid: errors.isEmpty(),
+                    message: errors.isEmpty() ? 'OK' : 'The request data is not valid',
                     errors: errors.array(),
                 });
             },
@@ -127,25 +142,30 @@ export class ScenarioSchedulerController {
     deleteScenarioScheduler() {
         return [
             ...this.#scenarioSchedulerValidator.deleteScenarioSchedulerValidator(),
-            async (req, res) => {
+            async (req, res, next) => {
                 const errors = validationResult(req);
 
                 if (!errors.isEmpty()) {
                     return res.status(400).json({
+                        message: 'The request data is not valid',
                         errors: errors.array(),
                     });
                 }
 
-                if (!(await this.#scenarioSchedulerRepository.delete(req.params.scenarioSchedulerId))) {
-                    res.status(404).json({
-                        error: 'Scenario scheduler not found.',
-                    });
+                try {
+                    if (!(await this.#scenarioSchedulerRepository.delete(req.params.scenarioSchedulerId))) {
+                        res.status(404).json({
+                            message: 'Scenario scheduler not found',
+                        });
 
-                    return;
+                        return;
+                    }
+                    await this.#scheduler.refresh();
+
+                    res.status(204).end();
+                } catch (err) {
+                    next(err);
                 }
-                await this.#scheduler.refresh();
-
-                res.status(204).end();
             },
         ];
     }
@@ -153,20 +173,27 @@ export class ScenarioSchedulerController {
     getScenarioScheduler() {
         return [
             ...this.#scenarioSchedulerValidator.getScenarioSchedulerValidator(),
-            async (req, res) => {
+            async (req, res, next) => {
                 const errors = validationResult(req);
 
                 if (!errors.isEmpty()) {
                     return res.status(400).json({
+                        message: 'The request data is not valid',
                         errors: errors.array(),
                     });
                 }
 
-                const scenarioScheduler = await this.#scenarioSchedulerRepository.get(req.params.scenarioSchedulerId);
+                let scenarioScheduler;
+
+                try {
+                    scenarioScheduler = await this.#scenarioSchedulerRepository.get(req.params.scenarioSchedulerId);
+                } catch (err) {
+                    return next(err);
+                }
 
                 if (null === scenarioScheduler) {
                     res.status(404).json({
-                        error: 'Scenario scheduler not found.',
+                        message: 'Scenario scheduler not found',
                     });
 
                     return;
