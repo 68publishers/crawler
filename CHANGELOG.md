@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## 0.1.4 - 2023-06-07
 ### Removed
 - Removed the option `baseUrl` for the action `enqueueLinks` - browser automatically detects it.
 
