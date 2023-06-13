@@ -133,6 +133,10 @@ export class ScenarioSchedulerRepository {
         ('username' in filter) && (qb = qb.andWhereILike('user.username', `%${filter.username}%`));
         ('name' in filter) && (qb = qb.andWhereILike('scenario_scheduler.name', `%${filter.name}%`));
         ('flags' in filter) && (qb = qb.whereJsonSupersetOf('scenario_scheduler.flags', filter.flags));
+        ('createdBefore' in filter) && (qb = qb.andWhere('scenario_scheduler.created_at', '<', filter.createdBefore));
+        ('createdAfter' in filter) && (qb = qb.andWhere('scenario_scheduler.created_at', '>', filter.createdAfter));
+        ('updatedBefore' in filter) && (qb = qb.andWhere('scenario_scheduler.updated_at', '<', filter.updatedBefore));
+        ('updatedAfter' in filter) && (qb = qb.andWhere('scenario_scheduler.updated_at', '>', filter.updatedAfter));
 
         return qb;
     }

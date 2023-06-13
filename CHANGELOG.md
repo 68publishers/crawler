@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Added new initial scenario status `waiting`. A Scenario is marked as `running` when it actually runs.
 - Added support for logging into Sentry. Two ENV variables are processed - `SENTRY_DSN` (optional, enables logging) and `SENTRY_SERVER_NAME` (by default `crawler`).
+- Added filters `createdBefore` and `createdAfter` for endpoint `GET /api/scenarios`.
+- Added filters `createdBefore`, `createdAfter`, `updatedBefore` and `updatedAfter` for endpoint `GET /api/scenario-schedulers`.
 
 ### Changed
 - Logger allows to call methods `warning()` and `error()` with Error objects.

@@ -156,6 +156,8 @@ export class ScenarioRepository {
         ('name' in filter) && (qb = qb.andWhereILike('scenario.name', `%${filter.name}%`));
         ('status' in filter) && (qb = qb.andWhere('scenario.status', filter.status));
         ('flags' in filter) && (qb = qb.whereJsonSupersetOf('scenario.flags', filter.flags));
+        ('createdBefore' in filter) && (qb = qb.andWhere('scenario.created_at', '<', filter.createdBefore));
+        ('createdAfter' in filter) && (qb = qb.andWhere('scenario.created_at', '>', filter.createdAfter));
 
         return qb;
     }

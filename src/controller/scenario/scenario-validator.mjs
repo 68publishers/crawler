@@ -20,8 +20,10 @@ export class ScenarioValidator {
             query('filter.userId', 'The value must be a valid uuid.').optional().isUUID(),
             query('filter.username', 'The value must be a string.').optional().isString(),
             query('filter.name', 'The value must be a string').optional().isString(),
-            query('filter.status', 'The value must be a string.').optional().isString(),
+            query('filter.status', 'The value must be one of these: ["waiting", "running", "completed", "failed"].').optional().isString().isIn(['waiting', 'running', 'completed', 'failed']),
             query('filter.flags', 'The valid must be an object with string values.').optional().isObject(),
+            query('filter.createdBefore', 'The valid must be a date.').optional().isISO8601({ strict: true }),
+            query('filter.createdAfter', 'The valid must be a date.').optional().isISO8601({ strict: true }),
             query('limit', 'The value must be int that is greater than or equal to 1.').isInt({ min: 1 }),
             query('page', 'The value must be int that is greater than or equal to 1.').isInt({ min: 1 }),
         ];
