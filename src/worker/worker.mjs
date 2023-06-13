@@ -56,7 +56,7 @@ export class Worker {
             const worker = this.#scenarioWorkerFactory.create(options);
 
             worker.on('error', async (err) => {
-                await this.#logger.error(`${err.name}: ${err.message}\nStack: ${JSON.stringify(err.stack)}`);
+                await this.#logger.error(err);
             });
 
             worker.on('failed', async ({ job, failedReason }) => {

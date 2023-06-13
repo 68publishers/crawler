@@ -21,7 +21,7 @@ export class Application {
 
     run() {
         process.on('uncaughtException', async (err) => {
-            await this.#logger.error(`Uncaught exception ${err.name}: ${err.message}\nStack: ${JSON.stringify(err.stack)}`);
+            await this.#logger.error(err);
 
             process.exit(1);
         });
@@ -49,10 +49,14 @@ export class Application {
         // error handler
         // eslint-disable-next-line no-unused-vars
         app.use(async (err, req, res, next) => {
-            await this.#logger.error(`${err.name}: ${err.message}\nStack: ${err.stack}`)
+            const status = err.status || 500;
+
+            if (500 <= status) {
+                await this.#logger.error(err);
+            }
 
             if (res.headersSent) {
-                return next(err)
+                return next(err);
             }
 
             res.status(err.status || 500);

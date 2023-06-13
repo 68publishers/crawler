@@ -22,7 +22,7 @@ export class ScenarioWorkerFactory {
 
         worker.on('failed', async ({ job, failedReason }) => {
             if (job && job.data.scenarioId) {
-                await this.#scenarioRepository.fail(job.data.scenarioId, failedReason);
+                await this.#scenarioRepository.markAsFailed(job.data.scenarioId, failedReason);
             }
         });
 

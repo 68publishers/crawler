@@ -54,6 +54,8 @@ export class Bootstrap {
             redisAuth: asValue(requireEnv('REDIS_AUTH')),
             crawleeStorageDir: asValue(requireEnv('CRAWLEE_STORAGE_DIR')),
             numberOfWorkerProcesses: asValue(parseInt(requireEnv('WORKER_PROCESSES'))),
+            sentryDsn: asValue(process.env.SENTRY_DSN || undefined),
+            sentryServerName: asValue(requireEnv('SENTRY_SERVER_NAME')),
         });
 
         container.register({

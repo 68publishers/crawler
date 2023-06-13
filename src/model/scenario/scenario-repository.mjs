@@ -13,14 +13,22 @@ export class ScenarioRepository {
             .insert({
                 id: scenarioId,
                 user_id: userId,
-                status: 'running',
+                status: 'waiting',
                 name: name,
                 flags: JSON.stringify(flags),
                 config: JSON.stringify(config),
             });
     }
 
-    async fail(scenarioId, error) {
+    async markAsRunning(scenarioId) {
+        await this.#databaseClient('scenario')
+            .update({
+                status: 'running',
+            })
+            .where('id', scenarioId);
+    }
+
+    async markAsFailed(scenarioId, error) {
         await this.#databaseClient('scenario')
             .update({
                 status: 'failed',
@@ -29,7 +37,7 @@ export class ScenarioRepository {
             .where('id', scenarioId);
     }
 
-    async complete(scenarioId) {
+    async markAdCompleted(scenarioId) {
         await this.#databaseClient('scenario')
             .update({
                 status: 'completed',

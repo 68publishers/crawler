@@ -56,7 +56,7 @@ export class SetIdentity extends AbstractAction {
         }
 
         if (null === identity) {
-            await logger.error(`Unable to set identity with options ${JSON.stringify(options)}. Data will not be collected`);
+            await logger.error(new Error(`Unable to set identity with options ${JSON.stringify(options)}. Data will not be collected`));
         }
 
         request.userData.identity = identity;

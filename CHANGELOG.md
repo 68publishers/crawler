@@ -5,6 +5,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
+### Added
+- Added new initial scenario status `waiting`. A Scenario is marked as `running` when it actually runs.
+- Added support for logging into Sentry. Two ENV variables are processed - `SENTRY_DSN` (optional, enables logging) and `SENTRY_SERVER_NAME` (by default `crawler`).
+
+### Changed
+- Logger allows to call methods `warning()` and `error()` with Error objects.
+- A scenario is marked as `failed` if no URL has benn successfully crawled.
 
 ## 0.1.4 - 2023-06-07
 ### Removed

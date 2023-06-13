@@ -40,7 +40,9 @@ export class CallbackUriNotifier {
 
             await logger.info(`URL ${callbackUri} successfully notified. The client responded with a status code ${res.statusCode}.`);
         } catch (err) {
-            await logger.error(`Failed to notify ${callbackUri}. ${err.toString()}`);
+            err.message = `Failed to notify ${callbackUri}. ` + err.message;
+
+            await logger.error(err);
         }
     }
 }

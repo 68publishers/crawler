@@ -21,7 +21,7 @@ module.exports = async (job) => {
 
         if (null === scenario) {
             const err = new Error(`Unable to process scenario ${job.data.scenarioId}. The scenario not found in the database.`);
-            await logger.error(err.toString());
+            await logger.error(err);
 
             throw err;
         }
@@ -42,7 +42,7 @@ module.exports = async (job) => {
             try {
                 user = await userRepository.getById(userId);
             } catch (err) {
-                await logger.error('Unable to send callback uri notification, user not found.');
+                await logger.error(new Error('Unable to send callback uri notification, user not found.'));
 
                 return result;
             }

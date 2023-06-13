@@ -49,23 +49,48 @@ export class Crawler {
      * @param {object} logger
      * @param {updateProgressHandlerCallback} updateProgressHandler
      *
-     * @returns {Promise<*>}
+     * @returns {object}
      */
     async crawl(scenarioId, config, logger, updateProgressHandler = undefined) {
-        await logger.info(`Running scenario ${scenarioId}`);
-
         try {
+            await logger.info(`Running scenario ${scenarioId}`);
+            await this.#scenarioRepository.markAsRunning(scenarioId);
             await this.#doCrawl(scenarioId, config, logger, updateProgressHandler);
-            await this.#scenarioRepository.complete(scenarioId);
-            await logger.info(`Scenario ${scenarioId} completed`);
         } catch (err) {
-            await logger.error(`Scenario ${scenarioId} failed, reason: ${err.message}`);
-            await this.#scenarioRepository.fail(scenarioId, err.toString());
+            err.message = `Scenario ${scenarioId} failed, reason: ${err.message}`;
 
-            throw err;
+            await logger.error(err);
+            await this.#scenarioRepository.markAsFailed(scenarioId, err.toString());
+
+            return await this.#scenarioRepository.get(scenarioId);
         }
 
-        return await this.#scenarioRepository.get(scenarioId);
+        const result = await this.#scenarioRepository.get(scenarioId);
+        let isAnyUrlSuccessfullyVisited = false;
+
+        for (let visitedUrl of result.results.visitedUrls) {
+            if (null === visitedUrl.error && 300 > visitedUrl.statusCode) {
+                isAnyUrlSuccessfullyVisited = true;
+
+                break;
+            }
+        }
+
+        if (isAnyUrlSuccessfullyVisited) {
+            await this.#scenarioRepository.markAdCompleted(scenarioId);
+            await logger.info(`Scenario ${scenarioId} completed`);
+
+            result.status = 'completed';
+        } else {
+            const errorMessage = 'No url has been successfully crawled.';
+            await this.#scenarioRepository.markAsFailed(scenarioId, errorMessage);
+            await logger.error(new Error(`Scenario ${scenarioId} failed, reason: ${errorMessage}`));
+
+            result.status = 'failed';
+            result.error = errorMessage;
+        }
+
+        return result;
     }
 
     async #doCrawl(scenarioId, config, logger, updateProgressHandler) {
@@ -207,7 +232,7 @@ export class Crawler {
                 const previousUrl = request.userData.previousUrl;
                 const currentUrl = request.url;
 
-                await logger.error(`Failed to crawl URL ${currentUrl} (scene "${scene}"). ${err.toString()}`);
+                await logger.warning(`Failed to crawl URL ${currentUrl} (scene "${scene}"). ${err.toString()}`);
                 await saveVisitedUrl(previousUrl, currentUrl, response ? response.status() : 500, err.toString());
                 await updateProgress(crawler);
             },

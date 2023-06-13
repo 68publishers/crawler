@@ -2,17 +2,21 @@ import Winston from 'winston';
 import DailyRotateFile from 'winston-daily-rotate-file';
 import {AbstractLogger} from './abstract-logger.mjs';
 
+const SentryTransport = (await import('winston-transport-sentry-node')).default;
+
 export class WinstonLogger extends AbstractLogger {
-    constructor({ logDir, developmentMode }) {
+    constructor({ logDir, developmentMode, sentryDsn, sentryServerName }) {
         super();
+
+        const format = Winston.format;
 
         this.logger = Winston.createLogger({
             level: 'info',
-            format: Winston.format.combine(
-                Winston.format.timestamp({
+            format: format.combine(
+                format.timestamp({
                     format: "YYYY-MM-DD HH:mm:ss",
                 }),
-                Winston.format.json(),
+                format.json(),
             ),
             transports: [
                 new DailyRotateFile({
@@ -38,7 +42,24 @@ export class WinstonLogger extends AbstractLogger {
 
         if (developmentMode) {
             this.logger.add(new Winston.transports.Console({
-                format: Winston.format.simple(),
+                format: format.simple(),
+            }));
+        }
+
+        if ('string' === typeof sentryDsn) {
+            this.logger.add(new SentryTransport.default({
+                sentry: {
+                    dsn: sentryDsn,
+                    serverName: sentryServerName,
+                },
+                level: 'error',
+                format: format.combine(
+                    format.timestamp({
+                        format: "YYYY-MM-DD HH:mm:ss",
+                    }),
+                    format.json(),
+                    format.prettyPrint(),
+                ),
             }));
         }
     }
@@ -48,10 +69,24 @@ export class WinstonLogger extends AbstractLogger {
     }
 
     async warning(message) {
-        this.logger.warn(message);
+        this.logger.warn(this.#formatErrorMessage(message));
     }
 
     async error(message) {
-        this.logger.error(message);
+        this.logger.error(this.#formatErrorMessage(message));
+    }
+
+    #formatErrorMessage(message) {
+        if (message instanceof Error) {
+            let errorMessage = message.toString();
+
+            if (!errorMessage.endsWith('.')) {
+                errorMessage += '.';
+            }
+
+            return `${errorMessage} Stack:\n${message.stack}`;
+        }
+
+        return message;
     }
 }

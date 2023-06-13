@@ -11,6 +11,7 @@ ENV APP_PORT=3000
 ENV CRAWLEE_STORAGE_DIR=./var/crawlee
 ENV CHROME_PATH=/usr/bin/chromium-browser
 ENV WORKER_PROCESSES=5
+ENV SENTRY_SERVER_NAME=crawler
 
 RUN apk --no-cache -U upgrade
 RUN apk add --update --no-cache --virtual \

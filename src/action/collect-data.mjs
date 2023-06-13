@@ -64,7 +64,7 @@ export class CollectData extends AbstractAction {
 
     async execute(options, { request, page, saveResult, logger }) {
         if (null === request.userData.identity) {
-            await logger.error(`Unable to collect data with options ${JSON.stringify(options)}. Current identity is not set`);
+            await logger.error(new Error(`Unable to collect data with options ${JSON.stringify(options)}. Current identity is not set`));
 
             options = [];
         }
