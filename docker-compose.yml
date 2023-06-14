@@ -56,7 +56,7 @@ services:
     redis:
         image: redis:7.0.10-alpine
         container_name: crawler-redis
-        command: redis-server --loglevel warning --requirepass redis_pass --maxmemory-policy noeviction
+        command: redis-server --loglevel warning --requirepass redis_pass --maxmemory-policy noeviction --appendonly yes
         ports:
             - "6379:6379"
         networks:
