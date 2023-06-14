@@ -1,0 +1,6 @@
+type: string
+enum:
+  - waiting
+  - running
+  - completed
+  - failed

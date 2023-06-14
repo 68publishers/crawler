@@ -1,0 +1,42 @@
+scenarioListing:
+  $ref: ./scenario/scenarioListing.yml
+waitingScenario:
+  $ref: ./scenario/waitingScenario.yml
+scenarioValidation:
+  $ref: ./scenario/scenarioValidation.yml
+getScenario:
+  $ref: ./scenario/getScenario.yml
+scenarioListingQueryValidationError:
+  $ref: ./scenario/scenarioListingQueryValidationError.yml
+scenarioConfigValidationError:
+  $ref: ./scenario/scenarioConfigValidationError.yml
+scenarioPathParameterValidationError:
+  $ref: ./scenario/scenarioPathParameterValidationError.yml
+scenarioNotFoundError:
+  $ref: ./scenario/scenarioNotFoundError.yml
+
+scenarioSchedulerConfigValidationError:
+  $ref: ./scenarioScheduler/scenarioSchedulerConfigValidationError.yml
+scenarioSchedulerListingQueryValidationError:
+  $ref: ./scenarioScheduler/scenarioSchedulerListingQueryValidationError.yml
+scenarioSchedulerNotFoundError:
+  $ref: ./scenarioScheduler/scenarioSchedulerNotFoundError.yml
+scenarioSchedulerPathParameterValidationError:
+  $ref: ./scenarioScheduler/scenarioSchedulerPathParameterValidationError.yml
+scenarioSchedulerValidation:
+  $ref: ./scenarioScheduler/scenarioSchedulerValidation.yml
+getScenarioScheduler:
+  $ref: ./scenarioScheduler/getScenarioScheduler.yml
+scenarioSchedulerListing:
+  $ref: ./scenarioScheduler/scenarioSchedulerListing.yml
+
+noContent:
+  $ref: ./common/noContent.yml
+preconditionFailedError:
+  $ref: ./common/preconditionFailedError.yml
+preconditionRequiredError:
+  $ref: ./common/preconditionRequiredError.yml
+unauthorizedError:
+  $ref: ./common/unauthorizedError.yml
+serverError:
+  $ref: ./common/serverError.yml

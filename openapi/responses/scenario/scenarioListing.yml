@@ -1,0 +1,12 @@
+description: Paginated list of scenarios.
+content:
+  application/json:
+    schema:
+      $ref: ../../schemas/scenario/scenarioListingResponseBody.yml
+    examples:
+      one page only:
+        $ref: ../../examples/scenario/scenarioListingWithOnlyOnePage.yml
+      with the previous page:
+        $ref: ../../examples/scenario/scenarioListingWithPreviousPage.yml
+      with the next page:
+        $ref: ../../examples/scenario/scenarioListingWithNextPage.yml

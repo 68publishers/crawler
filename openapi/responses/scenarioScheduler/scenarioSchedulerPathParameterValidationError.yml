@@ -1,0 +1,20 @@
+description: The request contains validation errors.
+content:
+  application/json:
+    type: object
+    properties:
+      message:
+        type: string
+      errors:
+        $ref: ../../schemas/common/validationErrors.yml
+    examples:
+      path parameter error example:
+        description: >-
+          Endpoint was invoked as `GET /api/scenario-schedulers/13` but the scenarioSchedulerId parameter must be a valid uuid.
+        value:
+          message: The request data is not valid
+          errors:
+            - value: '13'
+              msg: The value must be a valid uuid.
+              param: scenarioSchedulerId
+              location: params

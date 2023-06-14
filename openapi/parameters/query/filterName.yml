@@ -1,0 +1,5 @@
+name: filter[name]
+in: query
+required: false
+schema:
+  type: string

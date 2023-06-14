@@ -1,0 +1,10 @@
+type: object
+nullable: true
+properties:
+  url:
+    type: string
+    format: uri
+  page:
+    type: integer
+  limit:
+    type: integer

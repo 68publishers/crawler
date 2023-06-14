@@ -1,0 +1,12 @@
+type: array
+items:
+  type: object
+  properties:
+    value:
+      description: Any data type.
+    msg:
+      type: string
+    param:
+      type: string
+    location:
+      type: string

@@ -2,6 +2,7 @@ import express, { Router } from 'express';
 import { createBullBoard } from '@bull-board/api';
 import { BullMQAdapter } from '@bull-board/api/bullMQAdapter.js';
 import { ExpressAdapter } from '@bull-board/express';
+import SwaggerUi from 'swagger-ui-express';
 import { comparePassword } from '../helper/password.mjs';
 import { BasicStrategy } from 'passport-http';
 import passport from 'passport';
@@ -56,7 +57,13 @@ export class RouterFactory {
         adminRouter.use(passport.authenticate('basic', { session: false }, undefined));
         apiRouter.use(passport.authenticate('basic', { session: false }, undefined));
 
-        router.use('/static', express.static('public'))
+        router.use('/api-docs', SwaggerUi.serve, SwaggerUi.setup(undefined, {
+            swaggerOptions: {
+                url: '/static/openapi.json',
+            },
+        }));
+
+        router.use('/static', express.static('public'));
         router.use('/admin', adminRouter);
         router.use('/api', apiRouter);
         apiRouter.use('/scenarios', scenariosRouter);

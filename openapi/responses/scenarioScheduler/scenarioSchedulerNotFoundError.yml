@@ -1,0 +1,11 @@
+description: Requested scenario scheduler not found.
+content:
+  application/json:
+    type: object
+    properties:
+      message: string
+    examples:
+      scenario scheduler not found error example:
+        description: Requested scenario scheduler not found.
+        value:
+          message: Scenario scheduler not found

@@ -1,0 +1,8 @@
+description: Request body for running a scenario.
+content:
+  application/json:
+    schema:
+      $ref: ../../schemas/scenario/scenarioRequestBody.yml
+    examples:
+      scenario example:
+        $ref: ../../examples/scenario/scenarioRequest.yml

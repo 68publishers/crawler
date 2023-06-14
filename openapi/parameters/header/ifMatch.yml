@@ -1,0 +1,6 @@
+name: If-Match
+in: header
+description: Prevents lock updates. Use the value of the header `Etag` that is returned from `GET /api/scenario-schedulers/{scenarioSchedulerId}` or `POST /api/scenario-schedulers`.
+required: true
+schema:
+  type: string

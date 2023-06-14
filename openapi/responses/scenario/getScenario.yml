@@ -1,0 +1,14 @@
+description: A complete scenario in the current state
+content:
+  application/json:
+    schema:
+      $ref: ../../schemas/scenario/scenarioResponseBody.yml
+    examples:
+      waiting scenario response example:
+        $ref: ../../examples/scenario/waitingScenario.yml
+      running scenario response example:
+        $ref: ../../examples/scenario/runningScenario.yml
+      completed scenario response example:
+        $ref: ../../examples/scenario/completedScenario.yml
+      failed scenario response example:
+        $ref: ../../examples/scenario/failedScenario.yml

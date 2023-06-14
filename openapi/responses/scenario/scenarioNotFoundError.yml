@@ -1,0 +1,11 @@
+description: Requested scenario not found.
+content:
+  application/json:
+    type: object
+    properties:
+      message: string
+    examples:
+      scenario not found error example:
+        description: Requested scenario not found.
+        value:
+          message: Scenario not found

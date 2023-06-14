@@ -1,0 +1,8 @@
+description: Request body for updating (or creating if not exists) a scenario scheduler.
+content:
+  application/json:
+    schema:
+      $ref: ../../schemas/scenarioScheduler/scenarioSchedulerRequestBody.yml
+    examples:
+      scenario scheduler example:
+        $ref: ../../examples/scenarioScheduler/scenarioSchedulerRequest.yml

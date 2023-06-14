@@ -14,7 +14,8 @@
     "eslint": "eslint ./index.mjs ./src --ext .js,.mjs",
     "user:list": "node ./src/console/console.mjs user:list",
     "user:create": "node ./src/console/console.mjs user:create",
-    "user:delete": "node ./src/console/console.mjs user:delete"
+    "user:delete": "node ./src/console/console.mjs user:delete",
+    "openapi:bundle": "npx swagger-cli bundle ./openapi/schema.yml --outfile ./public/openapi.json"
   },
   "dependencies": {
     "@bull-board/api": "^5.2.0",
@@ -42,6 +43,7 @@
     "puppeteer": "^20.1.0",
     "puppeteer-extra": "^3.3.6",
     "puppeteer-extra-plugin-stealth": "^2.11.2",
+    "swagger-ui-express": "^4.6.3",
     "uuid": "^9.0.0",
     "validator": "^13.9.0",
     "winston": "^3.8.2",
@@ -49,7 +51,8 @@
     "winston-transport-sentry-node": "^2.7.0"
   },
   "devDependencies": {
-    "nodemon": "^2.0.22"
+    "nodemon": "^2.0.22",
+    "swagger-cli": "^4.0.4"
   },
   "repository": {
     "type": "git",

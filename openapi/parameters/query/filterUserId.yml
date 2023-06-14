@@ -1,0 +1,6 @@
+name: filter[userId]
+in: query
+required: false
+schema:
+  type: string
+  format: uuid

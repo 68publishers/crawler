@@ -1,0 +1,23 @@
+tags:
+  - Scenario schedulers
+parameters:
+  - $ref: ../../parameters/query/page.yml
+  - $ref: ../../parameters/query/limit.yml
+  - $ref: ../../parameters/query/filterId.yml
+  - $ref: ../../parameters/query/filterUserId.yml
+  - $ref: ../../parameters/query/filterUsername.yml
+  - $ref: ../../parameters/query/filterName.yml
+  - $ref: ../../parameters/query/filterFlags.yml
+  - $ref: ../../parameters/query/filterCreatedBefore.yml
+  - $ref: ../../parameters/query/filterCreatedAfter.yml
+  - $ref: ../../parameters/query/filterUpdatedBefore.yml
+  - $ref: ../../parameters/query/filterUpdatedAfter.yml
+responses:
+  '200':
+    $ref: ../../responses/scenarioScheduler/scenarioSchedulerListing.yml
+  '400':
+    $ref: ../../responses/scenarioScheduler/scenarioSchedulerListingQueryValidationError.yml
+  '401':
+    $ref: ../../responses/common/unauthorizedError.yml
+  '500':
+    $ref: ../../responses/common/serverError.yml

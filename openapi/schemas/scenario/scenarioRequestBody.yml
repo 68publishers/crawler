@@ -1,0 +1,9 @@
+type: object
+properties:
+  name:
+    type: string
+    maxLength: 255
+  flags:
+    $ref: ./scenarioFlags.yml
+  config:
+    $ref: ./scenarioConfig.yml

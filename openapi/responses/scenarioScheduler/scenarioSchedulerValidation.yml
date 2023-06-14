@@ -1,0 +1,24 @@
+description: Scenario scheduler validation result.
+content:
+  application/json:
+    schema:
+      $ref: ../../schemas/scenarioScheduler/scenarioSchedulerValidationResponseBody.yml
+    examples:
+      successful validation:
+        description: >-
+          The scenario scheduler has been successfully validated.
+        value:
+          valid: true
+          message: OK
+          errors: [ ]
+      failed validation:
+        description: >-
+          The scenario scheduler validation failed.
+        value:
+          valid: false
+          message: The request data is not valid
+          errors:
+            - value: //example.com
+              msg: The value must be a valid URL.
+              param: config.entrypoint.url
+              location: body

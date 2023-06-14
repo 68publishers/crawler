@@ -1,0 +1,22 @@
+tags:
+  - Scenario schedulers
+parameters:
+  - $ref: ../../parameters/path/scenarioSchedulerId.yml
+  - $ref: ../../parameters/header/ifMatch.yml
+requestBody:
+  $ref: ../../requestBodies/scenarioScheduler/putScenarioScheduler.yml
+responses:
+  '200':
+    $ref: ../../responses/scenarioScheduler/getScenarioScheduler.yml
+  '201':
+    $ref: ../../responses/scenarioScheduler/getScenarioScheduler.yml
+  '400':
+    $ref: ../../responses/scenarioScheduler/scenarioSchedulerConfigValidationError.yml
+  '412':
+    $ref: ../../responses/common/preconditionFailedError.yml
+  '428':
+    $ref: ../../responses/common/preconditionRequiredError.yml
+  '401':
+    $ref: ../../responses/common/unauthorizedError.yml
+  '500':
+    $ref: ../../responses/common/serverError.yml

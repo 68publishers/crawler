@@ -1,0 +1,15 @@
+tags:
+  - Scenario schedulers
+parameters:
+  - $ref: ../../parameters/path/scenarioSchedulerId.yml
+responses:
+  '200':
+    $ref: ../../responses/scenarioScheduler/getScenarioScheduler.yml
+  '400':
+    $ref: ../../responses/scenarioScheduler/scenarioSchedulerPathParameterValidationError.yml
+  '404':
+    $ref: ../../responses/scenarioScheduler/scenarioSchedulerNotFoundError.yml
+  '401':
+    $ref: ../../responses/common/unauthorizedError.yml
+  '500':
+    $ref: ../../responses/common/serverError.yml

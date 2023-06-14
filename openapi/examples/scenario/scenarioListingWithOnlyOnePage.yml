@@ -1,0 +1,25 @@
+description: >-
+  The request has been sent with query parameters `limit=2&page=1` and only two
+  scenarios were found, so fields `next` and `previous` are null.
+value:
+  totalCount: 2
+  next: null
+  previous: null
+  data:
+    - id: df44bbd6-d9fb-4929-8d5e-b16b4fa71905
+      userId: 42d68a75-a8bb-435e-a756-bc4ac0f8f889
+      username: admin
+      name: Test scenario 1
+      createdAt: '2023-06-13T02:26:19.965Z'
+      status: running
+      error: null
+      flags:
+        flagA: valueA
+    - id: 3b53acb3-3ced-4bbb-9d82-abf6a71bc785
+      userId: 42d68a75-a8bb-435e-a756-bc4ac0f8f889
+      username: admin
+      name: Test scenario 2
+      createdAt: '2023-06-13T02:10:23.973Z'
+      status: failed
+      error: No url has been successfully crawled.
+      flags: {}

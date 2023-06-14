@@ -1,0 +1,79 @@
+description: >-
+  The scenario has been successfully completed.
+value:
+  id: df44bbd6-d9fb-4929-8d5e-b16b4fa71905
+  userId: 42d68a75-a8bb-435e-a756-bc4ac0f8f889
+  username: admin
+  name: Example scenario
+  createdAt: '2023-06-13T02:26:19.965Z'
+  status: completed
+  error: null
+  flags:
+    flagA: valueA
+  config:
+    options:
+      maxRequests: 100
+      maxRequestRetries: 2
+      viewport:
+        width: 1728
+        height: 1117
+    scenes:
+      startup:
+        - action: screenshot
+          options:
+            name: entrypoint image
+        - action: setIdentity
+          options:
+            strategy: static
+            identity: PageInfo
+        - action: collectData
+          options:
+            title:
+              strategy: selector.innerText
+              selector: title
+            links:
+              strategy: selector.attribute
+              selector: a
+              attribute: href
+              multiple: true
+        - action: collectCookies
+          options: {}
+    callbackUri: https://crawler.requestcatcher.com/results
+    entrypoint:
+      url: https://www.example.com
+      scene: startup
+  stats:
+    visitedUrls: 0
+    data: 0
+    cookies: 0
+    screenshots: 0
+  results:
+    visitedUrls:
+      - identity: 4d45c714eae5ed1095823307d96f7fceb2fc1d7d07c453a07563515d4ed4dc4e
+        url: https://www.example.com/
+        error: null
+        foundOnUrl: null
+        statusCode: 200
+    data:
+      - identity: PageInfo
+        values:
+          links:
+            - https://www.iana.org/domains/example
+          title: Example Domain
+        foundOnUrl:
+          links: https://www.example.com/
+          title: https://www.example.com/
+    cookies:
+      - identity: 825e6e9af712af57e58c9d8048040df570f11e8245a6d468942fdc2600096489
+        name: cc-settings
+        domain: example.com
+        secure: false
+        session: false
+        httpOnly: false
+        sameSite: Lax
+        foundOnUrl: https://www.example.com/
+    screenshots:
+      - identity: 6f0d7bcb-d1ec-4692-b8d7-5f9e429ad798
+        name: entrypoint image
+        foundOnUrl: https://www.example.com/
+        screenshot: http://localhost:3000/static/screenshots/1c805aa2-c4f9-4f54-baec-f1461e1e9d46/6f0d7bcb-d1ec-4692-b8d7-5f9e429ad798.jpg

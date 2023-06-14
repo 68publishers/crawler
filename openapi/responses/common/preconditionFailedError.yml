@@ -1,0 +1,10 @@
+description: Precondition failed.
+content:
+  application/json:
+    type: object
+    properties:
+      message: string
+    examples:
+      precondition failed error example:
+        value:
+          message: Precondition failed

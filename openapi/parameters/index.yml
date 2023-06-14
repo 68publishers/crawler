@@ -1,0 +1,32 @@
+ifMatch:
+  $ref: ./header/ifMatch.yml
+
+scenarioId:
+  $ref: ./path/scenarioId.yml
+scenarioSchedulerId:
+  $ref: ./path/scenarioSchedulerId.yml
+
+page:
+  $ref: ./query/page.yml
+limit:
+  $ref: ./query/limit.yml
+filterId:
+  $ref: ./query/filterId.yml
+filterUserId:
+  $ref: ./query/filterUserId.yml
+filterUsername:
+  $ref: ./query/filterUsername.yml
+filterName:
+  $ref: ./query/filterName.yml
+filterStatus:
+  $ref: ./query/filterStatus.yml
+filterFlags:
+  $ref: ./query/filterFlags.yml
+filterCreatedBefore:
+  $ref: ./query/filterCreatedBefore.yml
+filterCreatedAfter:
+  $ref: ./query/filterCreatedAfter.yml
+filterUpdatedBefore:
+  $ref: ./query/filterUpdatedBefore.yml
+filterUpdatedAfter:
+  $ref: ./query/filterUpdatedAfter.yml

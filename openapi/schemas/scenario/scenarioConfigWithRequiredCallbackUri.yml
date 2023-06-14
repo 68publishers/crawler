@@ -1,0 +1,57 @@
+type: object
+properties:
+  options:
+    type: object
+    required: false
+    properties:
+      maxRequests:
+        type: integer
+        minimum: 1
+        required: false
+      maxRequestRetries:
+        type: integer
+        minimum: 0
+        default: 0
+        required: false
+      viewport:
+        type: object
+        required: false
+        properties:
+          width:
+            type: integer
+            minimum: 200
+            required: false
+          height:
+            type: integer
+            minimum: 200
+            required: false
+  scenes:
+    type: object
+    required: true
+    additionalProperties:
+      type: array
+      minItems: 1
+      items:
+        type: object
+        properties:
+          action:
+            type: string
+          options:
+            type: object
+    example:
+      startup:
+        - action: screenshot
+          options:
+            name: entrypoint image
+  callbackUri:
+    type: string
+    format: uri
+    required: true
+  entrypoint:
+    type: object
+    properties:
+      url:
+        type: string
+        format: uri
+      scene:
+        type: string

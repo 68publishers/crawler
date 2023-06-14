@@ -1,0 +1,12 @@
+description: Paginated list of scenario schedulers.
+content:
+  application/json:
+    schema:
+      $ref: ../../schemas/scenarioScheduler/scenarioSchedulerListingResponseBody.yml
+    examples:
+      one page only:
+        $ref: ../../examples/scenarioScheduler/scenarioSchedulerListingWithOnlyOnePage.yml
+      with the previous page:
+        $ref: ../../examples/scenarioScheduler/scenarioSchedulerListingWithPreviousPage.yml
+      with the next page:
+        $ref: ../../examples/scenarioScheduler/scenarioSchedulerListingWithNextPage.yml

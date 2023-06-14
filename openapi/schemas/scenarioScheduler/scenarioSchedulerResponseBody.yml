@@ -1,0 +1,24 @@
+type: object
+properties:
+  id:
+    type: string
+    format: uuid
+  userId:
+    type: string
+    format: uuid
+  username:
+    type: string
+  name:
+    type: string
+  createdAt:
+    type: string
+    format: date-time
+  updatedAt:
+    type: string
+    format: date-time
+  expression:
+    type: string
+  flags:
+    $ref: ../scenario/scenarioFlags.yml
+  config:
+    $ref: ../scenario/scenarioConfigWithRequiredCallbackUri.yml

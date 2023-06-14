@@ -1,0 +1,25 @@
+description: >-
+  The request has been sent with query parameters `limit=2&page=1` and only two
+  scenario schedulers were found, so fields `next` and `previous` are null.
+value:
+  totalCount: 2
+  next: null
+  previous: null
+  data:
+    - id: ae3d868a-3671-4d2b-a114-d82ebc008ee2
+      userId: 42d68a75-a8bb-435e-a756-bc4ac0f8f889
+      username: admin
+      name: Test scenario 1
+      createdAt: '2023-06-13T02:26:19.965Z'
+      updatedAt: '2023-06-14T03:38:22.666Z'
+      expression: '0 1 * * *'
+      flags:
+        flagA: valueA
+    - id: 5853f823-766b-4a2d-a892-393f3ede794a
+      userId: 42d68a75-a8bb-435e-a756-bc4ac0f8f889
+      username: admin
+      name: Test scenario 2
+      createdAt: '2023-06-13T02:10:23.973Z'
+      updatedAt: '2023-06-14T01:23:08.777Z'
+      expression: '0 1 * * *'
+      flags: {}

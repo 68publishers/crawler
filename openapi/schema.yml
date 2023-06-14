@@ -1,0 +1,33 @@
+openapi: 3.0.3
+info:
+  title: Crawler
+  description: Rest API reference for 68publishers/crawler - https://github.com/68publishers/crawler
+  version: 1.0.0
+  contact:
+    name: '''68 Publishers'
+    url: http://www.68publishers.io
+    email: support@68publishers.io
+tags:
+  - name: Scenarios
+    description: Scenarios API operations
+  - name: Scenario schedulers
+    description: Scenario schedulers API operations
+security:
+  - BasicAuth: []
+paths:
+  $ref: ./paths/index.yml
+components:
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic
+  parameters:
+    $ref: ./parameters/index.yml
+  requestBodies:
+    $ref: ./requestBodies/index.yml
+  responses:
+    $ref: ./responses/index.yml
+  schemas:
+    $ref: ./schemas/index.yml
+  examples:
+    $ref: ./examples/index.yml

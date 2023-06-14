@@ -1,0 +1,13 @@
+tags:
+  - Scenario schedulers
+requestBody:
+  $ref: ../../requestBodies/scenarioScheduler/postScenarioScheduler.yml
+responses:
+  '201':
+    $ref: ../../responses/scenarioScheduler/getScenarioScheduler.yml
+  '400':
+    $ref: ../../responses/scenarioScheduler/scenarioSchedulerConfigValidationError.yml
+  '401':
+    $ref: ../../responses/common/unauthorizedError.yml
+  '500':
+    $ref: ../../responses/common/serverError.yml

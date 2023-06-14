@@ -1,0 +1,8 @@
+name: scenarioId
+in: path
+description: Scenario UUID
+required: true
+schema:
+  type: string
+  format: uuid
+example: e89a56b7-1ad5-4b2e-ac4f-d321fa5b7d84

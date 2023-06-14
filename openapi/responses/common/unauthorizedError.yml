@@ -1,0 +1,4 @@
+description: The user is not authorized.
+content:
+  text/plain:
+    example: Unauthorized

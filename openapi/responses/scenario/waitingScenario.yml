@@ -1,0 +1,12 @@
+description: Scenario has been queued and will be launched as soon as possible.
+headers:
+  Location:
+    type: string
+    description: Relative path to a scenario location.
+content:
+  application/json:
+    schema:
+      $ref: ../../schemas/scenario/scenarioResponseBody.yml
+    examples:
+      waiting scenario response example:
+        $ref: ../../examples/scenario/waitingScenario.yml

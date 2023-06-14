@@ -1,0 +1,22 @@
+tags:
+  - Scenarios
+parameters:
+  - $ref: ../../parameters/query/page.yml
+  - $ref: ../../parameters/query/limit.yml
+  - $ref: ../../parameters/query/filterId.yml
+  - $ref: ../../parameters/query/filterUserId.yml
+  - $ref: ../../parameters/query/filterUsername.yml
+  - $ref: ../../parameters/query/filterName.yml
+  - $ref: ../../parameters/query/filterStatus.yml
+  - $ref: ../../parameters/query/filterFlags.yml
+  - $ref: ../../parameters/query/filterCreatedBefore.yml
+  - $ref: ../../parameters/query/filterCreatedAfter.yml
+responses:
+  '200':
+    $ref: ../../responses/scenario/scenarioListing.yml
+  '400':
+    $ref: ../../responses/scenario/scenarioListingQueryValidationError.yml
+  '401':
+    $ref: ../../responses/common/unauthorizedError.yml
+  '500':
+    $ref: ../../responses/common/serverError.yml

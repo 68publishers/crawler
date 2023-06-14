@@ -1,0 +1,14 @@
+description: The application encountered an internal error
+content:
+  application/json:
+    type: object
+    properties:
+      message:
+        type: string
+      stack:
+        type: string
+    examples:
+      server error example:
+        value:
+          message: Something went wrong
+          stack: 'Error: Unexpected error.\n    at file:///app/src/controller/...'

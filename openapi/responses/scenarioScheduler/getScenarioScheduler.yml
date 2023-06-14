@@ -1,0 +1,8 @@
+description: Scenario scheduler configuration.
+content:
+  application/json:
+    schema:
+      $ref: ../../schemas/scenarioScheduler/scenarioSchedulerResponseBody.yml
+    examples:
+      scenario scheduler response example:
+        $ref: ../../examples/scenarioScheduler/scenarioScheduler.yml

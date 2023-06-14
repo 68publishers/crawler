@@ -1,0 +1,21 @@
+description: The request contains validation errors.
+content:
+  application/json:
+    type: object
+    properties:
+      message:
+        type: string
+      errors:
+        $ref: ../../schemas/common/validationErrors.yml
+    examples:
+      query parameter error example:
+        description: >-
+          Query parameter `filter[id]=13` has been passed but the value must be a valid
+          uuid.
+        value:
+          message: The request data is not valid
+          errors:
+            - value: '13'
+              msg: The value must be a valid uuid.
+              param: filter.id
+              location: query

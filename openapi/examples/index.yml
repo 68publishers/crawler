@@ -1,0 +1,27 @@
+scenarioListingWithOnlyOnePage:
+  $ref: ./scenario/scenarioListingWithOnlyOnePage.yml
+scenarioListingWithPreviousPage:
+  $ref: ./scenario/scenarioListingWithPreviousPage.yml
+scenarioListingWithNextPage:
+  $ref: ./scenario/scenarioListingWithNextPage.yml
+scenarioRequest:
+  $ref: ./scenario/scenarioRequest.yml
+waitingScenario:
+  $ref: ./scenario/waitingScenario.yml
+runningScenario:
+  $ref: ./scenario/runningScenario.yml
+completedScenario:
+  $ref: ./scenario/completedScenario.yml
+failedScenario:
+  $ref: ./scenario/failedScenario.yml
+
+scenarioScheduler:
+  $ref: ./scenarioScheduler/scenarioScheduler.yml
+scenarioSchedulerRequest:
+  $ref: ./scenarioScheduler/scenarioSchedulerRequest.yml
+scenarioSchedulerListingWithOnlyOnePage:
+  $ref: ./scenarioScheduler/scenarioSchedulerListingWithOnlyOnePage.yml
+scenarioSchedulerListingWithPreviousPage:
+  $ref: ./scenarioScheduler/scenarioSchedulerListingWithPreviousPage.yml
+scenarioSchedulerListingWithNextPage:
+  $ref: ./scenarioScheduler/scenarioSchedulerListingWithNextPage.yml

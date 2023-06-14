@@ -1,0 +1,20 @@
+description: The request contains validation errors.
+content:
+  application/json:
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+        errors:
+          $ref: ../../schemas/common/validationErrors.yml
+    examples:
+      body parameter error example:
+        description: Body field `config.entrypoint.url` contains value that is not a valid URL.
+        value:
+          message: The request data is not valid
+          errors:
+            - value: //example.com
+              msg: The value must be a valid URL.
+              param: config.entrypoint.url
+              location: body

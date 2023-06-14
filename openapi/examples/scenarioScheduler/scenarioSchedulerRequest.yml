@@ -1,0 +1,42 @@
+description: >-
+  A simple scenario that is scheduled every day at 01:00. When the scenario runs it navigates to `https://www.example.com` and takes a
+  screenshot of the page, then collects data (page title and all links), and
+  finally collects cookies. Results will be sent to
+  `https://crawler.requestcatcher.com/results`.
+value:
+  name: Example scenario
+  flags:
+    flagA: valueA
+  expression: '0 1 * * *'
+  config:
+    options:
+      maxRequests: 100
+      maxRequestRetries: 2
+      viewport:
+        width: 1728
+        height: 1117
+    scenes:
+      startup:
+        - action: screenshot
+          options:
+            name: entrypoint image
+        - action: setIdentity
+          options:
+            strategy: static
+            identity: PageInfo
+        - action: collectData
+          options:
+            title:
+              strategy: selector.innerText
+              selector: title
+            links:
+              strategy: selector.attribute
+              selector: a
+              attribute: href
+              multiple: true
+        - action: collectCookies
+          options: {}
+    callbackUri: https://crawler.requestcatcher.com/results
+    entrypoint:
+      url: https://www.example.com
+      scene: startup

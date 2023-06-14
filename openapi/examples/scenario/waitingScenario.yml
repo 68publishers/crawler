@@ -1,0 +1,56 @@
+description: >-
+  The scenario has been queued and is yet to be processed. For this reason, no
+  results are returned yet (fields `stats` and `results`). To see the final or
+  current results, the endpoint `/api/scenarios/{scenarioId}` can be called.
+value:
+  id: df44bbd6-d9fb-4929-8d5e-b16b4fa71905
+  userId: 42d68a75-a8bb-435e-a756-bc4ac0f8f889
+  username: admin
+  name: Example scenario
+  createdAt: '2023-06-13T02:26:19.965Z'
+  status: waiting
+  error: null
+  flags:
+    flagA: valueA
+  config:
+    options:
+      maxRequests: 100
+      maxRequestRetries: 2
+      viewport:
+        width: 1728
+        height: 1117
+    scenes:
+      startup:
+        - action: screenshot
+          options:
+            name: entrypoint image
+        - action: setIdentity
+          options:
+            strategy: static
+            identity: PageInfo
+        - action: collectData
+          options:
+            title:
+              strategy: selector.innerText
+              selector: title
+            links:
+              strategy: selector.attribute
+              selector: a
+              attribute: href
+              multiple: true
+        - action: collectCookies
+          options: {}
+    callbackUri: https://crawler.requestcatcher.com/results
+    entrypoint:
+      url: https://www.example.com
+      scene: startup
+  stats:
+    visitedUrls: 0
+    data: 0
+    cookies: 0
+    screenshots: 0
+  results:
+    visitedUrls: []
+    data: []
+    cookies: []
+    screenshots: []

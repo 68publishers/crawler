@@ -1,0 +1,30 @@
+listingNavigation:
+  $ref: ./common/listingNavigation.yml
+validationErrors:
+  $ref: ./common/validationErrors.yml
+
+scenarioListingResponseBody:
+  $ref: ./scenario/scenarioListingResponseBody.yml
+scenarioRequestBody:
+  $ref: ./scenario/scenarioRequestBody.yml
+scenarioResponseBody:
+  $ref: ./scenario/scenarioResponseBody.yml
+scenarioValidationResponseBody:
+  $ref: ./scenario/scenarioValidationResponseBody.yml
+scenarioStatus:
+  $ref: ./scenario/scenarioStatus.yml
+scenarioConfig:
+  $ref: ./scenario/scenarioConfig.yml
+scenarioConfigWithRequiredCallbackUri:
+  $ref: ./scenario/scenarioConfigWithRequiredCallbackUri.yml
+scenarioFlags:
+  $ref: ./scenario/scenarioFlags.yml
+
+scenarioSchedulerListingResponseBody:
+  $ref: ./scenarioScheduler/scenarioSchedulerListingResponseBody.yml
+scenarioSchedulerRequestBody:
+  $ref: ./scenarioScheduler/scenarioSchedulerRequestBody.yml
+scenarioSchedulerResponseBody:
+  $ref: ./scenarioScheduler/scenarioSchedulerResponseBody.yml
+scenarioSchedulerValidationResponseBody:
+  $ref: ./scenarioScheduler/scenarioSchedulerValidationResponseBody.yml

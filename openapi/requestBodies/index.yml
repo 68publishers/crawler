@@ -1,0 +1,11 @@
+runScenario:
+  $ref: ./scenario/runScenario.yml
+validateScenario:
+  $ref: ./scenario/validateScenario.yml
+
+postScenarioScheduler:
+  $ref: ./scenarioScheduler/postScenarioScheduler.yml
+putScenarioScheduler:
+  $ref: ./scenarioScheduler/putScenarioScheduler.yml
+validateScenarioScheduler:
+  $ref: ./scenarioScheduler/validateScenarioScheduler.yml

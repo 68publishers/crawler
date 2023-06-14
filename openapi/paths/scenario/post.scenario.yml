@@ -1,0 +1,13 @@
+tags:
+  - Scenarios
+requestBody:
+  $ref: ../../requestBodies/scenario/runScenario.yml
+responses:
+  '202':
+    $ref: ../../responses/scenario/waitingScenario.yml
+  '400':
+    $ref: ../../responses/scenario/scenarioConfigValidationError.yml
+  '401':
+    $ref: ../../responses/common/unauthorizedError.yml
+  '500':
+    $ref: ../../responses/common/serverError.yml

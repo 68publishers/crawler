@@ -1,0 +1,5 @@
+name: filter[status]
+in: query
+required: false
+schema:
+  $ref: ../../schemas/scenario/scenarioStatus.yml

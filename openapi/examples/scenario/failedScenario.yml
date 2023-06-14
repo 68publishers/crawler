@@ -1,0 +1,59 @@
+description: >-
+  The scenario went into a `failed` state. Despite this, it may contain some results (fields `stats` and `results`).
+value:
+  id: df44bbd6-d9fb-4929-8d5e-b16b4fa71905
+  userId: 42d68a75-a8bb-435e-a756-bc4ac0f8f889
+  username: admin
+  name: Example scenario
+  createdAt: '2023-06-13T02:26:19.965Z'
+  status: failed
+  error: No url has been successfully crawled.
+  flags:
+    flagA: valueA
+  config:
+    options:
+      maxRequests: 100
+      maxRequestRetries: 2
+      viewport:
+        width: 1728
+        height: 1117
+    scenes:
+      startup:
+        - action: screenshot
+          options:
+            name: entrypoint image
+        - action: setIdentity
+          options:
+            strategy: static
+            identity: PageInfo
+        - action: collectData
+          options:
+            title:
+              strategy: selector.innerText
+              selector: title
+            links:
+              strategy: selector.attribute
+              selector: a
+              attribute: href
+              multiple: true
+        - action: collectCookies
+          options: {}
+    callbackUri: https://crawler.requestcatcher.com/results
+    entrypoint:
+      url: https://www.example.com
+      scene: startup
+  stats:
+    visitedUrls: 0
+    data: 0
+    cookies: 0
+    screenshots: 0
+  results:
+    visitedUrls:
+      - identity: 4d45c714eae5ed1095823307d96f7fceb2fc1d7d07c453a07563515d4ed4dc4e
+        url: https://www.example.com/
+        error: Not Found
+        foundOnUrl: null
+        statusCode: 404
+    data: []
+    cookies: []
+    screenshots: []

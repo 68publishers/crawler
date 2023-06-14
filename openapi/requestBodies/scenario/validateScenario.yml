@@ -1,0 +1,8 @@
+description: Request body for validating a scenario.
+content:
+  application/json:
+    schema:
+      $ref: ../../schemas/scenario/scenarioRequestBody.yml
+    examples:
+      scenario example:
+        $ref: ../../examples/scenario/scenarioRequest.yml

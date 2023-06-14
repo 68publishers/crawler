@@ -1,0 +1,35 @@
+type: object
+properties:
+  totalCount:
+    type: integer
+  next:
+    $ref: ../common/listingNavigation.yml
+  previous:
+    $ref: ../common/listingNavigation.yml
+  data:
+    type: array
+    items:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+          nullable: true
+        username:
+          type: string
+          nullable: true
+        name:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        status:
+          $ref: ../scenario/scenarioStatus.yml
+        error:
+          type: string
+          nullable: true
+        flags:
+          $ref: ../scenario/scenarioFlags.yml

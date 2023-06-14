@@ -1,0 +1,2425 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Crawler",
+    "description": "Rest API reference for 68publishers/crawler - https://github.com/68publishers/crawler",
+    "version": "1.0.0",
+    "contact": {
+      "name": "'68 Publishers",
+      "url": "http://www.68publishers.io",
+      "email": "support@68publishers.io"
+    }
+  },
+  "tags": [
+    {
+      "name": "Scenarios",
+      "description": "Scenarios API operations"
+    },
+    {
+      "name": "Scenario schedulers",
+      "description": "Scenario schedulers API operations"
+    }
+  ],
+  "security": [
+    {
+      "BasicAuth": []
+    }
+  ],
+  "paths": {
+    "/api/scenarios": {
+      "get": {
+        "tags": [
+          "Scenarios"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/page"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/filterId"
+          },
+          {
+            "$ref": "#/components/parameters/filterUserId"
+          },
+          {
+            "$ref": "#/components/parameters/filterUsername"
+          },
+          {
+            "$ref": "#/components/parameters/filterName"
+          },
+          {
+            "$ref": "#/components/parameters/filterStatus"
+          },
+          {
+            "$ref": "#/components/parameters/filterFlags"
+          },
+          {
+            "$ref": "#/components/parameters/filterCreatedBefore"
+          },
+          {
+            "$ref": "#/components/parameters/filterCreatedAfter"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/scenarioListing"
+          },
+          "400": {
+            "$ref": "#/components/responses/scenarioListingQueryValidationError"
+          },
+          "401": {
+            "$ref": "#/components/responses/unauthorizedError"
+          },
+          "500": {
+            "$ref": "#/components/responses/serverError"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Scenarios"
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/runScenario"
+        },
+        "responses": {
+          "202": {
+            "$ref": "#/components/responses/waitingScenario"
+          },
+          "400": {
+            "$ref": "#/components/responses/scenarioConfigValidationError"
+          },
+          "401": {
+            "$ref": "#/components/responses/unauthorizedError"
+          },
+          "500": {
+            "$ref": "#/components/responses/serverError"
+          }
+        }
+      }
+    },
+    "/api/scenarios/{scenarioId}": {
+      "get": {
+        "tags": [
+          "Scenarios"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/scenarioId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/getScenario"
+          },
+          "400": {
+            "$ref": "#/components/responses/scenarioPathParameterValidationError"
+          },
+          "401": {
+            "$ref": "#/components/responses/unauthorizedError"
+          },
+          "404": {
+            "$ref": "#/components/responses/scenarioNotFoundError"
+          },
+          "500": {
+            "$ref": "#/components/responses/serverError"
+          }
+        }
+      }
+    },
+    "/api/scenarios/validate": {
+      "post": {
+        "tags": [
+          "Scenarios"
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/validateScenario"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/scenarioValidation"
+          },
+          "401": {
+            "$ref": "#/components/responses/unauthorizedError"
+          },
+          "500": {
+            "$ref": "#/components/responses/serverError"
+          }
+        }
+      }
+    },
+    "/api/scenario-schedulers": {
+      "get": {
+        "tags": [
+          "Scenario schedulers"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/page"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/filterId"
+          },
+          {
+            "$ref": "#/components/parameters/filterUserId"
+          },
+          {
+            "$ref": "#/components/parameters/filterUsername"
+          },
+          {
+            "$ref": "#/components/parameters/filterName"
+          },
+          {
+            "$ref": "#/components/parameters/filterFlags"
+          },
+          {
+            "$ref": "#/components/parameters/filterCreatedBefore"
+          },
+          {
+            "$ref": "#/components/parameters/filterCreatedAfter"
+          },
+          {
+            "$ref": "#/components/parameters/filterUpdatedBefore"
+          },
+          {
+            "$ref": "#/components/parameters/filterUpdatedAfter"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/scenarioSchedulerListing"
+          },
+          "400": {
+            "$ref": "#/components/responses/scenarioSchedulerListingQueryValidationError"
+          },
+          "401": {
+            "$ref": "#/components/responses/unauthorizedError"
+          },
+          "500": {
+            "$ref": "#/components/responses/serverError"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Scenario schedulers"
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/postScenarioScheduler"
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/getScenarioScheduler"
+          },
+          "400": {
+            "$ref": "#/components/responses/scenarioSchedulerConfigValidationError"
+          },
+          "401": {
+            "$ref": "#/components/responses/unauthorizedError"
+          },
+          "500": {
+            "$ref": "#/components/responses/serverError"
+          }
+        }
+      }
+    },
+    "/api/scenario-schedulers/{scenarioSchedulerId}": {
+      "get": {
+        "tags": [
+          "Scenario schedulers"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/scenarioSchedulerId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/getScenarioScheduler"
+          },
+          "400": {
+            "$ref": "#/components/responses/scenarioSchedulerPathParameterValidationError"
+          },
+          "401": {
+            "$ref": "#/components/responses/unauthorizedError"
+          },
+          "404": {
+            "$ref": "#/components/responses/scenarioSchedulerNotFoundError"
+          },
+          "500": {
+            "$ref": "#/components/responses/serverError"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Scenario schedulers"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/scenarioSchedulerId"
+          },
+          {
+            "$ref": "#/components/parameters/ifMatch"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/putScenarioScheduler"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/getScenarioScheduler"
+          },
+          "201": {
+            "$ref": "#/components/responses/getScenarioScheduler"
+          },
+          "400": {
+            "$ref": "#/components/responses/scenarioSchedulerConfigValidationError"
+          },
+          "401": {
+            "$ref": "#/components/responses/unauthorizedError"
+          },
+          "412": {
+            "$ref": "#/components/responses/preconditionFailedError"
+          },
+          "428": {
+            "$ref": "#/components/responses/preconditionRequiredError"
+          },
+          "500": {
+            "$ref": "#/components/responses/serverError"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Scenario schedulers"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/scenarioSchedulerId"
+          }
+        ],
+        "responses": {
+          "204": {
+            "$ref": "#/components/responses/noContent"
+          },
+          "400": {
+            "$ref": "#/components/responses/scenarioSchedulerPathParameterValidationError"
+          },
+          "401": {
+            "$ref": "#/components/responses/unauthorizedError"
+          },
+          "404": {
+            "$ref": "#/components/responses/scenarioSchedulerNotFoundError"
+          },
+          "500": {
+            "$ref": "#/components/responses/serverError"
+          }
+        }
+      }
+    },
+    "/api/scenario-schedulers/validate": {
+      "post": {
+        "tags": [
+          "Scenario schedulers"
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/validateScenarioScheduler"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/scenarioSchedulerValidation"
+          },
+          "401": {
+            "$ref": "#/components/responses/unauthorizedError"
+          },
+          "500": {
+            "$ref": "#/components/responses/serverError"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "BasicAuth": {
+        "type": "http",
+        "scheme": "basic"
+      }
+    },
+    "parameters": {
+      "ifMatch": {
+        "name": "If-Match",
+        "in": "header",
+        "description": "Prevents lock updates. Use the value of the header `Etag` that is returned from `GET /api/scenario-schedulers/{scenarioSchedulerId}` or `POST /api/scenario-schedulers`.",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "scenarioId": {
+        "name": "scenarioId",
+        "in": "path",
+        "description": "Scenario UUID",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "example": "e89a56b7-1ad5-4b2e-ac4f-d321fa5b7d84"
+      },
+      "scenarioSchedulerId": {
+        "name": "scenarioSchedulerId",
+        "in": "path",
+        "description": "Scenario scheduler UUID",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "example": "e89a56b7-1ad5-4b2e-ac4f-d321fa5b7d84"
+      },
+      "page": {
+        "name": "page",
+        "in": "query",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        },
+        "example": 1
+      },
+      "limit": {
+        "name": "limit",
+        "in": "query",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        },
+        "example": 10
+      },
+      "filterId": {
+        "name": "filter[id]",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "filterUserId": {
+        "name": "filter[userId]",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "filterUsername": {
+        "name": "filter[username]",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "filterName": {
+        "name": "filter[name]",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "filterStatus": {
+        "name": "filter[status]",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "$ref": "#/components/schemas/scenarioStatus"
+        }
+      },
+      "filterFlags": {
+        "name": "filter[flags]",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "style": "deepObject",
+        "example": {
+          "flagA": "valueA"
+        }
+      },
+      "filterCreatedBefore": {
+        "name": "filter[createdBefore]",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "filterCreatedAfter": {
+        "name": "filter[createdAfter]",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "filterUpdatedBefore": {
+        "name": "filter[updatedBefore]",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "filterUpdatedAfter": {
+        "name": "filter[updatedAfter]",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "requestBodies": {
+      "runScenario": {
+        "description": "Request body for running a scenario.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/scenarioRequestBody"
+            },
+            "examples": {
+              "scenario example": {
+                "$ref": "#/components/examples/scenarioRequest"
+              }
+            }
+          }
+        }
+      },
+      "validateScenario": {
+        "description": "Request body for validating a scenario.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/scenarioRequestBody"
+            },
+            "examples": {
+              "scenario example": {
+                "$ref": "#/components/examples/scenarioRequest"
+              }
+            }
+          }
+        }
+      },
+      "postScenarioScheduler": {
+        "description": "Request body for creating a scenario scheduler.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/scenarioSchedulerRequestBody"
+            },
+            "examples": {
+              "scenario scheduler example": {
+                "$ref": "#/components/examples/scenarioSchedulerRequest"
+              }
+            }
+          }
+        }
+      },
+      "putScenarioScheduler": {
+        "description": "Request body for updating (or creating if not exists) a scenario scheduler.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/scenarioSchedulerRequestBody"
+            },
+            "examples": {
+              "scenario scheduler example": {
+                "$ref": "#/components/examples/scenarioSchedulerRequest"
+              }
+            }
+          }
+        }
+      },
+      "validateScenarioScheduler": {
+        "description": "Request body for validating a scenario scheduler.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/scenarioSchedulerRequestBody"
+            },
+            "examples": {
+              "scenario scheduler example": {
+                "$ref": "#/components/examples/scenarioSchedulerRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "responses": {
+      "scenarioListing": {
+        "description": "Paginated list of scenarios.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/scenarioListingResponseBody"
+            },
+            "examples": {
+              "one page only": {
+                "$ref": "#/components/examples/scenarioListingWithOnlyOnePage"
+              },
+              "with the previous page": {
+                "$ref": "#/components/examples/scenarioListingWithPreviousPage"
+              },
+              "with the next page": {
+                "$ref": "#/components/examples/scenarioListingWithNextPage"
+              }
+            }
+          }
+        }
+      },
+      "waitingScenario": {
+        "description": "Scenario has been queued and will be launched as soon as possible.",
+        "headers": {
+          "Location": {
+            "type": "string",
+            "description": "Relative path to a scenario location."
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/scenarioResponseBody"
+            },
+            "examples": {
+              "waiting scenario response example": {
+                "$ref": "#/components/examples/waitingScenario"
+              }
+            }
+          }
+        }
+      },
+      "scenarioValidation": {
+        "description": "Scenario validation result.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/scenarioValidationResponseBody"
+            },
+            "examples": {
+              "successful validation": {
+                "description": "The scenario has been successfully validated.",
+                "value": {
+                  "valid": true,
+                  "message": "OK",
+                  "errors": []
+                }
+              },
+              "failed validation": {
+                "description": "The scenario validation failed.",
+                "value": {
+                  "valid": false,
+                  "message": "The request data is not valid",
+                  "errors": [
+                    {
+                      "value": "//example.com",
+                      "msg": "The value must be a valid URL.",
+                      "param": "config.entrypoint.url",
+                      "location": "body"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "getScenario": {
+        "description": "A complete scenario in the current state",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/scenarioResponseBody"
+            },
+            "examples": {
+              "waiting scenario response example": {
+                "$ref": "#/components/examples/waitingScenario"
+              },
+              "running scenario response example": {
+                "$ref": "#/components/examples/runningScenario"
+              },
+              "completed scenario response example": {
+                "$ref": "#/components/examples/completedScenario"
+              },
+              "failed scenario response example": {
+                "$ref": "#/components/examples/failedScenario"
+              }
+            }
+          }
+        }
+      },
+      "scenarioListingQueryValidationError": {
+        "description": "The request contains validation errors.",
+        "content": {
+          "application/json": {
+            "type": "object",
+            "properties": {
+              "message": {
+                "type": "string"
+              },
+              "errors": {
+                "$ref": "#/components/schemas/validationErrors"
+              }
+            },
+            "examples": {
+              "query parameter error example": {
+                "description": "Query parameter `filter[id]=13` has been passed but the value must be a valid uuid.",
+                "value": {
+                  "message": "The request data is not valid",
+                  "errors": [
+                    {
+                      "value": "13",
+                      "msg": "The value must be a valid uuid.",
+                      "param": "filter.id",
+                      "location": "query"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "scenarioConfigValidationError": {
+        "description": "The request contains validation errors.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                },
+                "errors": {
+                  "$ref": "#/components/schemas/validationErrors"
+                }
+              }
+            },
+            "examples": {
+              "body parameter error example": {
+                "description": "Body field `config.entrypoint.url` contains value that is not a valid URL.",
+                "value": {
+                  "message": "The request data is not valid",
+                  "errors": [
+                    {
+                      "value": "//example.com",
+                      "msg": "The value must be a valid URL.",
+                      "param": "config.entrypoint.url",
+                      "location": "body"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "scenarioPathParameterValidationError": {
+        "description": "The request contains validation errors.",
+        "content": {
+          "application/json": {
+            "type": "object",
+            "properties": {
+              "message": {
+                "type": "string"
+              },
+              "errors": {
+                "$ref": "#/components/schemas/validationErrors"
+              }
+            },
+            "examples": {
+              "path parameter error example": {
+                "description": "Endpoint was invoked as `GET /api/scenarios/13` but the scenarioId parameter must be a valid uuid.",
+                "value": {
+                  "message": "The request data is not valid",
+                  "errors": [
+                    {
+                      "value": "13",
+                      "msg": "The value must be a valid uuid.",
+                      "param": "scenarioId",
+                      "location": "params"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "scenarioNotFoundError": {
+        "description": "Requested scenario not found.",
+        "content": {
+          "application/json": {
+            "type": "object",
+            "properties": {
+              "message": "string"
+            },
+            "examples": {
+              "scenario not found error example": {
+                "description": "Requested scenario not found.",
+                "value": {
+                  "message": "Scenario not found"
+                }
+              }
+            }
+          }
+        }
+      },
+      "scenarioSchedulerConfigValidationError": {
+        "description": "The request contains validation errors.",
+        "content": {
+          "application/json": {
+            "type": "object",
+            "properties": {
+              "message": {
+                "type": "string"
+              },
+              "errors": {
+                "$ref": "#/components/schemas/validationErrors"
+              }
+            },
+            "examples": {
+              "body parameter error example": {
+                "description": "Body field `config.entrypoint.url` contains value that is not a valid URL.",
+                "value": {
+                  "message": "The request data is not valid",
+                  "errors": [
+                    {
+                      "value": "//example.com",
+                      "msg": "The value must be a valid URL.",
+                      "param": "config.entrypoint.url",
+                      "location": "body"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "scenarioSchedulerListingQueryValidationError": {
+        "description": "The request contains validation errors.",
+        "content": {
+          "application/json": {
+            "type": "object",
+            "properties": {
+              "message": {
+                "type": "string"
+              },
+              "errors": {
+                "$ref": "#/components/schemas/validationErrors"
+              }
+            },
+            "examples": {
+              "query parameter error example": {
+                "description": "Query parameter `filter[id]=13` has been passed but the value must be a valid uuid.",
+                "value": {
+                  "message": "The request data is not valid",
+                  "errors": [
+                    {
+                      "value": "13",
+                      "msg": "The value must be a valid uuid.",
+                      "param": "filter.id",
+                      "location": "query"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "scenarioSchedulerNotFoundError": {
+        "description": "Requested scenario scheduler not found.",
+        "content": {
+          "application/json": {
+            "type": "object",
+            "properties": {
+              "message": "string"
+            },
+            "examples": {
+              "scenario scheduler not found error example": {
+                "description": "Requested scenario scheduler not found.",
+                "value": {
+                  "message": "Scenario scheduler not found"
+                }
+              }
+            }
+          }
+        }
+      },
+      "scenarioSchedulerPathParameterValidationError": {
+        "description": "The request contains validation errors.",
+        "content": {
+          "application/json": {
+            "type": "object",
+            "properties": {
+              "message": {
+                "type": "string"
+              },
+              "errors": {
+                "$ref": "#/components/schemas/validationErrors"
+              }
+            },
+            "examples": {
+              "path parameter error example": {
+                "description": "Endpoint was invoked as `GET /api/scenario-schedulers/13` but the scenarioSchedulerId parameter must be a valid uuid.",
+                "value": {
+                  "message": "The request data is not valid",
+                  "errors": [
+                    {
+                      "value": "13",
+                      "msg": "The value must be a valid uuid.",
+                      "param": "scenarioSchedulerId",
+                      "location": "params"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "scenarioSchedulerValidation": {
+        "description": "Scenario scheduler validation result.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/scenarioSchedulerValidationResponseBody"
+            },
+            "examples": {
+              "successful validation": {
+                "description": "The scenario scheduler has been successfully validated.",
+                "value": {
+                  "valid": true,
+                  "message": "OK",
+                  "errors": []
+                }
+              },
+              "failed validation": {
+                "description": "The scenario scheduler validation failed.",
+                "value": {
+                  "valid": false,
+                  "message": "The request data is not valid",
+                  "errors": [
+                    {
+                      "value": "//example.com",
+                      "msg": "The value must be a valid URL.",
+                      "param": "config.entrypoint.url",
+                      "location": "body"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "getScenarioScheduler": {
+        "description": "Scenario scheduler configuration.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/scenarioSchedulerResponseBody"
+            },
+            "examples": {
+              "scenario scheduler response example": {
+                "$ref": "#/components/examples/scenarioScheduler"
+              }
+            }
+          }
+        }
+      },
+      "scenarioSchedulerListing": {
+        "description": "Paginated list of scenario schedulers.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/scenarioSchedulerListingResponseBody"
+            },
+            "examples": {
+              "one page only": {
+                "$ref": "#/components/examples/scenarioSchedulerListingWithOnlyOnePage"
+              },
+              "with the previous page": {
+                "$ref": "#/components/examples/scenarioSchedulerListingWithPreviousPage"
+              },
+              "with the next page": {
+                "$ref": "#/components/examples/scenarioSchedulerListingWithNextPage"
+              }
+            }
+          }
+        }
+      },
+      "noContent": {
+        "description": "Response does not contain any body."
+      },
+      "preconditionFailedError": {
+        "description": "Precondition failed.",
+        "content": {
+          "application/json": {
+            "type": "object",
+            "properties": {
+              "message": "string"
+            },
+            "examples": {
+              "precondition failed error example": {
+                "value": {
+                  "message": "Precondition failed"
+                }
+              }
+            }
+          }
+        }
+      },
+      "preconditionRequiredError": {
+        "description": "Precondition failed.",
+        "content": {
+          "application/json": {
+            "type": "object",
+            "properties": {
+              "message": "string"
+            },
+            "examples": {
+              "precondition failed error example": {
+                "value": {
+                  "message": "Precondition required, please specify the \"If-Match\" header"
+                }
+              }
+            }
+          }
+        }
+      },
+      "unauthorizedError": {
+        "description": "The user is not authorized.",
+        "content": {
+          "text/plain": {
+            "example": "Unauthorized"
+          }
+        }
+      },
+      "serverError": {
+        "description": "The application encountered an internal error",
+        "content": {
+          "application/json": {
+            "type": "object",
+            "properties": {
+              "message": {
+                "type": "string"
+              },
+              "stack": {
+                "type": "string"
+              }
+            },
+            "examples": {
+              "server error example": {
+                "value": {
+                  "message": "Something went wrong",
+                  "stack": "Error: Unexpected error.\\n    at file:///app/src/controller/..."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "listingNavigation": {
+        "type": "object",
+        "nullable": true,
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "page": {
+            "type": "integer"
+          },
+          "limit": {
+            "type": "integer"
+          }
+        }
+      },
+      "validationErrors": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "description": "Any data type."
+            },
+            "msg": {
+              "type": "string"
+            },
+            "param": {
+              "type": "string"
+            },
+            "location": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "scenarioListingResponseBody": {
+        "type": "object",
+        "properties": {
+          "totalCount": {
+            "type": "integer"
+          },
+          "next": {
+            "$ref": "#/components/schemas/listingNavigation"
+          },
+          "previous": {
+            "$ref": "#/components/schemas/listingNavigation"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "userId": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "username": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "createdAt": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "updatedAt": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "expression": {
+                  "type": "string"
+                },
+                "flags": {
+                  "$ref": "#/components/schemas/scenarioFlags"
+                }
+              }
+            }
+          }
+        }
+      },
+      "scenarioRequestBody": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 255
+          },
+          "flags": {
+            "$ref": "#/components/schemas/scenarioFlags"
+          },
+          "config": {
+            "$ref": "#/components/schemas/scenarioConfig"
+          }
+        }
+      },
+      "scenarioResponseBody": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "userId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "username": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "$ref": "#/components/schemas/scenarioStatus"
+          },
+          "error": {
+            "type": "string",
+            "nullable": true
+          },
+          "flags": {
+            "$ref": "#/components/schemas/scenarioFlags"
+          },
+          "config": {
+            "$ref": "#/components/schemas/scenarioConfig"
+          },
+          "stats": {
+            "type": "object",
+            "properties": {
+              "visitedUrls": {
+                "type": "integer"
+              },
+              "data": {
+                "type": "integer"
+              },
+              "cookies": {
+                "type": "integer"
+              },
+              "screenshots": {
+                "type": "integer"
+              }
+            }
+          },
+          "results": {
+            "type": "object",
+            "properties": {
+              "visitedUrls": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "identity": {
+                      "type": "string"
+                    },
+                    "url": {
+                      "type": "string",
+                      "format": "uri"
+                    },
+                    "error": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "foundOnUrl": {
+                      "type": "string",
+                      "format": "uri",
+                      "nullable": true
+                    },
+                    "statusCode": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              },
+              "data": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "identity": {
+                      "type": "string"
+                    },
+                    "values": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "oneOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "foundOnUrl": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              },
+              "cookies": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "identity": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "domain": {
+                      "type": "string"
+                    },
+                    "secure": {
+                      "type": "boolean"
+                    },
+                    "session": {
+                      "type": "boolean"
+                    },
+                    "httpOnly": {
+                      "type": "boolean"
+                    },
+                    "sameSite": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "foundOnUrl": {
+                      "type": "string",
+                      "format": "uri"
+                    }
+                  }
+                }
+              },
+              "screenshots": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "identity": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "foundOnUrl": {
+                      "type": "string",
+                      "format": "uri"
+                    },
+                    "screenshot": {
+                      "type": "string",
+                      "format": "uri"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "scenarioValidationResponseBody": {
+        "type": "object",
+        "properties": {
+          "valid": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string"
+          },
+          "errors": {
+            "$ref": "#/components/schemas/validationErrors"
+          }
+        }
+      },
+      "scenarioStatus": {
+        "type": "string",
+        "enum": [
+          "waiting",
+          "running",
+          "completed",
+          "failed"
+        ]
+      },
+      "scenarioConfig": {
+        "type": "object",
+        "properties": {
+          "options": {
+            "type": "object",
+            "required": false,
+            "properties": {
+              "maxRequests": {
+                "type": "integer",
+                "minimum": 1,
+                "required": false
+              },
+              "maxRequestRetries": {
+                "type": "integer",
+                "minimum": 0,
+                "default": 0,
+                "required": false
+              },
+              "viewport": {
+                "type": "object",
+                "required": false,
+                "properties": {
+                  "width": {
+                    "type": "integer",
+                    "minimum": 200,
+                    "required": false
+                  },
+                  "height": {
+                    "type": "integer",
+                    "minimum": 200,
+                    "required": false
+                  }
+                }
+              }
+            }
+          },
+          "scenes": {
+            "type": "object",
+            "required": true,
+            "additionalProperties": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "properties": {
+                  "action": {
+                    "type": "string"
+                  },
+                  "options": {
+                    "type": "object"
+                  }
+                }
+              }
+            },
+            "example": {
+              "startup": [
+                {
+                  "action": "screenshot",
+                  "options": {
+                    "name": "entrypoint image"
+                  }
+                }
+              ]
+            }
+          },
+          "callbackUri": {
+            "type": "string",
+            "format": "uri",
+            "required": false
+          },
+          "entrypoint": {
+            "type": "object",
+            "properties": {
+              "url": {
+                "type": "string",
+                "format": "uri"
+              },
+              "scene": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "scenarioConfigWithRequiredCallbackUri": {
+        "type": "object",
+        "properties": {
+          "options": {
+            "type": "object",
+            "required": false,
+            "properties": {
+              "maxRequests": {
+                "type": "integer",
+                "minimum": 1,
+                "required": false
+              },
+              "maxRequestRetries": {
+                "type": "integer",
+                "minimum": 0,
+                "default": 0,
+                "required": false
+              },
+              "viewport": {
+                "type": "object",
+                "required": false,
+                "properties": {
+                  "width": {
+                    "type": "integer",
+                    "minimum": 200,
+                    "required": false
+                  },
+                  "height": {
+                    "type": "integer",
+                    "minimum": 200,
+                    "required": false
+                  }
+                }
+              }
+            }
+          },
+          "scenes": {
+            "type": "object",
+            "required": true,
+            "additionalProperties": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "properties": {
+                  "action": {
+                    "type": "string"
+                  },
+                  "options": {
+                    "type": "object"
+                  }
+                }
+              }
+            },
+            "example": {
+              "startup": [
+                {
+                  "action": "screenshot",
+                  "options": {
+                    "name": "entrypoint image"
+                  }
+                }
+              ]
+            }
+          },
+          "callbackUri": {
+            "type": "string",
+            "format": "uri",
+            "required": true
+          },
+          "entrypoint": {
+            "type": "object",
+            "properties": {
+              "url": {
+                "type": "string",
+                "format": "uri"
+              },
+              "scene": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "scenarioFlags": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "string"
+        },
+        "example": {
+          "flagA": "valueA"
+        }
+      },
+      "scenarioSchedulerListingResponseBody": {
+        "type": "object",
+        "properties": {
+          "totalCount": {
+            "type": "integer"
+          },
+          "next": {
+            "$ref": "#/components/schemas/listingNavigation"
+          },
+          "previous": {
+            "$ref": "#/components/schemas/listingNavigation"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "userId": {
+                  "type": "string",
+                  "format": "uuid",
+                  "nullable": true
+                },
+                "username": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "name": {
+                  "type": "string"
+                },
+                "createdAt": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "status": {
+                  "$ref": "#/components/schemas/scenarioStatus"
+                },
+                "error": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "flags": {
+                  "$ref": "#/components/schemas/scenarioFlags"
+                }
+              }
+            }
+          }
+        }
+      },
+      "scenarioSchedulerRequestBody": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 255
+          },
+          "flags": {
+            "$ref": "#/components/schemas/scenarioFlags"
+          },
+          "expression": {
+            "type": "string"
+          },
+          "config": {
+            "$ref": "#/components/schemas/scenarioConfigWithRequiredCallbackUri"
+          }
+        }
+      },
+      "scenarioSchedulerResponseBody": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "username": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "expression": {
+            "type": "string"
+          },
+          "flags": {
+            "$ref": "#/components/schemas/scenarioFlags"
+          },
+          "config": {
+            "$ref": "#/components/schemas/scenarioConfigWithRequiredCallbackUri"
+          }
+        }
+      },
+      "scenarioSchedulerValidationResponseBody": {
+        "type": "object",
+        "properties": {
+          "valid": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string"
+          },
+          "errors": {
+            "$ref": "#/components/schemas/validationErrors"
+          }
+        }
+      }
+    },
+    "examples": {
+      "scenarioListingWithOnlyOnePage": {
+        "description": "The request has been sent with query parameters `limit=2&page=1` and only two scenarios were found, so fields `next` and `previous` are null.",
+        "value": {
+          "totalCount": 2,
+          "next": null,
+          "previous": null,
+          "data": [
+            {
+              "id": "df44bbd6-d9fb-4929-8d5e-b16b4fa71905",
+              "userId": "42d68a75-a8bb-435e-a756-bc4ac0f8f889",
+              "username": "admin",
+              "name": "Test scenario 1",
+              "createdAt": "2023-06-13T02:26:19.965Z",
+              "status": "running",
+              "error": null,
+              "flags": {
+                "flagA": "valueA"
+              }
+            },
+            {
+              "id": "3b53acb3-3ced-4bbb-9d82-abf6a71bc785",
+              "userId": "42d68a75-a8bb-435e-a756-bc4ac0f8f889",
+              "username": "admin",
+              "name": "Test scenario 2",
+              "createdAt": "2023-06-13T02:10:23.973Z",
+              "status": "failed",
+              "error": "No url has been successfully crawled.",
+              "flags": {}
+            }
+          ]
+        }
+      },
+      "scenarioListingWithPreviousPage": {
+        "description": "The request has been sent with query parameters `limit=2&page=5` and the total number of scenarios is 10. Field `previous` contains navigation object to the previous page (4) and field `next` is null because there is not next page.",
+        "value": {
+          "totalCount": 10,
+          "next": null,
+          "previous": {
+            "url": "https://www.example.com/api/scenarios?limit=2&page=4",
+            "page": 4,
+            "limit": 2
+          },
+          "data": [
+            {
+              "id": "df44bbd6-d9fb-4929-8d5e-b16b4fa71905",
+              "userId": "42d68a75-a8bb-435e-a756-bc4ac0f8f889",
+              "username": "admin",
+              "name": "Test scenario 1",
+              "createdAt": "2023-06-13T02:26:19.965Z",
+              "status": "running",
+              "error": null,
+              "flags": {
+                "flagA": "valueA"
+              }
+            },
+            {
+              "id": "3b53acb3-3ced-4bbb-9d82-abf6a71bc785",
+              "userId": "42d68a75-a8bb-435e-a756-bc4ac0f8f889",
+              "username": "admin",
+              "name": "Test scenario 2",
+              "createdAt": "2023-06-13T02:10:23.973Z",
+              "status": "failed",
+              "error": "No url has been successfully crawled.",
+              "flags": {}
+            }
+          ]
+        }
+      },
+      "scenarioListingWithNextPage": {
+        "description": "The request has been sent with query parameters `limit=2&page=1` and the total number of scenarios is 10. Field `next` contains navigation object to the next page (2) and field `previous` is null because there is not previous page.",
+        "value": {
+          "totalCount": 10,
+          "next": {
+            "url": "https://www.example.com/api/scenarios?limit=2&page=2",
+            "page": 2,
+            "limit": 2
+          },
+          "previous": null,
+          "data": [
+            {
+              "id": "df44bbd6-d9fb-4929-8d5e-b16b4fa71905",
+              "userId": "42d68a75-a8bb-435e-a756-bc4ac0f8f889",
+              "username": "admin",
+              "name": "Test scenario 1",
+              "createdAt": "2023-06-13T02:26:19.965Z",
+              "status": "running",
+              "error": null,
+              "flags": {
+                "flagA": "valueA"
+              }
+            },
+            {
+              "id": "3b53acb3-3ced-4bbb-9d82-abf6a71bc785",
+              "userId": "42d68a75-a8bb-435e-a756-bc4ac0f8f889",
+              "username": "admin",
+              "name": "Test scenario 2",
+              "createdAt": "2023-06-13T02:10:23.973Z",
+              "status": "failed",
+              "error": "No url has been successfully crawled.",
+              "flags": {}
+            }
+          ]
+        }
+      },
+      "scenarioRequest": {
+        "description": "A simple scenario that navigates to `https://www.example.com` and takes a screenshot of the page, then collects data (page title and all links), and finally collects cookies. Results will be sent to `https://crawler.requestcatcher.com/results`.",
+        "value": {
+          "name": "Example scenario",
+          "flags": {
+            "flagA": "valueA"
+          },
+          "config": {
+            "options": {
+              "maxRequests": 100,
+              "maxRequestRetries": 2,
+              "viewport": {
+                "width": 1728,
+                "height": 1117
+              }
+            },
+            "scenes": {
+              "startup": [
+                {
+                  "action": "screenshot",
+                  "options": {
+                    "name": "entrypoint image"
+                  }
+                },
+                {
+                  "action": "setIdentity",
+                  "options": {
+                    "strategy": "static",
+                    "identity": "PageInfo"
+                  }
+                },
+                {
+                  "action": "collectData",
+                  "options": {
+                    "title": {
+                      "strategy": "selector.innerText",
+                      "selector": "title"
+                    },
+                    "links": {
+                      "strategy": "selector.attribute",
+                      "selector": "a",
+                      "attribute": "href",
+                      "multiple": true
+                    }
+                  }
+                },
+                {
+                  "action": "collectCookies",
+                  "options": {}
+                }
+              ]
+            },
+            "callbackUri": "https://crawler.requestcatcher.com/results",
+            "entrypoint": {
+              "url": "https://www.example.com",
+              "scene": "startup"
+            }
+          }
+        }
+      },
+      "waitingScenario": {
+        "description": "The scenario has been queued and is yet to be processed. For this reason, no results are returned yet (fields `stats` and `results`). To see the final or current results, the endpoint `/api/scenarios/{scenarioId}` can be called.",
+        "value": {
+          "id": "df44bbd6-d9fb-4929-8d5e-b16b4fa71905",
+          "userId": "42d68a75-a8bb-435e-a756-bc4ac0f8f889",
+          "username": "admin",
+          "name": "Example scenario",
+          "createdAt": "2023-06-13T02:26:19.965Z",
+          "status": "waiting",
+          "error": null,
+          "flags": {
+            "flagA": "valueA"
+          },
+          "config": {
+            "options": {
+              "maxRequests": 100,
+              "maxRequestRetries": 2,
+              "viewport": {
+                "width": 1728,
+                "height": 1117
+              }
+            },
+            "scenes": {
+              "startup": [
+                {
+                  "action": "screenshot",
+                  "options": {
+                    "name": "entrypoint image"
+                  }
+                },
+                {
+                  "action": "setIdentity",
+                  "options": {
+                    "strategy": "static",
+                    "identity": "PageInfo"
+                  }
+                },
+                {
+                  "action": "collectData",
+                  "options": {
+                    "title": {
+                      "strategy": "selector.innerText",
+                      "selector": "title"
+                    },
+                    "links": {
+                      "strategy": "selector.attribute",
+                      "selector": "a",
+                      "attribute": "href",
+                      "multiple": true
+                    }
+                  }
+                },
+                {
+                  "action": "collectCookies",
+                  "options": {}
+                }
+              ]
+            },
+            "callbackUri": "https://crawler.requestcatcher.com/results",
+            "entrypoint": {
+              "url": "https://www.example.com",
+              "scene": "startup"
+            }
+          },
+          "stats": {
+            "visitedUrls": 0,
+            "data": 0,
+            "cookies": 0,
+            "screenshots": 0
+          },
+          "results": {
+            "visitedUrls": [],
+            "data": [],
+            "cookies": [],
+            "screenshots": []
+          }
+        }
+      },
+      "runningScenario": {
+        "description": "The scenario is currently being worked on. The results (fields `stats` and `results`) are not yet final.",
+        "value": {
+          "id": "df44bbd6-d9fb-4929-8d5e-b16b4fa71905",
+          "userId": "42d68a75-a8bb-435e-a756-bc4ac0f8f889",
+          "username": "admin",
+          "name": "Example scenario",
+          "createdAt": "2023-06-13T02:26:19.965Z",
+          "status": "running",
+          "error": null,
+          "flags": {
+            "flagA": "valueA"
+          },
+          "config": {
+            "options": {
+              "maxRequests": 100,
+              "maxRequestRetries": 2,
+              "viewport": {
+                "width": 1728,
+                "height": 1117
+              }
+            },
+            "scenes": {
+              "startup": [
+                {
+                  "action": "screenshot",
+                  "options": {
+                    "name": "entrypoint image"
+                  }
+                },
+                {
+                  "action": "setIdentity",
+                  "options": {
+                    "strategy": "static",
+                    "identity": "PageInfo"
+                  }
+                },
+                {
+                  "action": "collectData",
+                  "options": {
+                    "title": {
+                      "strategy": "selector.innerText",
+                      "selector": "title"
+                    },
+                    "links": {
+                      "strategy": "selector.attribute",
+                      "selector": "a",
+                      "attribute": "href",
+                      "multiple": true
+                    }
+                  }
+                },
+                {
+                  "action": "collectCookies",
+                  "options": {}
+                }
+              ]
+            },
+            "callbackUri": "https://crawler.requestcatcher.com/results",
+            "entrypoint": {
+              "url": "https://www.example.com",
+              "scene": "startup"
+            }
+          },
+          "stats": {
+            "visitedUrls": 0,
+            "data": 0,
+            "cookies": 0,
+            "screenshots": 0
+          },
+          "results": {
+            "visitedUrls": [
+              {
+                "identity": "4d45c714eae5ed1095823307d96f7fceb2fc1d7d07c453a07563515d4ed4dc4e",
+                "url": "https://www.example.com/",
+                "error": null,
+                "foundOnUrl": null,
+                "statusCode": 200
+              }
+            ],
+            "data": [],
+            "cookies": [],
+            "screenshots": [
+              {
+                "identity": "6f0d7bcb-d1ec-4692-b8d7-5f9e429ad798",
+                "name": "entrypoint image",
+                "foundOnUrl": "https://www.example.com/",
+                "screenshot": "http://localhost:3000/static/screenshots/1c805aa2-c4f9-4f54-baec-f1461e1e9d46/6f0d7bcb-d1ec-4692-b8d7-5f9e429ad798.jpg"
+              }
+            ]
+          }
+        }
+      },
+      "completedScenario": {
+        "description": "The scenario has been successfully completed.",
+        "value": {
+          "id": "df44bbd6-d9fb-4929-8d5e-b16b4fa71905",
+          "userId": "42d68a75-a8bb-435e-a756-bc4ac0f8f889",
+          "username": "admin",
+          "name": "Example scenario",
+          "createdAt": "2023-06-13T02:26:19.965Z",
+          "status": "completed",
+          "error": null,
+          "flags": {
+            "flagA": "valueA"
+          },
+          "config": {
+            "options": {
+              "maxRequests": 100,
+              "maxRequestRetries": 2,
+              "viewport": {
+                "width": 1728,
+                "height": 1117
+              }
+            },
+            "scenes": {
+              "startup": [
+                {
+                  "action": "screenshot",
+                  "options": {
+                    "name": "entrypoint image"
+                  }
+                },
+                {
+                  "action": "setIdentity",
+                  "options": {
+                    "strategy": "static",
+                    "identity": "PageInfo"
+                  }
+                },
+                {
+                  "action": "collectData",
+                  "options": {
+                    "title": {
+                      "strategy": "selector.innerText",
+                      "selector": "title"
+                    },
+                    "links": {
+                      "strategy": "selector.attribute",
+                      "selector": "a",
+                      "attribute": "href",
+                      "multiple": true
+                    }
+                  }
+                },
+                {
+                  "action": "collectCookies",
+                  "options": {}
+                }
+              ]
+            },
+            "callbackUri": "https://crawler.requestcatcher.com/results",
+            "entrypoint": {
+              "url": "https://www.example.com",
+              "scene": "startup"
+            }
+          },
+          "stats": {
+            "visitedUrls": 0,
+            "data": 0,
+            "cookies": 0,
+            "screenshots": 0
+          },
+          "results": {
+            "visitedUrls": [
+              {
+                "identity": "4d45c714eae5ed1095823307d96f7fceb2fc1d7d07c453a07563515d4ed4dc4e",
+                "url": "https://www.example.com/",
+                "error": null,
+                "foundOnUrl": null,
+                "statusCode": 200
+              }
+            ],
+            "data": [
+              {
+                "identity": "PageInfo",
+                "values": {
+                  "links": [
+                    "https://www.iana.org/domains/example"
+                  ],
+                  "title": "Example Domain"
+                },
+                "foundOnUrl": {
+                  "links": "https://www.example.com/",
+                  "title": "https://www.example.com/"
+                }
+              }
+            ],
+            "cookies": [
+              {
+                "identity": "825e6e9af712af57e58c9d8048040df570f11e8245a6d468942fdc2600096489",
+                "name": "cc-settings",
+                "domain": "example.com",
+                "secure": false,
+                "session": false,
+                "httpOnly": false,
+                "sameSite": "Lax",
+                "foundOnUrl": "https://www.example.com/"
+              }
+            ],
+            "screenshots": [
+              {
+                "identity": "6f0d7bcb-d1ec-4692-b8d7-5f9e429ad798",
+                "name": "entrypoint image",
+                "foundOnUrl": "https://www.example.com/",
+                "screenshot": "http://localhost:3000/static/screenshots/1c805aa2-c4f9-4f54-baec-f1461e1e9d46/6f0d7bcb-d1ec-4692-b8d7-5f9e429ad798.jpg"
+              }
+            ]
+          }
+        }
+      },
+      "failedScenario": {
+        "description": "The scenario went into a `failed` state. Despite this, it may contain some results (fields `stats` and `results`).",
+        "value": {
+          "id": "df44bbd6-d9fb-4929-8d5e-b16b4fa71905",
+          "userId": "42d68a75-a8bb-435e-a756-bc4ac0f8f889",
+          "username": "admin",
+          "name": "Example scenario",
+          "createdAt": "2023-06-13T02:26:19.965Z",
+          "status": "failed",
+          "error": "No url has been successfully crawled.",
+          "flags": {
+            "flagA": "valueA"
+          },
+          "config": {
+            "options": {
+              "maxRequests": 100,
+              "maxRequestRetries": 2,
+              "viewport": {
+                "width": 1728,
+                "height": 1117
+              }
+            },
+            "scenes": {
+              "startup": [
+                {
+                  "action": "screenshot",
+                  "options": {
+                    "name": "entrypoint image"
+                  }
+                },
+                {
+                  "action": "setIdentity",
+                  "options": {
+                    "strategy": "static",
+                    "identity": "PageInfo"
+                  }
+                },
+                {
+                  "action": "collectData",
+                  "options": {
+                    "title": {
+                      "strategy": "selector.innerText",
+                      "selector": "title"
+                    },
+                    "links": {
+                      "strategy": "selector.attribute",
+                      "selector": "a",
+                      "attribute": "href",
+                      "multiple": true
+                    }
+                  }
+                },
+                {
+                  "action": "collectCookies",
+                  "options": {}
+                }
+              ]
+            },
+            "callbackUri": "https://crawler.requestcatcher.com/results",
+            "entrypoint": {
+              "url": "https://www.example.com",
+              "scene": "startup"
+            }
+          },
+          "stats": {
+            "visitedUrls": 0,
+            "data": 0,
+            "cookies": 0,
+            "screenshots": 0
+          },
+          "results": {
+            "visitedUrls": [
+              {
+                "identity": "4d45c714eae5ed1095823307d96f7fceb2fc1d7d07c453a07563515d4ed4dc4e",
+                "url": "https://www.example.com/",
+                "error": "Not Found",
+                "foundOnUrl": null,
+                "statusCode": 404
+              }
+            ],
+            "data": [],
+            "cookies": [],
+            "screenshots": []
+          }
+        }
+      },
+      "scenarioScheduler": {
+        "value": {
+          "id": "66119f3a-0b13-4e09-be2e-d69bbdef806e",
+          "userId": "42d68a75-a8bb-435e-a756-bc4ac0f8f889",
+          "username": "admin",
+          "name": "Example scenario",
+          "createdAt": "2023-06-13T02:26:19.965Z",
+          "updatedAt": "2023-06-14T03:17:27.888Z",
+          "expression": "0 1 * * *",
+          "flags": {
+            "flagA": "valueA"
+          },
+          "config": {
+            "options": {
+              "maxRequests": 100,
+              "maxRequestRetries": 2,
+              "viewport": {
+                "width": 1728,
+                "height": 1117
+              }
+            },
+            "scenes": {
+              "startup": [
+                {
+                  "action": "screenshot",
+                  "options": {
+                    "name": "entrypoint image"
+                  }
+                },
+                {
+                  "action": "setIdentity",
+                  "options": {
+                    "strategy": "static",
+                    "identity": "PageInfo"
+                  }
+                },
+                {
+                  "action": "collectData",
+                  "options": {
+                    "title": {
+                      "strategy": "selector.innerText",
+                      "selector": "title"
+                    },
+                    "links": {
+                      "strategy": "selector.attribute",
+                      "selector": "a",
+                      "attribute": "href",
+                      "multiple": true
+                    }
+                  }
+                },
+                {
+                  "action": "collectCookies",
+                  "options": {}
+                }
+              ]
+            },
+            "callbackUri": "https://crawler.requestcatcher.com/results",
+            "entrypoint": {
+              "url": "https://www.example.com",
+              "scene": "startup"
+            }
+          }
+        }
+      },
+      "scenarioSchedulerRequest": {
+        "description": "A simple scenario that is scheduled every day at 01:00. When the scenario runs it navigates to `https://www.example.com` and takes a screenshot of the page, then collects data (page title and all links), and finally collects cookies. Results will be sent to `https://crawler.requestcatcher.com/results`.",
+        "value": {
+          "name": "Example scenario",
+          "flags": {
+            "flagA": "valueA"
+          },
+          "expression": "0 1 * * *",
+          "config": {
+            "options": {
+              "maxRequests": 100,
+              "maxRequestRetries": 2,
+              "viewport": {
+                "width": 1728,
+                "height": 1117
+              }
+            },
+            "scenes": {
+              "startup": [
+                {
+                  "action": "screenshot",
+                  "options": {
+                    "name": "entrypoint image"
+                  }
+                },
+                {
+                  "action": "setIdentity",
+                  "options": {
+                    "strategy": "static",
+                    "identity": "PageInfo"
+                  }
+                },
+                {
+                  "action": "collectData",
+                  "options": {
+                    "title": {
+                      "strategy": "selector.innerText",
+                      "selector": "title"
+                    },
+                    "links": {
+                      "strategy": "selector.attribute",
+                      "selector": "a",
+                      "attribute": "href",
+                      "multiple": true
+                    }
+                  }
+                },
+                {
+                  "action": "collectCookies",
+                  "options": {}
+                }
+              ]
+            },
+            "callbackUri": "https://crawler.requestcatcher.com/results",
+            "entrypoint": {
+              "url": "https://www.example.com",
+              "scene": "startup"
+            }
+          }
+        }
+      },
+      "scenarioSchedulerListingWithOnlyOnePage": {
+        "description": "The request has been sent with query parameters `limit=2&page=1` and only two scenario schedulers were found, so fields `next` and `previous` are null.",
+        "value": {
+          "totalCount": 2,
+          "next": null,
+          "previous": null,
+          "data": [
+            {
+              "id": "ae3d868a-3671-4d2b-a114-d82ebc008ee2",
+              "userId": "42d68a75-a8bb-435e-a756-bc4ac0f8f889",
+              "username": "admin",
+              "name": "Test scenario 1",
+              "createdAt": "2023-06-13T02:26:19.965Z",
+              "updatedAt": "2023-06-14T03:38:22.666Z",
+              "expression": "0 1 * * *",
+              "flags": {
+                "flagA": "valueA"
+              }
+            },
+            {
+              "id": "5853f823-766b-4a2d-a892-393f3ede794a",
+              "userId": "42d68a75-a8bb-435e-a756-bc4ac0f8f889",
+              "username": "admin",
+              "name": "Test scenario 2",
+              "createdAt": "2023-06-13T02:10:23.973Z",
+              "updatedAt": "2023-06-14T01:23:08.777Z",
+              "expression": "0 1 * * *",
+              "flags": {}
+            }
+          ]
+        }
+      },
+      "scenarioSchedulerListingWithPreviousPage": {
+        "description": "The request has been sent with query parameters `limit=2&page=5` and the total number of scenario schedulers is 10. Field `previous` contains navigation object to the previous page (4) and field `next` is null because there is not next page.",
+        "value": {
+          "totalCount": 10,
+          "next": null,
+          "previous": {
+            "url": "https://www.example.com/api/scenario-schedulers?limit=2&page=4",
+            "page": 4,
+            "limit": 2
+          },
+          "data": [
+            {
+              "id": "ae3d868a-3671-4d2b-a114-d82ebc008ee2",
+              "userId": "42d68a75-a8bb-435e-a756-bc4ac0f8f889",
+              "username": "admin",
+              "name": "Test scenario 1",
+              "createdAt": "2023-06-13T02:26:19.965Z",
+              "updatedAt": "2023-06-14T03:38:22.666Z",
+              "expression": "0 1 * * *",
+              "flags": {
+                "flagA": "valueA"
+              }
+            },
+            {
+              "id": "5853f823-766b-4a2d-a892-393f3ede794a",
+              "userId": "42d68a75-a8bb-435e-a756-bc4ac0f8f889",
+              "username": "admin",
+              "name": "Test scenario 2",
+              "createdAt": "2023-06-13T02:10:23.973Z",
+              "updatedAt": "2023-06-14T01:23:08.777Z",
+              "expression": "0 1 * * *",
+              "flags": {}
+            }
+          ]
+        }
+      },
+      "scenarioSchedulerListingWithNextPage": {
+        "description": "The request has been sent with query parameters `limit=2&page=1` and the total number of scenario schedulers is 10. Field `next` contains navigation object to the next page (2) and field `previous` is null because there is not previous page.",
+        "value": {
+          "totalCount": 10,
+          "next": {
+            "url": "https://www.example.com/api/scenario-schedulers?limit=2&page=2",
+            "page": 2,
+            "limit": 2
+          },
+          "previous": null,
+          "data": [
+            {
+              "id": "ae3d868a-3671-4d2b-a114-d82ebc008ee2",
+              "userId": "42d68a75-a8bb-435e-a756-bc4ac0f8f889",
+              "username": "admin",
+              "name": "Test scenario 1",
+              "createdAt": "2023-06-13T02:26:19.965Z",
+              "updatedAt": "2023-06-14T03:38:22.666Z",
+              "expression": "0 1 * * *",
+              "flags": {
+                "flagA": "valueA"
+              }
+            },
+            {
+              "id": "5853f823-766b-4a2d-a892-393f3ede794a",
+              "userId": "42d68a75-a8bb-435e-a756-bc4ac0f8f889",
+              "username": "admin",
+              "name": "Test scenario 2",
+              "createdAt": "2023-06-13T02:10:23.973Z",
+              "updatedAt": "2023-06-14T01:23:08.777Z",
+              "expression": "0 1 * * *",
+              "flags": {}
+            }
+          ]
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,31 @@
+/api/scenarios:
+  get:
+    $ref: ./scenario/get.scenarios.yml
+  post:
+    $ref: ./scenario/post.scenario.yml
+
+/api/scenarios/{scenarioId}:
+  get:
+    $ref: ./scenario/get.scenario.yml
+
+/api/scenarios/validate:
+  post:
+    $ref: ./scenario/post.scenarioValidate.yml
+
+/api/scenario-schedulers:
+  get:
+    $ref: ./scenarioScheduler/get.scenarioSchedulers.yml
+  post:
+    $ref: ./scenarioScheduler/post.scenarioScheduler.yml
+
+/api/scenario-schedulers/{scenarioSchedulerId}:
+  get:
+    $ref: ./scenarioScheduler/get.scenarioScheduler.yml
+  put:
+    $ref: ./scenarioScheduler/put.scenarioScheduler.yml
+  delete:
+    $ref: ./scenarioScheduler/delete.scenarioScheduler.yml
+
+/api/scenario-schedulers/validate:
+  post:
+    $ref: ./scenarioScheduler/post.scenarioSchedulerValidate.yml

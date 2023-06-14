@@ -1,0 +1,116 @@
+type: object
+properties:
+  id:
+    type: string
+    format: uuid
+  userId:
+    type: string
+    format: uuid
+    nullable: true
+  username:
+    type: string
+    nullable: true
+  name:
+    type: string
+  createdAt:
+    type: string
+    format: date-time
+  status:
+    $ref: ./scenarioStatus.yml
+  error:
+    type: string
+    nullable: true
+  flags:
+    $ref: ./scenarioFlags.yml
+  config:
+    $ref: ./scenarioConfig.yml
+  stats:
+    type: object
+    properties:
+      visitedUrls:
+        type: integer
+      data:
+        type: integer
+      cookies:
+        type: integer
+      screenshots:
+        type: integer
+  results:
+    type: object
+    properties:
+      visitedUrls:
+        type: array
+        items:
+          type: object
+          properties:
+            identity:
+              type: string
+            url:
+              type: string
+              format: uri
+            error:
+              type: string
+              nullable: true
+            foundOnUrl:
+              type: string
+              format: uri
+              nullable: true
+            statusCode:
+              type: integer
+      data:
+        type: array
+        items:
+          type: object
+          properties:
+            identity:
+              type: string
+            values:
+              type: object
+              additionalProperties:
+                oneOf:
+                  - type: string
+                  - type: array
+                    items:
+                      type: string
+            foundOnUrl:
+              type: object
+              additionalProperties:
+                type: string
+      cookies:
+        type: array
+        items:
+          type: object
+          properties:
+            identity:
+              type: string
+            name:
+              type: string
+            domain:
+              type: string
+            secure:
+              type: boolean
+            session:
+              type: boolean
+            httpOnly:
+              type: boolean
+            sameSite:
+              type: string
+              nullable: true
+            foundOnUrl:
+              type: string
+              format: uri
+      screenshots:
+        type: array
+        items:
+          type: object
+          properties:
+            identity:
+              type: string
+            name:
+              type: string
+            foundOnUrl:
+              type: string
+              format: uri
+            screenshot:
+              type: string
+              format: uri
