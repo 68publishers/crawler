@@ -13,7 +13,7 @@
 * [Rest API and Queues board](#rest-api-and-queues-board)
 * [Working with scenarios](#working-with-scenarios)
 * [Working with scenario schedulers](#working-with-scenario-schedulers)
-* [Tutorial: Creating the fist scenario](#tutorial--creating-the-first-scenario)
+* [Tutorial: Creating the fist scenario](#tutorial-creating-the-first-scenario)
 * [Integrations](#integrations)
 * [License](#license)
 
@@ -33,7 +33,7 @@ Crawler is a standalone application written in Node.js built on top of [Express.
 ### Installation
 
 ```sh
-$ https://github.com/68publishers/crawler.git crawler
+$ git clone https://github.com/68publishers/crawler.git crawler
 $ cd crawler
 $ make init
 ```
@@ -56,8 +56,8 @@ $ docker exec -it crawler-app npm run user:create
 
 For production use, the following Redis settings must be made:
 
-- Configuring persistence with `Append-only-file` strategy - https://redis.io/docs/management/persistence/#aof-advantages
-- Set `Max memory policy` to `noeviction` - https://redis.io/docs/reference/eviction/#eviction-policies
+1. Configuring persistence with `Append-only-file` strategy - https://redis.io/docs/management/persistence/#aof-advantages
+1. Set `Max memory policy` to `noeviction` - https://redis.io/docs/reference/eviction/#eviction-policies
 
 ### Installation
 
@@ -123,9 +123,9 @@ $ docker exec -it 68publishers_crawler npm run user:create
 
 ## Rest API and Queues board
 
-The specification of the Rest API (Swagger UI) can be found at endpoint `/api-docs` (usually `http://localhost:3000/api-docs` in case of development setup). You can try to call all endpoints here.
+The specification of the Rest API (Swagger UI) can be found at endpoint `/api-docs`. Usually `http://localhost:3000/api-docs` in case of development setup. You can try to call all endpoints here.
 
-Alternatively, the specification can be viewed online [here](https://petstore.swagger.io/?url=https://raw.githubusercontent.com/68publishers/crawler/main/public/openapi.json).
+Alternatively, the specification can be viewed [online](https://petstore.swagger.io/?url=https://raw.githubusercontent.com/68publishers/crawler/main/public/openapi.json).
 
 BullBoard is located at `/admin/queues`. Here you can see all the scenarios that are currently running or have already run.
 
@@ -143,7 +143,7 @@ BullBoard is located at `/admin/queues`. Here you can see all the scenarios that
 
 ## Integrations
 
-- [68publishers/crawler-client-php](https://github.com/68publishers/crawler-client-php) - PHP Client for Crawler's API
+- PHP Client for Crawler's API - [68publishers/crawler-client-php](https://github.com/68publishers/crawler-client-php)
 
 ## License
 
