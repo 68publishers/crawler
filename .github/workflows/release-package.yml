@@ -7,6 +7,10 @@ on:
         description: 'Release type (one of): patch, minor, major, prepatch, preminor, premajor, prerelease'
         required: true
 
+env:
+  PUPPETEER_SKIP_DOWNLOAD: true
+  PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: true
+
 jobs:
   release:
     runs-on: ubuntu-latest
