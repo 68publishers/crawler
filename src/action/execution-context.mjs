@@ -4,6 +4,7 @@ export class ExecutionContext {
         page,
         scenarioId,
         enqueueLinks,
+        enqueueLinksByClickingElements,
         saveResult,
         logger,
     }) {
@@ -11,6 +12,7 @@ export class ExecutionContext {
         this.page = page;
         this.scenarioId = scenarioId;
         this.enqueueLinks = enqueueLinks;
+        this.enqueueLinksByClickingElements = enqueueLinksByClickingElements;
         this.saveResult = saveResult;
         this.logger = logger;
     }

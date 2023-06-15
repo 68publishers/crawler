@@ -19,7 +19,7 @@ export class ClickWithRedirect extends AbstractAction {
         }
     }
 
-    async execute(options, { page }) {
+    async execute(options, { request, page }) {
         if (options.xpath) {
             const [button] = await page.$x(options.selector);
             await Promise.all([
@@ -40,5 +40,7 @@ export class ClickWithRedirect extends AbstractAction {
                 }),
             ]);
         }
+
+        request.loadedUrl = page.url();
     }
 }

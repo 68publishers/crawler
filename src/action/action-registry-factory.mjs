@@ -5,6 +5,7 @@ import { CollectCookies } from './collect-cookies.mjs';
 import { CollectData } from './collect-data.mjs';
 import { Delay } from './delay.mjs';
 import { EnqueueLinks } from './enqueue-links.mjs';
+import { EnqueueLinksByClicking } from './enqueue-links-by-clicking.mjs';
 import { Focus } from './focus.mjs';
 import { Hover } from './hover.mjs';
 import { KeyboardPress } from './keyboard-press.mjs';
@@ -23,6 +24,7 @@ export function createActionRegistry({ applicationUrl }) {
     registry.addAction(new CollectData());
     registry.addAction(new Delay());
     registry.addAction(new EnqueueLinks());
+    registry.addAction(new EnqueueLinksByClicking());
     registry.addAction(new Focus());
     registry.addAction(new Hover());
     registry.addAction(new KeyboardPress());

@@ -52,10 +52,12 @@ export class Crawler {
      * @returns {object}
      */
     async crawl(scenarioId, config, logger, updateProgressHandler = undefined) {
+        const userDataDir = `/tmp/puppeteer_dev_profile_${scenarioId}`;
+
         try {
             await logger.info(`Running scenario ${scenarioId}`);
             await this.#scenarioRepository.markAsRunning(scenarioId);
-            await this.#doCrawl(scenarioId, config, logger, updateProgressHandler);
+            await this.#doCrawl(scenarioId, config, logger, updateProgressHandler, userDataDir);
         } catch (err) {
             err.message = `Scenario ${scenarioId} failed, reason: ${err.message}`;
 
@@ -63,6 +65,8 @@ export class Crawler {
             await this.#scenarioRepository.markAsFailed(scenarioId, err.toString());
 
             return await this.#scenarioRepository.get(scenarioId);
+        } finally {
+            this.#cleanup(userDataDir, scenarioId);
         }
 
         const result = await this.#scenarioRepository.get(scenarioId);
@@ -93,11 +97,10 @@ export class Crawler {
         return result;
     }
 
-    async #doCrawl(scenarioId, config, logger, updateProgressHandler) {
+    async #doCrawl(scenarioId, config, logger, updateProgressHandler, userDataDir) {
         const scenarioOptions = config.options || {};
         const scenarioViewport = scenarioOptions.viewport || {};
         const maxRequests = 'maxRequests' in scenarioOptions ? scenarioOptions.maxRequests : undefined;
-        const userDataDir = `/tmp/puppeteer_dev_profile_${scenarioId}`;
         let viewportOptions = null;
 
         if ('width' in scenarioViewport && 'height' in scenarioViewport) {
@@ -185,7 +188,7 @@ export class Crawler {
 
         const crawler = new PuppeteerCrawler({
             ...crawlerOptions,
-            async requestHandler({ request, response, page, enqueueLinks, crawler }) {
+            async requestHandler({ request, response, page, enqueueLinks, enqueueLinksByClickingElements, crawler }) {
                 const statusCode = response.status();
                 const scene = request.userData.scene;
                 let previousUrl = request.userData.previousUrl;
@@ -210,6 +213,7 @@ export class Crawler {
                             page,
                             scenarioId,
                             enqueueLinks,
+                            enqueueLinksByClickingElements,
                             saveResult,
                             logger,
                         }),
@@ -249,8 +253,9 @@ export class Crawler {
             },
         ]);
         await updateProgress(crawler);
+    }
 
-        // cleanup
+    #cleanup(userDataDir, scenarioId) {
         for (let storeDir of [
             userDataDir,
             path.resolve(this.#crawleeStorageDir, `key_value_stores/${scenarioId}`),
