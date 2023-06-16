@@ -36,7 +36,7 @@ USER node
 
 RUN npm i
 
-ENTRYPOINT ["npm", "run", "dev"]
+ENTRYPOINT ["npm", "run", "dev:app"]
 
 FROM base as prod
 

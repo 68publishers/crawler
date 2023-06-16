@@ -1,18 +1,18 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createContainer, asClass, asValue, InjectionMode, asFunction } from 'awilix';
-import { Application } from './application.mjs';
+import { Application } from './application/application.mjs';
 import { WinstonLogger } from './logger/winston-logger.mjs';
-import { RouterFactory } from './routes/router-factory.mjs';
+import { RouterFactory } from './application/routes/router-factory.mjs';
 import { createActionRegistry } from './action/action-registry-factory.mjs';
 import { Crawler } from './crawler/crawler.mjs';
 import { CallbackUriNotifier } from './notification/callback-uri-notifier.mjs';
 
-import { ScenarioController } from './controller/scenario/scenario-controller.mjs';
-import { ScenarioValidator } from './controller/scenario/scenario-validator.mjs';
+import { ScenarioController } from './application/controller/scenario/scenario-controller.mjs';
+import { ScenarioValidator } from './application/controller/scenario/scenario-validator.mjs';
 
-import { ScenarioSchedulerController } from './controller/scenario/scenario-scheduler-controller.mjs';
-import { ScenarioSchedulerValidator } from './controller/scenario/scenario-scheduler-validator.mjs';
+import { ScenarioSchedulerController } from './application/controller/scenario/scenario-scheduler-controller.mjs';
+import { ScenarioSchedulerValidator } from './application/controller/scenario/scenario-scheduler-validator.mjs';
 
 import { createDatabaseClient } from './model/database-client-factory.mjs';
 import { ScenarioRepository } from './model/scenario/scenario-repository.mjs';
@@ -20,8 +20,10 @@ import { ScenarioSchedulerRepository } from './model/scenario/scenario-scheduler
 import { UserRepository } from './model/user/user-repository.mjs';
 
 import { ScenarioQueue } from './queue/scenario-queue.mjs';
-import { ScenarioWorkerFactory } from './worker/scenario-worker-factory.mjs';
-import { Worker } from './worker/worker.mjs';
+import { SchedulerQueue } from './queue/scheduler-queue.mjs';
+
+import { ScenarioWorker } from './worker/scenario-worker.mjs';
+import { SchedulerWorker } from './worker/scheduler-worker.mjs';
 
 import { Scheduler } from './scheduler/scheduler.mjs';
 
@@ -74,8 +76,9 @@ export class Bootstrap {
             scenarioSchedulerRepository: asClass(ScenarioSchedulerRepository).singleton(),
             userRepository: asClass(UserRepository).singleton(),
             scenarioQueue: asClass(ScenarioQueue).singleton(),
-            scenarioWorkerFactory: asClass(ScenarioWorkerFactory).singleton(),
-            worker: asClass(Worker).singleton(),
+            schedulerQueue: asClass(SchedulerQueue).singleton(),
+            scenarioWorker: asClass(ScenarioWorker).singleton(),
+            schedulerWorker: asClass(SchedulerWorker).singleton(),
             scheduler: asClass(Scheduler).singleton(),
         });
 

@@ -1,5 +1,5 @@
 import { v4 as uuid } from 'uuid';
-import { validationResult } from "express-validator";
+import { validationResult } from 'express-validator';
 import { paginatedResultMiddleware } from '../middleware/paginated-result-middleware.mjs';
 
 export class ScenarioController {

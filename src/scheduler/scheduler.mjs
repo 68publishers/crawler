@@ -5,20 +5,18 @@ export class Scheduler {
     #scenarioRepository;
     #scenarioSchedulerRepository;
     #scenarioQueue;
-    #logger;
     #running;
     #tasks = {};
 
-    constructor({ scenarioRepository, scenarioSchedulerRepository, scenarioQueue, logger }) {
+    constructor({ scenarioRepository, scenarioSchedulerRepository, scenarioQueue }) {
         this.#scenarioRepository = scenarioRepository;
         this.#scenarioSchedulerRepository = scenarioSchedulerRepository;
         this.#scenarioQueue = scenarioQueue;
-        this.#logger = logger;
         this.#running = false;
         this.#tasks = [];
     }
 
-    async run() {
+    async run(logger = undefined) {
         if (this.#running) {
             return;
         }
@@ -30,15 +28,18 @@ export class Scheduler {
         }, true);
 
         for (let scheduler of schedulers) {
-            await this.#schedule(scheduler);
+            await this.#schedule(scheduler, logger);
         }
 
         this.#running = true;
     }
 
-    async refresh() {
+    async refresh(logger = undefined) {
         if (!this.#running) {
-            return;
+            return {
+                message: 'Scheduler not running, nothing to refresh.',
+                changes: [],
+            };
         }
 
         const schedulers = await this.#scenarioSchedulerRepository.list({
@@ -47,15 +48,28 @@ export class Scheduler {
             offset: null,
         }, true);
         const keep = [];
+        const changes = [];
 
         for (let scheduler of schedulers) {
             const task = this.#tasks[scheduler.id];
 
             if (!task) {
-                await this.#schedule(scheduler);
+                await this.#schedule(scheduler, logger);
+
+                changes.push({
+                    scenarioSchedulerId: scheduler.id,
+                    expression: scheduler.expression,
+                    status: 'started',
+                });
             } else if ((new Date(task.scheduler.updatedAt)) < (new Date(scheduler.updatedAt))) {
-                await this.#destroy(scheduler.id);
-                await this.#schedule(scheduler);
+                await this.#destroy(scheduler.id, logger);
+                await this.#schedule(scheduler, logger);
+
+                changes.push({
+                    scenarioSchedulerId: scheduler.id,
+                    expression: scheduler.expression,
+                    status: 'refreshed',
+                });
             }
 
             keep.push(scheduler.id);
@@ -63,29 +77,42 @@ export class Scheduler {
 
         for (let schedulerId in this.#tasks) {
             if (!keep.includes(schedulerId)) {
-                await this.#destroy(schedulerId);
+                const task = this.#tasks[schedulerId];
+
+                await this.#destroy(schedulerId, logger);
+
+                changes.push({
+                    scenarioSchedulerId: task.scheduler.id,
+                    expression: task.scheduler.expression,
+                    status: 'destroyed',
+                });
             }
         }
+
+        return {
+            message: 'Scheduler refreshed.',
+            changes: changes,
+        };
     }
 
-    async close() {
+    async close(logger = undefined) {
         for (let schedulerId in this.#tasks) {
-            await this.#destroy(schedulerId);
+            await this.#destroy(schedulerId, logger);
         }
 
         this.#tasks = {};
         this.#running = false;
     }
 
-    async #destroy(schedulerId) {
+    async #destroy(schedulerId, logger) {
         const expression = this.#tasks[schedulerId].scheduler.expression;
         this.#tasks[schedulerId].task.stop();
         delete this.#tasks[schedulerId];
 
-        await this.#logger.info(`Scenario scheduler ${schedulerId} (${expression}) destroyed.`);
+        logger && (await logger.info(`Scenario scheduler ${schedulerId} (${expression}) destroyed.`));
     }
 
-    async #schedule(scheduler) {
+    async #schedule(scheduler, logger) {
         this.#tasks[scheduler.id] = {
             scheduler: scheduler,
             task: scheduleTask(scheduler.expression, async () => {
@@ -106,6 +133,6 @@ export class Scheduler {
             }),
         };
 
-        await this.#logger.info(`Scenario scheduler ${scheduler.id} (${scheduler.expression}) started.`);
+        logger && (await logger.info(`Scenario scheduler ${scheduler.id} (${scheduler.expression}) started.`));
     }
 }

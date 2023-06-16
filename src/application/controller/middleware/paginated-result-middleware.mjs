@@ -1,4 +1,4 @@
-import { validationResult } from "express-validator";
+import { validationResult } from 'express-validator';
 import { URL } from 'node:url';
 
 export const paginatedResultMiddleware = (calculateTotalCountCallback, getResultCallback, applicationUrl) => {

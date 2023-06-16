@@ -1,4 +1,4 @@
-import {Bootstrap} from './src/bootstrap.mjs';
+import { Bootstrap } from './bootstrap.mjs';
 
 Bootstrap.boot()
     .resolve('application')

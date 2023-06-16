@@ -9,9 +9,35 @@ services:
             - .:/app
             - /app/node_modules
         container_name: crawler-app
-        restart: always
         ports:
             - "3000:3000"
+        environment:
+            APP_URL: http://localhost:3000
+            DB_URL: postgres://root:root@db:5432/crawler
+            REDIS_HOST: redis
+            REDIS_PORT: 6379
+            REDIS_AUTH: redis_pass
+        depends_on:
+            db:
+                condition: service_healthy
+            redis:
+                condition: service_started
+            migrations:
+                condition: service_completed_successfully
+        networks:
+            - backend
+
+    worker:
+        build:
+            context: .
+            target: dev
+        volumes:
+            - .:/app
+            - /app/node_modules
+        container_name: crawler-worker
+        entrypoint: ["npm", "run", "dev:worker"]
+        ports:
+            - "3001:3000"
         environment:
             APP_URL: http://localhost:3000
             DB_URL: postgres://root:root@db:5432/crawler
@@ -25,6 +51,52 @@ services:
                 condition: service_healthy
             redis:
                 condition: service_started
+            migrations:
+                condition: service_completed_successfully
+        networks:
+            - backend
+
+    scheduler:
+        build:
+            context: .
+            target: dev
+        volumes:
+            - .:/app
+            - /app/node_modules
+        container_name: crawler-scheduler
+        entrypoint: ["npm", "run", "dev:scheduler"]
+        ports:
+            - "3002:3000"
+        environment:
+            APP_URL: http://localhost:3000
+            DB_URL: postgres://root:root@db:5432/crawler
+            REDIS_HOST: redis
+            REDIS_PORT: 6379
+            REDIS_AUTH: redis_pass
+        depends_on:
+            db:
+                condition: service_healthy
+            redis:
+                condition: service_started
+            migrations:
+                condition: service_completed_successfully
+        networks:
+            - backend
+
+    migrations:
+        build:
+            context: .
+            target: dev
+        volumes:
+            - .:/app
+            - /app/node_modules
+        container_name: crawler-migrations
+        entrypoint: ["npm", "run", "migrations:up"]
+        environment:
+            DB_URL: postgres://root:root@db:5432/crawler
+        depends_on:
+            db:
+                condition: service_healthy
         networks:
             - backend
 

@@ -1,8 +1,8 @@
 import { Queue } from 'bullmq';
 
-export const QUEUE_NAME = 'scenario_queue';
+export const QUEUE_NAME = 'scheduler_queue';
 
-export class ScenarioQueue {
+export class SchedulerQueue {
     constructor({
         redisHost,
         redisPort,
@@ -22,9 +22,7 @@ export class ScenarioQueue {
         this.queue = new Queue(QUEUE_NAME, options);
     }
 
-    async addRunScenarioJob(scenarioId) {
-        await this.queue.add('run_scenario', {
-            scenarioId: scenarioId,
-        });
+    async addRefreshJob() {
+        await this.queue.add('refresh', {});
     }
 }

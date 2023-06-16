@@ -1,17 +1,17 @@
-import { validationResult } from "express-validator";
+import { validationResult } from 'express-validator';
 import { paginatedResultMiddleware } from '../middleware/paginated-result-middleware.mjs';
 import etag from 'etag';
 
 export class ScenarioSchedulerController {
     #scenarioSchedulerRepository;
     #scenarioSchedulerValidator;
-    #scheduler;
+    #schedulerQueue;
     #applicationUrl;
 
-    constructor({ scenarioSchedulerRepository, scenarioSchedulerValidator, scheduler, applicationUrl }) {
+    constructor({ scenarioSchedulerRepository, scenarioSchedulerValidator, schedulerQueue, applicationUrl }) {
         this.#scenarioSchedulerRepository = scenarioSchedulerRepository;
         this.#scenarioSchedulerValidator = scenarioSchedulerValidator;
-        this.#scheduler = scheduler;
+        this.#schedulerQueue = schedulerQueue;
         this.#applicationUrl = applicationUrl;
     }
 
@@ -34,7 +34,7 @@ export class ScenarioSchedulerController {
                 try {
                     const scenarioSchedulerId = await this.#scenarioSchedulerRepository.create(userId, name, flags || {}, expression, config);
 
-                    await this.#scheduler.refresh();
+                    await this.#schedulerQueue.addRefreshJob();
 
                     const scenarioScheduler = await this.#scenarioSchedulerRepository.get(scenarioSchedulerId);
 
@@ -99,7 +99,7 @@ export class ScenarioSchedulerController {
                             .header('Location', `${req.originalUrl}/${scenarioSchedulerId}`);
                     }
 
-                    await this.#scheduler.refresh();
+                    await this.#schedulerQueue.addRefreshJob();
 
                     scenarioScheduler = await this.#scenarioSchedulerRepository.get(scenarioSchedulerId);
 
@@ -160,7 +160,8 @@ export class ScenarioSchedulerController {
 
                         return;
                     }
-                    await this.#scheduler.refresh();
+
+                    await this.#schedulerQueue.addRefreshJob();
 
                     res.status(204).end();
                 } catch (err) {

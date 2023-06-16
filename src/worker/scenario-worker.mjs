@@ -1,5 +1,13 @@
-export class Worker {
-    #scenarioWorkerFactory;
+import { Worker as BullWorker } from 'bullmq';
+import path from 'node:path';
+import {fileURLToPath} from 'node:url';
+import { QUEUE_NAME as SCENARIO_QUEUE_NAME } from '../queue/scenario-queue.mjs';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const scenarioQueueProcessorPath = path.join(__dirname, 'processor', 'scenario-queue-processor.cjs');
+
+export class ScenarioWorker {
+    #scenarioRepository;
     #logger;
     #numberOfWorkerProcesses;
     #redisConfig;
@@ -7,7 +15,7 @@ export class Worker {
     #running;
 
     constructor({
-        scenarioWorkerFactory,
+        scenarioRepository,
         logger,
         numberOfWorkerProcesses,
         redisHost,
@@ -18,7 +26,7 @@ export class Worker {
             throw new Error('Argument "numberOfWorkerProcesses" must be integer greater than or equal to 1.');
         }
 
-        this.#scenarioWorkerFactory = scenarioWorkerFactory;
+        this.#scenarioRepository = scenarioRepository;
         this.#logger = logger;
         this.#numberOfWorkerProcesses = numberOfWorkerProcesses;
         this.#redisConfig = {
@@ -53,7 +61,11 @@ export class Worker {
         };
 
         for (let i = 0; i < this.#numberOfWorkerProcesses; i++) {
-            const worker = this.#scenarioWorkerFactory.create(options);
+            const worker = new BullWorker(
+                SCENARIO_QUEUE_NAME,
+                scenarioQueueProcessorPath,
+                options,
+            );
 
             worker.on('error', async (err) => {
                 await this.#logger.error(err);
@@ -61,6 +73,10 @@ export class Worker {
 
             worker.on('failed', async ({ job, failedReason }) => {
                 await this.#logger.error(`Job ${job ? job.id : 'unknown'} failed. ${failedReason}`);
+
+                if (job && job.data.scenarioId) {
+                    await this.#scenarioRepository.markAsFailed(job.data.scenarioId, failedReason);
+                }
             });
 
             this.#workers.push(worker);

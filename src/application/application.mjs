@@ -5,29 +5,25 @@ import methodOverride from 'method-override';
 export class Application {
     #routerFactory;
     #logger;
-    #worker;
-    #scheduler;
     #applicationPort;
     #developmentMode;
 
-    constructor({ routerFactory, logger, worker, scheduler, applicationPort, developmentMode }) {
+    constructor({ routerFactory, logger, applicationPort, developmentMode }) {
         this.#routerFactory = routerFactory;
         this.#logger = logger;
-        this.#worker = worker;
-        this.#scheduler = scheduler;
         this.#applicationPort = applicationPort;
         this.#developmentMode = developmentMode;
     }
 
     run() {
         process.on('uncaughtException', async (err) => {
+            err.message = '[application] ' +  err.message;
             await this.#logger.error(err);
-
             process.exit(1);
         });
 
         process.on('unhandledRejection', async (reason) => {
-            await this.#logger.error(`Unhandled Rejection at: Promise. ${reason}`);
+            await this.#logger.error(`[application] Unhandled Rejection at: Promise. ${reason}`);
         });
 
         const app = express();
@@ -66,20 +62,14 @@ export class Application {
             });
         });
 
-        this.#worker.run();
-        this.#scheduler.run();
-
         const server = app.listen(this.#applicationPort, () => {
             console.log(`app listening on port ${this.#applicationPort}!`)
         });
 
         process.on('SIGTERM', () => {
-            console.log('SIGTERM signal received: closing the application server.');
+            console.log('[application] SIGTERM signal received: closing the application server.');
 
             server.close(async () => {
-                await this.#worker.close();
-                await this.#scheduler.close();
-
                 process.exit(0);
             })
         })

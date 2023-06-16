@@ -3,7 +3,7 @@ import { createBullBoard } from '@bull-board/api';
 import { BullMQAdapter } from '@bull-board/api/bullMQAdapter.js';
 import { ExpressAdapter } from '@bull-board/express';
 import SwaggerUi from 'swagger-ui-express';
-import { comparePassword } from '../helper/password.mjs';
+import { comparePassword } from '../../helper/password.mjs';
 import { BasicStrategy } from 'passport-http';
 import passport from 'passport';
 import cors from 'cors';
@@ -12,17 +12,20 @@ export class RouterFactory {
     #scenarioController;
     #scenarioSchedulerController;
     #scenarioQueue;
+    #schedulerQueue;
     #userRepository;
 
     constructor({
         scenarioController,
         scenarioSchedulerController,
         scenarioQueue,
+        schedulerQueue,
         userRepository,
     }) {
         this.#scenarioController = scenarioController;
         this.#scenarioSchedulerController = scenarioSchedulerController;
         this.#scenarioQueue = scenarioQueue;
+        this.#schedulerQueue = schedulerQueue;
         this.#userRepository = userRepository;
     }
 
@@ -96,12 +99,14 @@ export class RouterFactory {
     #createAdminQueuesRouter(basePath) {
         const bullBoardServerAdapter = new ExpressAdapter();
         const scenarioQueue = new BullMQAdapter(this.#scenarioQueue.queue);
+        const schedulerQueue = new BullMQAdapter(this.#schedulerQueue.queue);
 
         bullBoardServerAdapter.setBasePath(basePath);
 
         createBullBoard({
             queues: [
                 scenarioQueue,
+                schedulerQueue,
             ],
             serverAdapter: bullBoardServerAdapter,
             options: {

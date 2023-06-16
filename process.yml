@@ -1,5 +1,11 @@
 apps:
-  - name: crawler
-    script: ./index.mjs
+  - name: app
+    script: ./src/app.mjs
     exec_mode: cluster
     instances: max
+
+  - name: worker
+    script: ./src/worker.mjs
+
+  - name: scheduler
+    script: ./src/scheduler.mjs
