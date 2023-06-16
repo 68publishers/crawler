@@ -5,15 +5,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
-
-## 0.2.2 - 2023-06-15
 ### Added
 - Added npm scripts `dev:app`, `dev:worker`, `dev:scheduler`.
 - Added separated services `worker` and `scheduler` in `docker-compose.yml`.
 - Added service `migrations` in `docker-compose.yml` that is run before services `app`, `worker` and `scheduler` started.
 - Added queue `scheduler_queue`. The scheduler is refreshed when the worker processes new job named `refresh`.
 
-### Changes
+### Changed
 - The application has been divided into 3 processes - `app`, `worker` and `scheduler`.
 - Moved controllers, routes and the Application class into the new directory `src/application`.
 - Updated pm2-runtime configuration file.
