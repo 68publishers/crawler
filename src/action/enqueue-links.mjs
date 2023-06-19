@@ -1,4 +1,4 @@
-import {AbstractAction} from './abstract-action.mjs';
+import { AbstractAction } from './abstract-action.mjs';
 import { EnqueueStrategy } from 'crawlee';
 import { placeholderReplacer } from '../helper/placeholder-replacer.mjs';
 
@@ -46,20 +46,37 @@ export class EnqueueLinks extends AbstractAction {
             if ('limit' in options && (!Number.isInteger(options.limit) || 0 >= options.limit)) {
                 yield 'the optional option "limit" must be a positive int';
             }
-        }
 
-        if ('baseUrl' in options && 'string' !== typeof options.baseUrl) {
-            yield 'the optional option "baseUrl" must be a string';
+            if ('baseUrl' in options && 'string' !== typeof options.baseUrl) {
+                yield 'the optional option "baseUrl" must be a string';
+            }
         }
     }
 
-    async execute(options, { request, page, enqueueLinks }) {
+    async execute(options, { scenarioOptions, request, page, enqueueLinks, browserController }) {
         await enqueueLinks(
-            await this.#createEnqueueLinksOptions(request, page, options),
+            await this.#createEnqueueLinksOptions(
+                request,
+                page,
+                browserController,
+                options,
+                ('session' in scenarioOptions && 'transferredCookies' in scenarioOptions.session) ? scenarioOptions.session.transferredCookies : [],
+            ),
         );
     }
 
-    async #createEnqueueLinksOptions(request, page, options) {
+    async #createEnqueueLinksOptions(request, page, browserController, options, transferredCookieNames) {
+        let transferredCookies = [];
+
+        if (Array.isArray(transferredCookieNames) && 0 < transferredCookieNames.length) {
+            const cookies = (await browserController.getCookies(page))
+                .filter(cookie => transferredCookieNames.includes(cookie.name));
+
+            if (0 < cookies.length) {
+                transferredCookies = cookies;
+            }
+        }
+
         if ('manual' === options.strategy) {
             return {
                 urls: options.urls,
@@ -67,6 +84,7 @@ export class EnqueueLinks extends AbstractAction {
                     scene: options.scene,
                     previousUrl: request.userData.currentUrl,
                     identity: request.userData.identity,
+                    transferredCookies: transferredCookies,
                 },
             };
         }
@@ -77,6 +95,7 @@ export class EnqueueLinks extends AbstractAction {
                 scene: options.scene,
                 previousUrl: request.userData.currentUrl,
                 identity: request.userData.identity,
+                transferredCookies: transferredCookies,
             },
         };
 

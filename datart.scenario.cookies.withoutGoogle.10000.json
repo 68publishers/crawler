@@ -1,0 +1,157 @@
+{
+  "name": "Datart.cz - cookies",
+  "config": {
+    "entrypoint": {
+      "url": "https://www.google.com/search?q=datart.cz",
+      "scene": "startup"
+    },
+    "options": {
+      "maxRequests": 10000,
+      "maxRequestRetries": 2,
+      "maxConcurrency": 18,
+      "viewport": {
+        "width": 1728,
+        "height": 1117
+      },
+      "session": {
+        "transferredCookies": [
+          "cc-settings"
+        ]
+      }
+    },
+    "scenes": {
+      "startup": [
+        {
+          "action": "screenshot",
+          "options": {
+            "name": "google-consent"
+          }
+        },
+        {
+          "action": "click",
+          "options": {
+            "selector": "//div[@role=\"dialog\"]//button/div[contains(., \"Přijmout vše\")]",
+            "delay": 300,
+            "xpath": true
+          }
+        },
+        {
+          "action": "delay",
+          "options": {
+            "delay": 1000
+          }
+        },
+        {
+          "action": "screenshot",
+          "options": {
+            "name": "google-search"
+          }
+        },
+        {
+          "action": "clickWithRedirect",
+          "options": {
+            "selector": "#tads [role=\"heading\"]",
+            "delay": 300
+          }
+        },
+        {
+          "action": "delay",
+          "options": {
+            "delay": 1000
+          }
+        },
+        {
+          "action": "screenshot",
+          "options": {
+            "name": "datart-consent"
+          }
+        },
+        {
+          "action": "runScene",
+          "options": {
+            "scene": "acceptCookies"
+          }
+        },
+        {
+          "action": "screenshot",
+          "options": {
+            "name": "datart-homepage"
+          }
+        },
+        {
+          "action": "collectCookies",
+          "options": {}
+        },
+        {
+          "action": "enqueueLinks",
+          "options": {
+            "scene": "navigation",
+            "selector": "#main-header a",
+            "strategy": "same-domain",
+            "baseUrl": "{{location.origin}}",
+            "exclude": [
+              "\\.pdf$",
+              "\\.zip$"
+            ]
+          }
+        }
+      ],
+      "navigation": [
+        {
+          "action": "runSceneConditionally",
+          "options": {
+            "condition": {
+              "type": "isElementVisible",
+              "options": {
+                "selector": "#c-p-bn"
+              }
+            },
+            "thenRun": "acceptCookies"
+          }
+        },
+        {
+          "action": "screenshot",
+          "options": {
+            "name": "{{location.href}}"
+          }
+        },
+        {
+          "action": "delay",
+          "options": {
+            "delay": 2000
+          }
+        },
+        {
+          "action": "collectCookies",
+          "options": {}
+        },
+        {
+          "action": "enqueueLinks",
+          "options": {
+            "scene": "navigation",
+            "selector": "#main-header ~ * a",
+            "strategy": "same-domain",
+            "exclude": [
+              "\\.pdf$",
+              "\\.zip$"
+            ]
+          }
+        }
+      ],
+      "acceptCookies": [
+        {
+          "action": "click",
+          "options": {
+            "selector": "#c-p-bn"
+          }
+        },
+        {
+          "action": "delay",
+          "options": {
+            "delay": 1000
+          }
+        }
+      ]
+    }
+  }
+}

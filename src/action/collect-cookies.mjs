@@ -1,4 +1,4 @@
-import {AbstractAction} from './abstract-action.mjs';
+import { AbstractAction } from './abstract-action.mjs';
 import { ScenarioResultGroups } from '../model/scenario/scenario-result-groups.mjs';
 import { sha256 } from '../helper/hash.mjs';
 
@@ -12,11 +12,12 @@ export class CollectCookies extends AbstractAction {
         const cookies = (await client.send('Storage.getCookies')).cookies;
 
         for (let cookie of cookies) {
-            const identity = sha256(cookie.name + '__' + cookie.domain);
+            const domain = cookie.domain.trim().replace(/^\./, '');
+            const identity = sha256(cookie.name + '__' + domain);
 
             await saveResult(ScenarioResultGroups.COOKIES, identity, {
                 name: cookie.name,
-                domain: cookie.domain,
+                domain: domain,
                 httpOnly: cookie.httpOnly || false,
                 secure: cookie.secure || false,
                 session: cookie.session || false,

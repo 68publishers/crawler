@@ -40,6 +40,11 @@ export class Crawler {
      *             width?: number,
      *             height?: number,
      *         },
+     *         session:? {
+     *             maxPoolSize?: number,
+     *             maxSessionUsageCount?: number,
+     *             transferredCookies?: array<string>,
+     *         }
      *     },
      *     scenes: Object.<string, array<{
      *         action: string,
@@ -100,6 +105,7 @@ export class Crawler {
     async #doCrawl(scenarioId, config, logger, updateProgressHandler, userDataDir) {
         const scenarioOptions = config.options || {};
         const scenarioViewport = scenarioOptions.viewport || {};
+        const scenarioSessionOptions = scenarioOptions.session || {};
         const maxRequests = 'maxRequests' in scenarioOptions ? scenarioOptions.maxRequests : undefined;
         let viewportOptions = null;
 
@@ -114,6 +120,9 @@ export class Crawler {
             maxRequestRetries: scenarioOptions.maxRequestRetries || 0,
             persistCookiesPerSession: true,
             useSessionPool: true,
+            sessionPoolOptions: {
+                sessionOptions: {},
+            },
             launchContext: {
                 launcher: puppeteerExtra,
                 launchOptions: {
@@ -128,18 +137,38 @@ export class Crawler {
             },
             preNavigationHooks: [
                 async (crawlingContext, gotoOptions) => {
-                    const { page } = crawlingContext;
+                    const { page, request } = crawlingContext;
                     gotoOptions.waitUntil = 'networkidle0';
 
                     if (viewportOptions) {
                         await page.setViewport(viewportOptions);
                     }
+
+                    let cookiesToTransfer = request.userData.transferredCookies;
+
+                    if (0 >= cookiesToTransfer.length) {
+                        return;
+                    }
+
+                    await page.setCookie(...cookiesToTransfer);
                 },
             ],
         };
 
         if (maxRequests) {
             crawlerOptions.maxRequestsPerCrawl = maxRequests;
+        }
+
+        if ('maxConcurrency' in scenarioOptions) {
+            crawlerOptions.maxConcurrency = scenarioOptions.maxConcurrency;
+        }
+
+        if ('maxPoolSize' in scenarioSessionOptions) {
+            crawlerOptions.sessionPoolOptions.maxPoolSize = scenarioSessionOptions.maxPoolSize;
+        }
+
+        if ('maxSessionUsageCount' in scenarioSessionOptions) {
+            crawlerOptions.sessionPoolOptions.sessionOptions.maxUsageCount = scenarioSessionOptions.maxSessionUsageCount;
         }
 
         const saveResult = async (group, identity, data, mergeOnConflict = true) => {
@@ -188,7 +217,7 @@ export class Crawler {
 
         const crawler = new PuppeteerCrawler({
             ...crawlerOptions,
-            async requestHandler({ request, response, page, enqueueLinks, enqueueLinksByClickingElements, crawler }) {
+            async requestHandler({ request, response, page, enqueueLinks, enqueueLinksByClickingElements, crawler, browserController }) {
                 const statusCode = response.status();
                 const scene = request.userData.scene;
                 let previousUrl = request.userData.previousUrl;
@@ -205,29 +234,31 @@ export class Crawler {
                 await logger.info(`Starting to crawl URL ${request.userData.currentUrl} (scene "${scene}")`);
                 await saveVisitedUrl(previousUrl, request.userData.currentUrl, statusCode, null);
 
-                for (let action of config.scenes[scene] || []) {
-                    await actionRegistry.get(action.action).execute(
-                        action.options,
-                        new ExecutionContext({
-                            request,
-                            page,
-                            scenarioId,
-                            enqueueLinks,
-                            enqueueLinksByClickingElements,
-                            saveResult,
-                            logger,
-                        }),
-                    );
-                    const afterActionUrl = await page.evaluate(() => location.href);
+                const executionContext = new ExecutionContext({
+                    request,
+                    page,
+                    scenarioId,
+                    scenarioOptions,
+                    enqueueLinks,
+                    enqueueLinksByClickingElements,
+                    saveResult,
+                    logger,
+                    browserController,
+                    actionRegistry,
+                    scenes: config.scenes,
+                    afterActionExecutionCallback: async ({ request, page }) => {
+                        const afterActionUrl = await page.evaluate(() => location.href);
 
-                    if (afterActionUrl !== request.userData.currentUrl) {
-                        request.userData.previousUrl = request.userData.currentUrl;
-                        request.userData.currentUrl = afterActionUrl;
+                        if (afterActionUrl !== request.userData.currentUrl) {
+                            request.userData.previousUrl = request.userData.currentUrl;
+                            request.userData.currentUrl = afterActionUrl;
 
-                        await saveVisitedUrl(request.userData.previousUrl, request.userData.currentUrl, statusCode, null);
-                    }
-                }
+                            await saveVisitedUrl(request.userData.previousUrl, request.userData.currentUrl, statusCode, null);
+                        }
+                    },
+                })
 
+                await executionContext.runScene(scene);
                 await updateProgress(crawler);
             },
 
@@ -249,6 +280,7 @@ export class Crawler {
                     scene: config.entrypoint.scene,
                     previousUrl: null,
                     identity: null,
+                    transferredCookies: [],
                 },
             },
         ]);

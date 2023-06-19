@@ -5,6 +5,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
+### Added
+- Added action `runScene`.
+- Added action `runSceneConditionally` with first implemented condition - `isElementVisible`.
+- Added scenario option `options.maxConcurrency`.
+- Added scenario option `options.session.maxPoolSize`.
+- Added scenario option `options.session.maxSessionUsageCount`.
+- Added scenario option `options.session.transferredCookies` - cookies with names defined by this option will be transferred between all sessions in the pool.
+
+### Changed
+- Cookies obtained via action `collectCookies` are stored and compared using domain without leading dot.
 
 ## 0.3.0 - 2023-06-16
 ### Added

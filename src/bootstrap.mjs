@@ -4,7 +4,7 @@ import { createContainer, asClass, asValue, InjectionMode, asFunction } from 'aw
 import { Application } from './application/application.mjs';
 import { WinstonLogger } from './logger/winston-logger.mjs';
 import { RouterFactory } from './application/routes/router-factory.mjs';
-import { createActionRegistry } from './action/action-registry-factory.mjs';
+import { ActionRegistry } from './action/action-registry.mjs';
 import { Crawler } from './crawler/crawler.mjs';
 import { CallbackUriNotifier } from './notification/callback-uri-notifier.mjs';
 
@@ -64,7 +64,7 @@ export class Bootstrap {
             application: asClass(Application).singleton(),
             logger: asClass(WinstonLogger).singleton(),
             routerFactory: asClass(RouterFactory).singleton(),
-            actionRegistry: asFunction(createActionRegistry).singleton(),
+            actionRegistry: asClass(ActionRegistry).singleton(),
             crawler: asClass(Crawler).singleton(),
             callbackUriNotifier: asClass(CallbackUriNotifier).singleton(),
             scenarioController: asClass(ScenarioController).singleton(),

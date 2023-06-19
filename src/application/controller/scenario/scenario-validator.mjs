@@ -58,10 +58,18 @@ export class ScenarioValidator {
             callbackUriRequired
                 ? body('config.callbackUri', 'The value must be a valid URL.').isURL()
                 : body('config.callbackUri', 'The value must be a valid URL.').optional().isURL(),
+            body('config.options').optional().isObject(),
+            body('config.options.maxConcurrency').optional().isInt({ min: 1 }),
             body('config.options.maxRequests', 'The value must be an int (>= 1) or undefined.').optional().isInt({ min: 1 }),
             body('config.options.maxRequestRetries', 'The value must be an int (>= 0) or undefined.').optional().isInt({ min: 0 }),
+            body('config.options.viewport').optional().isObject(),
             body('config.options.viewport.width', 'The value must be an int (>= 200) or undefined.').optional().isInt({ min: 200 }),
             body('config.options.viewport.height', 'The value must be an int (>= 200) or undefined.').optional().isInt({ min: 200 }),
+            body('config.options.session').optional().isObject(),
+            body('config.options.session.maxPoolSize').optional().isInt(),
+            body('config.options.session.maxSessionUsageCount').optional().isInt(),
+            body('config.options.session.transferredCookies').optional().isArray(),
+            body('config.options.session.transferredCookies.*').optional().isString(),
             body('config.scenes', 'The value must be a non empty object with string keys.').isObject().bail().custom(scenes => {
                 sceneNames = Object.keys(scenes);
 

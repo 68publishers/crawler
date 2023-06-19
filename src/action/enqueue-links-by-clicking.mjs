@@ -1,4 +1,4 @@
-import {AbstractAction} from './abstract-action.mjs';
+import { AbstractAction } from './abstract-action.mjs';
 
 export class EnqueueLinksByClicking extends AbstractAction {
     constructor() {
@@ -19,13 +19,26 @@ export class EnqueueLinksByClicking extends AbstractAction {
         }
     }
 
-    async execute(options, { request, enqueueLinksByClickingElements }) {
+    async execute(options, { scenarioOptions, request, page, enqueueLinksByClickingElements, browserController }) {
+        const transferredCookieNames = ('session' in scenarioOptions && 'transferredCookies' in scenarioOptions.session) ? scenarioOptions.session.transferredCookies : [];
+        let transferredCookies = [];
+
+        if (Array.isArray(transferredCookieNames) && 0 < transferredCookieNames.length) {
+            const cookies = (await browserController.getCookies(page))
+                .filter(cookie => transferredCookieNames.includes(cookie.name));
+
+            if (0 < cookies.length) {
+                transferredCookies = cookies;
+            }
+        }
+
         await enqueueLinksByClickingElements({
             selector: options.selector,
             userData: {
                 scene: options.scene,
                 previousUrl: request.userData.currentUrl,
                 identity: request.userData.identity,
+                transferredCookies: transferredCookies,
             },
         });
     }

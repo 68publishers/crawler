@@ -1,4 +1,4 @@
-import {AbstractAction} from './abstract-action.mjs';
+import { AbstractAction } from './abstract-action.mjs';
 
 export class Type extends AbstractAction {
     constructor() {
