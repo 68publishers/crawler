@@ -10,11 +10,16 @@ content:
     examples:
       path parameter error example:
         description: >-
-          Endpoint was invoked as `/api/scenario-schedulers/13` but the scenarioSchedulerId parameter must be a valid uuid.
+          Endpoint was invoked as `/api/scenarios/13` but the scenarioId parameter must be a valid uuid.
         value:
           message: The request data is not valid
           errors:
             - value: '13'
               msg: The value must be a valid uuid.
-              param: scenarioSchedulerId
+              param: scenarioId
               location: params
+      aborting scenario in the final status example:
+        description: >-
+          The scenario cannot be aborted as it is in the final state (`completed` or `failed`).
+        value:
+          message: Unable to abort the scenario with status "completed"

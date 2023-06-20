@@ -12,6 +12,8 @@ scenarioConfigValidationError:
   $ref: ./scenario/scenarioConfigValidationError.yml
 scenarioPathParameterValidationError:
   $ref: ./scenario/scenarioPathParameterValidationError.yml
+scenarioAbortBadRequestError:
+  $ref: ./scenario/scenarioAbortBadRequestError.yml
 scenarioNotFoundError:
   $ref: ./scenario/scenarioNotFoundError.yml
 

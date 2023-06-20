@@ -4,3 +4,4 @@ enum:
   - running
   - completed
   - failed
+  - aborted

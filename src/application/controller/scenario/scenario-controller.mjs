@@ -105,4 +105,49 @@ export class ScenarioController {
             },
         ];
     }
+
+    abortScenario() {
+        return [
+            ...this.#scenarioValidator.abortScenarioValidator(),
+            async (req, res, next) => {
+                const errors = validationResult(req);
+
+                if (!errors.isEmpty()) {
+                    return res.status(400).json({
+                        message: 'The request data is not valid',
+                        errors: errors.array(),
+                    });
+                }
+
+                const scenarioId = req.params.scenarioId;
+                let status = null;
+
+                try {
+                    status = await this.#scenarioRepository.getStatus(scenarioId);
+                } catch (err) {
+                    return next(err);
+                }
+
+                if (null === status) {
+                    return res.status(404).json({
+                        message: 'Scenario not found',
+                    });
+                }
+
+                if (!(['waiting', 'running'].includes(status))) {
+                    return res.status(400).json({
+                        message: `Unable to abort the scenario with status "${status}"`,
+                    });
+                }
+
+                try {
+                    await this.#scenarioRepository.markAsAborted(scenarioId);
+
+                    res.status(204).end();
+                } catch (err) {
+                    next(err);
+                }
+            },
+        ];
+    }
 }

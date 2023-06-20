@@ -87,4 +87,10 @@ export class ScenarioValidator {
             }),
         ];
     }
+
+    abortScenarioValidator() {
+        return [
+            param('scenarioId', 'The value must be a valid uuid.').isUUID(),
+        ];
+    }
 }

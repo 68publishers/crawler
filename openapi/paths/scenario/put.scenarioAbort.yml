@@ -1,0 +1,15 @@
+tags:
+  - Scenarios
+parameters:
+  - $ref: ../../parameters/path/scenarioId.yml
+responses:
+  '204':
+    $ref: ../../responses/common/noContent.yml
+  '400':
+    $ref: ../../responses/scenario/scenarioAbortBadRequestError.yml
+  '404':
+    $ref: ../../responses/scenario/scenarioNotFoundError.yml
+  '401':
+    $ref: ../../responses/common/unauthorizedError.yml
+  '500':
+    $ref: ../../responses/common/serverError.yml

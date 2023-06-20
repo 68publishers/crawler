@@ -45,6 +45,23 @@ export class ScenarioRepository {
             .where('id', scenarioId);
     }
 
+    async markAsAborted(scenarioId) {
+        await this.#databaseClient('scenario')
+            .update({
+                status: 'aborted',
+            })
+            .where('id', scenarioId);
+    }
+
+    async getStatus(scenarioId) {
+        const scenarioRows = await this.#databaseClient('scenario')
+            .select('scenario.status')
+            .where('scenario.id', scenarioId)
+            .limit(1);
+
+        return 0 < scenarioRows.length ? scenarioRows[0].status : null;
+    }
+
     async get(scenarioId, withResults = true) {
         const scenarioRows = await this.#databaseClient('scenario')
             .select(

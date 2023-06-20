@@ -79,6 +79,8 @@ export class RouterFactory {
         scenariosRouter.post('/', this.#scenarioController.runScenario());
         scenariosRouter.post('/validate', this.#scenarioController.validateScenario());
 
+        scenariosRouter.put('/:scenarioId/abort', this.#scenarioController.abortScenario());
+
         // scenario scheduler
         scenarioSchedulersRouter.get('/', this.#scenarioSchedulerController.listScenarioSchedulers());
         scenarioSchedulersRouter.get('/:scenarioSchedulerId', this.#scenarioSchedulerController.getScenarioScheduler());

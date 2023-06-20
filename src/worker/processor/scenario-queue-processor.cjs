@@ -34,7 +34,7 @@ module.exports = async (job) => {
             job.updateProgress(progress);
         });
 
-        if (userId && 'string' === typeof callbackUri) {
+        if (userId && 'string' === typeof callbackUri && 'aborted' !== result.status) {
             const notifier = container.resolve('callbackUriNotifier');
             const userRepository = container.resolve('userRepository');
             let user = null;

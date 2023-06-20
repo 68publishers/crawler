@@ -151,6 +151,35 @@
         }
       }
     },
+    "/api/scenarios/{scenarioId}/abort": {
+      "put": {
+        "tags": [
+          "Scenarios"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/scenarioId"
+          }
+        ],
+        "responses": {
+          "204": {
+            "$ref": "#/components/responses/noContent"
+          },
+          "400": {
+            "$ref": "#/components/responses/scenarioAbortBadRequestError"
+          },
+          "401": {
+            "$ref": "#/components/responses/unauthorizedError"
+          },
+          "404": {
+            "$ref": "#/components/responses/scenarioNotFoundError"
+          },
+          "500": {
+            "$ref": "#/components/responses/serverError"
+          }
+        }
+      }
+    },
     "/api/scenario-schedulers": {
       "get": {
         "tags": [
@@ -757,7 +786,7 @@
             },
             "examples": {
               "path parameter error example": {
-                "description": "Endpoint was invoked as `GET /api/scenarios/13` but the scenarioId parameter must be a valid uuid.",
+                "description": "Endpoint was invoked as `/api/scenarios/13` but the scenarioId parameter must be a valid uuid.",
                 "value": {
                   "message": "The request data is not valid",
                   "errors": [
@@ -768,6 +797,44 @@
                       "location": "params"
                     }
                   ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "scenarioAbortBadRequestError": {
+        "description": "The request contains validation errors.",
+        "content": {
+          "application/json": {
+            "type": "object",
+            "properties": {
+              "message": {
+                "type": "string"
+              },
+              "errors": {
+                "$ref": "#/components/schemas/validationErrors"
+              }
+            },
+            "examples": {
+              "path parameter error example": {
+                "description": "Endpoint was invoked as `/api/scenarios/13` but the scenarioId parameter must be a valid uuid.",
+                "value": {
+                  "message": "The request data is not valid",
+                  "errors": [
+                    {
+                      "value": "13",
+                      "msg": "The value must be a valid uuid.",
+                      "param": "scenarioId",
+                      "location": "params"
+                    }
+                  ]
+                }
+              },
+              "aborting scenario in the final status example": {
+                "description": "The scenario cannot be aborted as it is in the final state (`completed` or `failed`).",
+                "value": {
+                  "message": "Unable to abort the scenario with status \"completed\""
                 }
               }
             }
@@ -891,7 +958,7 @@
             },
             "examples": {
               "path parameter error example": {
-                "description": "Endpoint was invoked as `GET /api/scenario-schedulers/13` but the scenarioSchedulerId parameter must be a valid uuid.",
+                "description": "Endpoint was invoked as `/api/scenario-schedulers/13` but the scenarioSchedulerId parameter must be a valid uuid.",
                 "value": {
                   "message": "The request data is not valid",
                   "errors": [
@@ -1349,7 +1416,8 @@
           "waiting",
           "running",
           "completed",
-          "failed"
+          "failed",
+          "aborted"
         ]
       },
       "scenarioConfig": {

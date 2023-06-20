@@ -62,7 +62,14 @@ export class Crawler {
         try {
             await logger.info(`Running scenario ${scenarioId}`);
             await this.#scenarioRepository.markAsRunning(scenarioId);
-            await this.#doCrawl(scenarioId, config, logger, updateProgressHandler, userDataDir);
+
+            const aborted = 'ABORTED' === await this.#doCrawl(scenarioId, config, logger, updateProgressHandler, userDataDir);
+
+            if (aborted) {
+                await logger.info(`Scenario ${scenarioId} aborted.`);
+
+                return await this.#scenarioRepository.get(scenarioId);
+            }
         } catch (err) {
             err.message = `Scenario ${scenarioId} failed, reason: ${err.message}`;
 
@@ -108,6 +115,7 @@ export class Crawler {
         const scenarioSessionOptions = scenarioOptions.session || {};
         const maxRequests = 'maxRequests' in scenarioOptions ? scenarioOptions.maxRequests : undefined;
         let viewportOptions = null;
+        let aborted = false;
 
         if ('width' in scenarioViewport && 'height' in scenarioViewport) {
             viewportOptions = {
@@ -115,6 +123,22 @@ export class Crawler {
                 height: scenarioViewport.height,
             };
         }
+
+        const checkAbortion = async (crawler) => {
+            if (aborted) {
+                return true;
+            }
+
+            if ('aborted' === (await this.#scenarioRepository.getStatus(scenarioId))) {
+                aborted = true;
+                await logger.info(`Scenario ${scenarioId} receives an abort signal.`);
+                await crawler.autoscaledPool.abort();
+
+                return true;
+            }
+
+            return false;
+        };
 
         const crawlerOptions = {
             maxRequestRetries: scenarioOptions.maxRequestRetries || 0,
@@ -138,6 +162,13 @@ export class Crawler {
             preNavigationHooks: [
                 async (crawlingContext, gotoOptions) => {
                     const { page, request } = crawlingContext;
+
+                    if (aborted) {
+                        request.skipNavigation = true;
+
+                        return;
+                    }
+
                     gotoOptions.waitUntil = 'networkidle0';
 
                     if (viewportOptions) {
@@ -218,6 +249,10 @@ export class Crawler {
         const crawler = new PuppeteerCrawler({
             ...crawlerOptions,
             async requestHandler({ request, response, page, enqueueLinks, enqueueLinksByClickingElements, crawler, browserController }) {
+                if ((await checkAbortion(crawler))) {
+                    return;
+                }
+
                 const statusCode = response.status();
                 const scene = request.userData.scene;
                 let previousUrl = request.userData.previousUrl;
@@ -263,6 +298,10 @@ export class Crawler {
             },
 
             async failedRequestHandler({ request, response, crawler }, err) {
+                if ((await checkAbortion(crawler))) {
+                    return;
+                }
+
                 const scene = request.userData.scene || '?';
                 const previousUrl = request.userData.previousUrl;
                 const currentUrl = request.url;
@@ -271,6 +310,12 @@ export class Crawler {
                 await saveVisitedUrl(previousUrl, currentUrl, response ? response.status() : 500, err.toString());
                 await updateProgress(crawler);
             },
+
+            async errorHandler({ crawler, request }) {
+                if ((await checkAbortion(crawler))) {
+                    request.noRetry = true;
+                }
+            }
         }, configuration);
 
         await crawler.run([
@@ -285,14 +330,36 @@ export class Crawler {
             },
         ]);
         await updateProgress(crawler);
+        await checkAbortion(crawler);
+
+        if (aborted) {
+            const waitForRequestQueue = finished => {
+                if (finished) {
+                    return finished;
+                }
+
+                return new Promise((resolve) => setTimeout(resolve, 100))
+                    .then(() => Promise.resolve(0 >= crawler.requestQueue.inProgressCount()))
+                    .then(res => waitForRequestQueue(res));
+            }
+
+            await waitForRequestQueue(false);
+        }
+
+        return aborted ? 'ABORTED' : 'OK';
     }
 
-    #cleanup(userDataDir, scenarioId) {
-        for (let storeDir of [
+    #cleanup(userDataDir, scenarioId = undefined) {
+        const dirs = [
             userDataDir,
-            path.resolve(this.#crawleeStorageDir, `key_value_stores/${scenarioId}`),
-            path.resolve(this.#crawleeStorageDir, `request_queues/${scenarioId}`),
-        ]) {
+        ];
+
+        if (scenarioId) {
+            dirs.push(path.resolve(this.#crawleeStorageDir, `key_value_stores/${scenarioId}`));
+            dirs.push(path.resolve(this.#crawleeStorageDir, `request_queues/${scenarioId}`));
+        }
+
+        for (let storeDir of dirs) {
             if (existsSync(storeDir)) {
                 rmSync(storeDir, {
                     recursive: true,

@@ -12,6 +12,10 @@
   post:
     $ref: ./scenario/post.scenarioValidate.yml
 
+/api/scenarios/{scenarioId}/abort:
+  put:
+    $ref: ./scenario/put.scenarioAbort.yml
+
 /api/scenario-schedulers:
   get:
     $ref: ./scenarioScheduler/get.scenarioSchedulers.yml

@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
+### Added
+- Added new scenario status `aborted`.
+- Added endpoint `PUT /api/scenarios/:scenarioId/abort`. Scenario can be aborted until it is finished (`completed` or `failed`).
 
 ## 0.3.1 - 2023-06-19
 ### Added
