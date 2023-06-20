@@ -11,6 +11,8 @@ parameters:
   - $ref: ../../parameters/query/filterFlags.yml
   - $ref: ../../parameters/query/filterCreatedBefore.yml
   - $ref: ../../parameters/query/filterCreatedAfter.yml
+  - $ref: ../../parameters/query/filterFinishedBefore.yml
+  - $ref: ../../parameters/query/filterFinishedAfter.yml
 responses:
   '200':
     $ref: ../../responses/scenario/scenarioListing.yml

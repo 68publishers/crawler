@@ -4,6 +4,10 @@ properties:
     type: object
     required: false
     properties:
+      maxConcurrency:
+        type: integer
+        minimum: 1
+        required: false
       maxRequests:
         type: integer
         minimum: 1
@@ -25,6 +29,20 @@ properties:
             type: integer
             minimum: 200
             required: false
+      session:
+        type: object
+        properties:
+          maxPoolSize:
+            type: integer
+            required: false
+          maxSessionUsageCount:
+            type: integer
+            required: false
+          transferredCookies:
+            type: array
+            required: false
+            items:
+              type: string
   scenes:
     type: object
     required: true

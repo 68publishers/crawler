@@ -1,0 +1,6 @@
+name: filter[finishedBefore]
+in: query
+required: false
+schema:
+  type: string
+  format: date-time

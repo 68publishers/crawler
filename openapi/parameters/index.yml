@@ -30,3 +30,7 @@ filterUpdatedBefore:
   $ref: ./query/filterUpdatedBefore.yml
 filterUpdatedAfter:
   $ref: ./query/filterUpdatedAfter.yml
+filterFinishedBefore:
+  $ref: ./query/filterFinishedBefore.yml
+filterFinishedAfter:
+  $ref: ./query/filterFinishedAfter.yml

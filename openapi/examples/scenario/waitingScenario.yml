@@ -8,6 +8,7 @@ value:
   username: admin
   name: Example scenario
   createdAt: '2023-06-13T02:26:19.965Z'
+  finishedAt: null
   status: waiting
   error: null
   flags:

@@ -17,17 +17,23 @@ properties:
         userId:
           type: string
           format: uuid
+          nullable: true
         username:
           type: string
+          nullable: true
         name:
           type: string
         createdAt:
           type: string
           format: date-time
-        updatedAt:
+        finishedAt:
           type: string
           format: date-time
-        expression:
+          nullable: true
+        status:
+          $ref: ./scenarioStatus.yml
+        error:
           type: string
+          nullable: true
         flags:
           $ref: ./scenarioFlags.yml

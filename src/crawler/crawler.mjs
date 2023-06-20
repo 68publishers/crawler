@@ -315,7 +315,7 @@ export class Crawler {
                 if ((await checkAbortion(crawler))) {
                     request.noRetry = true;
                 }
-            }
+            },
         }, configuration);
 
         await crawler.run([

@@ -24,6 +24,7 @@ export class ScenarioRepository {
         await this.#databaseClient('scenario')
             .update({
                 status: 'running',
+                finished_at: null,
             })
             .where('id', scenarioId);
     }
@@ -33,6 +34,7 @@ export class ScenarioRepository {
             .update({
                 status: 'failed',
                 error: error,
+                finished_at: this.#databaseClient.fn.now(),
             })
             .where('id', scenarioId);
     }
@@ -41,6 +43,7 @@ export class ScenarioRepository {
         await this.#databaseClient('scenario')
             .update({
                 status: 'completed',
+                finished_at: this.#databaseClient.fn.now(),
             })
             .where('id', scenarioId);
     }
@@ -49,6 +52,7 @@ export class ScenarioRepository {
         await this.#databaseClient('scenario')
             .update({
                 status: 'aborted',
+                finished_at: this.#databaseClient.fn.now(),
             })
             .where('id', scenarioId);
     }
@@ -70,6 +74,7 @@ export class ScenarioRepository {
                 'user.username AS username',
                 'scenario.name',
                 'scenario.created_at AS createdAt',
+                'scenario.finished_at AS finishedAt',
                 'scenario.status',
                 'scenario.error',
                 'scenario.flags',
@@ -117,6 +122,7 @@ export class ScenarioRepository {
                 'user.username AS username',
                 'scenario.name',
                 'scenario.created_at AS createdAt',
+                'scenario.finished_at AS finishedAt',
                 'scenario.status',
                 'scenario.error',
                 'scenario.flags',
@@ -175,6 +181,8 @@ export class ScenarioRepository {
         ('flags' in filter) && (qb = qb.whereJsonSupersetOf('scenario.flags', filter.flags));
         ('createdBefore' in filter) && (qb = qb.andWhere('scenario.created_at', '<', filter.createdBefore));
         ('createdAfter' in filter) && (qb = qb.andWhere('scenario.created_at', '>', filter.createdAfter));
+        ('finishedBefore' in filter) && (qb = qb.andWhere('scenario.finished_at', '<', filter.finishedBefore));
+        ('finishedAfter' in filter) && (qb = qb.andWhere('scenario.finished_at', '>', filter.finishedAfter));
 
         return qb;
     }

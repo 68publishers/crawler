@@ -61,6 +61,12 @@
           },
           {
             "$ref": "#/components/parameters/filterCreatedAfter"
+          },
+          {
+            "$ref": "#/components/parameters/filterFinishedBefore"
+          },
+          {
+            "$ref": "#/components/parameters/filterFinishedAfter"
           }
         ],
         "responses": {
@@ -518,6 +524,24 @@
       },
       "filterUpdatedAfter": {
         "name": "filter[updatedAfter]",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "filterFinishedBefore": {
+        "name": "filter[finishedBefore]",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "filterFinishedAfter": {
+        "name": "filter[finishedAfter]",
         "in": "query",
         "required": false,
         "schema": {
@@ -1178,10 +1202,12 @@
                 },
                 "userId": {
                   "type": "string",
-                  "format": "uuid"
+                  "format": "uuid",
+                  "nullable": true
                 },
                 "username": {
-                  "type": "string"
+                  "type": "string",
+                  "nullable": true
                 },
                 "name": {
                   "type": "string"
@@ -1190,12 +1216,17 @@
                   "type": "string",
                   "format": "date-time"
                 },
-                "updatedAt": {
+                "finishedAt": {
                   "type": "string",
-                  "format": "date-time"
+                  "format": "date-time",
+                  "nullable": true
                 },
-                "expression": {
-                  "type": "string"
+                "status": {
+                  "$ref": "#/components/schemas/scenarioStatus"
+                },
+                "error": {
+                  "type": "string",
+                  "nullable": true
                 },
                 "flags": {
                   "$ref": "#/components/schemas/scenarioFlags"
@@ -1242,6 +1273,11 @@
           "createdAt": {
             "type": "string",
             "format": "date-time"
+          },
+          "finishedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
           },
           "status": {
             "$ref": "#/components/schemas/scenarioStatus"
@@ -1427,6 +1463,11 @@
             "type": "object",
             "required": false,
             "properties": {
+              "maxConcurrency": {
+                "type": "integer",
+                "minimum": 1,
+                "required": false
+              },
               "maxRequests": {
                 "type": "integer",
                 "minimum": 1,
@@ -1451,6 +1492,26 @@
                     "type": "integer",
                     "minimum": 200,
                     "required": false
+                  }
+                }
+              },
+              "session": {
+                "type": "object",
+                "properties": {
+                  "maxPoolSize": {
+                    "type": "integer",
+                    "required": false
+                  },
+                  "maxSessionUsageCount": {
+                    "type": "integer",
+                    "required": false
+                  },
+                  "transferredCookies": {
+                    "type": "array",
+                    "required": false,
+                    "items": {
+                      "type": "string"
+                    }
                   }
                 }
               }
@@ -1511,6 +1572,11 @@
             "type": "object",
             "required": false,
             "properties": {
+              "maxConcurrency": {
+                "type": "integer",
+                "minimum": 1,
+                "required": false
+              },
               "maxRequests": {
                 "type": "integer",
                 "minimum": 1,
@@ -1535,6 +1601,26 @@
                     "type": "integer",
                     "minimum": 200,
                     "required": false
+                  }
+                }
+              },
+              "session": {
+                "type": "object",
+                "properties": {
+                  "maxPoolSize": {
+                    "type": "integer",
+                    "required": false
+                  },
+                  "maxSessionUsageCount": {
+                    "type": "integer",
+                    "required": false
+                  },
+                  "transferredCookies": {
+                    "type": "array",
+                    "required": false,
+                    "items": {
+                      "type": "string"
+                    }
                   }
                 }
               }
@@ -1620,12 +1706,10 @@
                 },
                 "userId": {
                   "type": "string",
-                  "format": "uuid",
-                  "nullable": true
+                  "format": "uuid"
                 },
                 "username": {
-                  "type": "string",
-                  "nullable": true
+                  "type": "string"
                 },
                 "name": {
                   "type": "string"
@@ -1634,12 +1718,12 @@
                   "type": "string",
                   "format": "date-time"
                 },
-                "status": {
-                  "$ref": "#/components/schemas/scenarioStatus"
-                },
-                "error": {
+                "updatedAt": {
                   "type": "string",
-                  "nullable": true
+                  "format": "date-time"
+                },
+                "expression": {
+                  "type": "string"
                 },
                 "flags": {
                   "$ref": "#/components/schemas/scenarioFlags"
@@ -1732,6 +1816,7 @@
               "username": "admin",
               "name": "Test scenario 1",
               "createdAt": "2023-06-13T02:26:19.965Z",
+              "finishedAt": null,
               "status": "running",
               "error": null,
               "flags": {
@@ -1744,6 +1829,7 @@
               "username": "admin",
               "name": "Test scenario 2",
               "createdAt": "2023-06-13T02:10:23.973Z",
+              "finishedAt": "2023-06-13T02:20:00.923Z",
               "status": "failed",
               "error": "No url has been successfully crawled.",
               "flags": {}
@@ -1768,6 +1854,7 @@
               "username": "admin",
               "name": "Test scenario 1",
               "createdAt": "2023-06-13T02:26:19.965Z",
+              "finishedAt": null,
               "status": "running",
               "error": null,
               "flags": {
@@ -1780,6 +1867,7 @@
               "username": "admin",
               "name": "Test scenario 2",
               "createdAt": "2023-06-13T02:10:23.973Z",
+              "finishedAt": "2023-06-13T02:20:00.923Z",
               "status": "failed",
               "error": "No url has been successfully crawled.",
               "flags": {}
@@ -1804,6 +1892,7 @@
               "username": "admin",
               "name": "Test scenario 1",
               "createdAt": "2023-06-13T02:26:19.965Z",
+              "finishedAt": null,
               "status": "running",
               "error": null,
               "flags": {
@@ -1816,6 +1905,7 @@
               "username": "admin",
               "name": "Test scenario 2",
               "createdAt": "2023-06-13T02:10:23.973Z",
+              "finishedAt": "2023-06-13T02:20:00.923Z",
               "status": "failed",
               "error": "No url has been successfully crawled.",
               "flags": {}
@@ -1891,6 +1981,7 @@
           "username": "admin",
           "name": "Example scenario",
           "createdAt": "2023-06-13T02:26:19.965Z",
+          "finishedAt": null,
           "status": "waiting",
           "error": null,
           "flags": {
@@ -1969,6 +2060,7 @@
           "username": "admin",
           "name": "Example scenario",
           "createdAt": "2023-06-13T02:26:19.965Z",
+          "finishedAt": null,
           "status": "running",
           "error": null,
           "flags": {
@@ -2062,6 +2154,7 @@
           "username": "admin",
           "name": "Example scenario",
           "createdAt": "2023-06-13T02:26:19.965Z",
+          "finishedAt": "2023-06-13T02:36:00.923Z",
           "status": "completed",
           "error": null,
           "flags": {
@@ -2180,6 +2273,7 @@
           "username": "admin",
           "name": "Example scenario",
           "createdAt": "2023-06-13T02:26:19.965Z",
+          "finishedAt": "2023-06-13T02:36:00.923Z",
           "status": "failed",
           "error": "No url has been successfully crawled.",
           "flags": {

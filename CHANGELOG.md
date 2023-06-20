@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Added new scenario status `aborted`.
 - Added endpoint `PUT /api/scenarios/:scenarioId/abort`. Scenario can be aborted until it is finished (`completed` or `failed`).
+- Added field `finishedAt` for scenario.
+- Added database migration.
+- Added filters `finishedBefore` and `finishedAfter` for endpoint `GET /api/scenarios`.
 
 ## 0.3.1 - 2023-06-19
 ### Added

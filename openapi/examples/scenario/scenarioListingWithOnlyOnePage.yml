@@ -11,6 +11,7 @@ value:
       username: admin
       name: Test scenario 1
       createdAt: '2023-06-13T02:26:19.965Z'
+      finishedAt: null
       status: running
       error: null
       flags:
@@ -20,6 +21,7 @@ value:
       username: admin
       name: Test scenario 2
       createdAt: '2023-06-13T02:10:23.973Z'
+      finishedAt: '2023-06-13T02:20:00.923Z'
       status: failed
       error: No url has been successfully crawled.
       flags: {}
