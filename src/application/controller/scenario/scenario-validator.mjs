@@ -20,7 +20,7 @@ export class ScenarioValidator {
             query('filter.userId', 'The value must be a valid uuid.').optional().isUUID(),
             query('filter.username', 'The value must be a string.').optional().isString(),
             query('filter.name', 'The value must be a string').optional().isString(),
-            query('filter.status', 'The value must be one of these: ["waiting", "running", "completed", "failed"].').optional().isString().isIn(['waiting', 'running', 'completed', 'failed']),
+            query('filter.status', 'The value must be one of these: ["waiting", "running", "completed", "failed", "aborted"].').optional().isString().isIn(['waiting', 'running', 'completed', 'failed', 'aborted']),
             query('filter.flags', 'The value must be an object with string values.').optional().isObject(),
             query('filter.createdBefore', 'The value must be a valid date.').optional().isISO8601({ strict: true }),
             query('filter.createdAfter', 'The value must be a valid date.').optional().isISO8601({ strict: true }),
