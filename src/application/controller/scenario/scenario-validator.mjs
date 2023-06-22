@@ -67,11 +67,12 @@ export class ScenarioValidator {
             body('config.options.viewport').optional().isObject(),
             body('config.options.viewport.width', 'The value must be an int (>= 200) or undefined.').optional().isInt({ min: 200 }),
             body('config.options.viewport.height', 'The value must be an int (>= 200) or undefined.').optional().isInt({ min: 200 }),
-            body('config.options.session').optional().isObject(),
-            body('config.options.session.maxPoolSize').optional().isInt(),
-            body('config.options.session.maxSessionUsageCount').optional().isInt(),
-            body('config.options.session.transferredCookies').optional().isArray(),
-            body('config.options.session.transferredCookies.*').optional().isString(),
+            body('config.options.session', 'The value must be an object.').optional().isObject(),
+            body('config.options.session.maxPoolSize', 'The value must be an int.').optional().isInt(),
+            body('config.options.session.maxSessionUsageCount', 'The value must be an int.').optional().isInt(),
+            body('config.options.session.transferredCookies', 'The value must be an array of cookie names.').optional().isArray(),
+            body('config.options.session.transferredCookies.*', 'The value must be a cookie name.').optional().isString(),
+            body('config.options.waitUntil', 'The value must be one of these: ["load", "domcontentloaded", "networkidle0", "networkidle2"].').optional().isString().isIn(['load', 'domcontentloaded', 'networkidle0', 'networkidle2']),
             body('config.scenes', 'The value must be a non empty object with string keys.').isObject().bail().custom(scenes => {
                 sceneNames = Object.keys(scenes);
 

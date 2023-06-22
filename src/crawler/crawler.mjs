@@ -169,7 +169,7 @@ export class Crawler {
                         return;
                     }
 
-                    gotoOptions.waitUntil = 'networkidle0';
+                    gotoOptions.waitUntil = scenarioOptions.waitUntil || 'networkidle0';
 
                     if (viewportOptions) {
                         await page.setViewport(viewportOptions);

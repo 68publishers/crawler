@@ -43,6 +43,13 @@ properties:
             required: false
             items:
               type: string
+      waitUntil:
+        type: string
+        enum:
+          - load
+          - domcontentloaded
+          - networkidle0
+          - networkidle2
   scenes:
     type: object
     required: true

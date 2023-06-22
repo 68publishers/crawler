@@ -17,14 +17,20 @@ export class ClickWithRedirect extends AbstractAction {
         if ('xpath' in options && 'boolean' !== typeof options.xpath) {
             yield 'the optional option "xpath" must be a bool';
         }
+
+        if (('waitUntil' in options) && ('string' !== typeof options.waitUntil || !(['load', 'domcontentloaded', 'networkidle0', 'networkidle2'].includes(options.waitUntil)))) {
+            yield 'the optional option "waitUntil" must be one of these: ["load", "domcontentloaded", "networkidle0", "networkidle2"]';
+        }
     }
 
-    async execute(options, { request, page }) {
+    async execute(options, { scenarioOptions, request, page }) {
+        const waitUntil = options.waitUntil || scenarioOptions.waitUntil || 'networkidle0';
+        
         if (options.xpath) {
             const [button] = await page.$x(options.selector);
             await Promise.all([
                 page.waitForNavigation({
-                    waitUntil: 'networkidle0',
+                    waitUntil: waitUntil,
                 }),
                 button.click({
                     delay: options.delay || 0,
@@ -33,7 +39,7 @@ export class ClickWithRedirect extends AbstractAction {
         } else {
             await Promise.all([
                 page.waitForNavigation({
-                    waitUntil: 'networkidle0',
+                    waitUntil: waitUntil,
                 }),
                 page.click(options.selector, {
                     delay: options.delay || 0,
