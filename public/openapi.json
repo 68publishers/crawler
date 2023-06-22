@@ -1514,6 +1514,15 @@
                     }
                   }
                 }
+              },
+              "waitUntil": {
+                "type": "string",
+                "enum": [
+                  "load",
+                  "domcontentloaded",
+                  "networkidle0",
+                  "networkidle2"
+                ]
               }
             }
           },
@@ -1623,6 +1632,15 @@
                     }
                   }
                 }
+              },
+              "waitUntil": {
+                "type": "string",
+                "enum": [
+                  "load",
+                  "domcontentloaded",
+                  "networkidle0",
+                  "networkidle2"
+                ]
               }
             }
           },
