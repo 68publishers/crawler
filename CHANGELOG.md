@@ -5,6 +5,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
+### Changed
+- Updated dependency `puppeteer` to the version `20.7.3`.
+- Updated chrome installation instructions in the `Dockerfile`.
+
+## 0.3.4 - 2023-06-23
 ### Added
 - Added scenario option `waitUntil`.
 - Added option `waitUntil` for action `clickWithRedirect`.

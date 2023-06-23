@@ -1,4 +1,4 @@
-FROM node:20.2.0-alpine3.17 as base
+FROM node:20.2.0-alpine3.18 as base
 
 MAINTAINER support@68publishers.io
 
@@ -14,12 +14,17 @@ ENV WORKER_PROCESSES=5
 ENV SENTRY_SERVER_NAME=crawler
 
 RUN apk --no-cache -U upgrade
-RUN apk add --update --no-cache --virtual \
-    .build-deps \
-    udev \
-    ttf-opensans \
-    chromium \
-    ca-certificates
+RUN apk add --update --no-cache \
+	chromium=114.0.5735.133-r1 \
+	nss \
+	udev \
+	freetype \
+	harfbuzz \
+	ca-certificates \
+	ttf-freefont
+
+RUN mkdir -p /home/node/Downloads \
+	&& chown -R node:node /home/node
 
 COPY package*.json ./
 COPY . .

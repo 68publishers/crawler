@@ -41,7 +41,7 @@
     "passport": "^0.6.0",
     "passport-http": "^0.3.0",
     "pg": "^8.10.0",
-    "puppeteer": "^20.1.0",
+    "puppeteer": "^20.7.3",
     "puppeteer-extra": "^3.3.6",
     "puppeteer-extra-plugin-stealth": "^2.11.2",
     "swagger-ui-express": "^4.6.3",
