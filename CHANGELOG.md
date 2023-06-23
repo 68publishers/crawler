@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added scenario option `waitUntil`.
 - Added option `waitUntil` for action `clickWithRedirect`.
 
+### Fixed
+- Changed postgres pool options to prevent the "Connection terminated unexpectedly" error.
+
 ## 0.3.3 - 2023-06-21
 ### Fixed
 - Fixed filter `filter[status]=aborted` for endpoint `GET /api/scenarios`.
