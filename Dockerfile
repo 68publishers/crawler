@@ -13,6 +13,13 @@ ENV CHROME_PATH=/usr/bin/chromium-browser
 ENV WORKER_PROCESSES=5
 ENV SENTRY_SERVER_NAME=crawler
 
+COPY package*.json ./
+COPY . .
+
+EXPOSE 3000
+
+FROM base as base-with-chrome
+
 RUN apk --no-cache -U upgrade
 RUN apk add --update --no-cache \
 	chromium=114.0.5735.133-r1 \
@@ -26,11 +33,6 @@ RUN apk add --update --no-cache \
 RUN mkdir -p /home/node/Downloads \
 	&& chown -R node:node /home/node
 
-COPY package*.json ./
-COPY . .
-
-EXPOSE 3000
-
 FROM base as dev
 
 ENV NODE_ENV=development
@@ -43,7 +45,19 @@ RUN npm i
 
 ENTRYPOINT ["npm", "run", "dev:app"]
 
-FROM base as prod
+FROM base-with-chrome as dev-worker
+
+ENV NODE_ENV=development
+
+RUN chown -R node:node /app
+
+USER node
+
+RUN npm i
+
+ENTRYPOINT ["npm", "run", "dev:worker"]
+
+FROM base-with-chrome as prod
 
 ENV NODE_ENV=production
 
