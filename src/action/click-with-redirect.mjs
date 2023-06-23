@@ -25,7 +25,7 @@ export class ClickWithRedirect extends AbstractAction {
 
     async execute(options, { scenarioOptions, request, page }) {
         const waitUntil = options.waitUntil || scenarioOptions.waitUntil || 'networkidle0';
-        
+
         if (options.xpath) {
             const [button] = await page.$x(options.selector);
             await Promise.all([
