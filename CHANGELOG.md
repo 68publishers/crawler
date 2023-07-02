@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
+### Changed
+- Log files in `var/log` are now kept for 7 days only.
+- The crawler waits for the request queue to empty before exiting (until now, it only waited during an aborted scenario).
 
 ## 0.4.1 - 2023-06-23
 ### Changed

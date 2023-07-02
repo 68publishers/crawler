@@ -332,19 +332,17 @@ export class Crawler {
         await updateProgress(crawler);
         await checkAbortion(crawler);
 
-        if (aborted) {
-            const waitForRequestQueue = finished => {
-                if (finished) {
-                    return finished;
-                }
-
-                return new Promise((resolve) => setTimeout(resolve, 100))
-                    .then(() => Promise.resolve(0 >= crawler.requestQueue.inProgressCount()))
-                    .then(res => waitForRequestQueue(res));
+        const waitForRequestQueue = finished => {
+            if (finished) {
+                return finished;
             }
 
-            await waitForRequestQueue(false);
+            return new Promise((resolve) => setTimeout(resolve, 100))
+                .then(() => Promise.resolve(0 >= crawler.requestQueue.inProgressCount()))
+                .then(res => waitForRequestQueue(res));
         }
+
+        await waitForRequestQueue(false);
 
         return aborted ? 'ABORTED' : 'OK';
     }

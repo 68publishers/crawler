@@ -23,19 +23,19 @@ export class WinstonLogger extends AbstractLogger {
                     level: 'error',
                     filename: `${logDir}/error.%DATE%.log`,
                     datePattern: 'YYYY-MM-DD',
-                    maxFiles: '14d',
+                    maxFiles: '7d',
                 }),
                 new DailyRotateFile({
                     level: 'warn',
                     filename: `${logDir}/warning.%DATE%.log`,
                     datePattern: 'YYYY-MM-DD',
-                    maxFiles: '14d',
+                    maxFiles: '7d',
                 }),
                 new DailyRotateFile({
                     level: 'info',
                     filename: `${logDir}/info.%DATE%.log`,
                     datePattern: 'YYYY-MM-DD',
-                    maxFiles: '14d',
+                    maxFiles: '7d',
                 }),
             ],
         });
