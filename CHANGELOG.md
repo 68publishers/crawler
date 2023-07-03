@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
+
+## 0.4.2 - 2023-07-03
 ### Added
 - Added separated docker images for development (`dev-app`, `dev-scheduler`, `dev-worker`).
 - Added separated docker images for production (`prod-app`, `prod-scheduler`, `prod-worker`). Existing all-in-one image has now target `prod-all`.
