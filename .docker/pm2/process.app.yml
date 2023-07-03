@@ -1,0 +1,5 @@
+apps:
+  - name: app
+    script: ./src/app.mjs
+    exec_mode: cluster
+    instances: max

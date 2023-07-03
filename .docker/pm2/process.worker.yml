@@ -1,0 +1,3 @@
+apps:
+  - name: worker
+    script: ./src/worker.mjs

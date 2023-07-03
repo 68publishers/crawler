@@ -73,8 +73,8 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Docker meta
-        id: docker_meta_crawler
+      - name: Docker meta (all)
+        id: docker_meta_crawler_all
         uses: docker/metadata-action@v4
         with:
           images: |
@@ -82,23 +82,97 @@ jobs:
           flavor: |
             latest=false
           tags: |
-            type=schedule
             type=ref,event=pr
             type=semver,pattern={{version}},value=${{ env.NEW_VERSION }}
             type=semver,pattern={{major}}.{{minor}},value=${{ env.NEW_VERSION }},enable=${{ env.RELEASE_TAG != 'beta' }}
             type=semver,pattern={{major}},value=${{ env.NEW_VERSION }},enable=${{ env.RELEASE_TAG != 'beta' }}
             type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') && env.RELEASE_TAG != 'beta' }}
 
-      - name: Build and push
+      - name: Docker meta (app)
+        id: docker_meta_crawler_app
+        uses: docker/metadata-action@v4
+        with:
+          images: |
+            68publishers/crawler
+          flavor: |
+            latest=false
+          tags: |
+            type=semver,pattern={{version}}-app,value=${{ env.NEW_VERSION }}
+            type=semver,pattern={{major}}.{{minor}}-app,value=${{ env.NEW_VERSION }},enable=${{ env.RELEASE_TAG != 'beta' }}
+            type=semver,pattern={{major}}-app,value=${{ env.NEW_VERSION }},enable=${{ env.RELEASE_TAG != 'beta' }}
+            type=raw,value=latest-app,enable=${{ github.ref == format('refs/heads/{0}', 'main') && env.RELEASE_TAG != 'beta' }}
+
+      - name: Docker meta (scheduler)
+        id: docker_meta_crawler_scheduler
+        uses: docker/metadata-action@v4
+        with:
+          images: |
+            68publishers/crawler
+          flavor: |
+            latest=false
+          tags: |
+            type=semver,pattern={{version}}-scheduler,value=${{ env.NEW_VERSION }}
+            type=semver,pattern={{major}}.{{minor}}-scheduler,value=${{ env.NEW_VERSION }},enable=${{ env.RELEASE_TAG != 'beta' }}
+            type=semver,pattern={{major}}-scheduler,value=${{ env.NEW_VERSION }},enable=${{ env.RELEASE_TAG != 'beta' }}
+            type=raw,value=latest-scheduler,enable=${{ github.ref == format('refs/heads/{0}', 'main') && env.RELEASE_TAG != 'beta' }}
+
+      - name: Docker meta (worker)
+        id: docker_meta_crawler_worker
+        uses: docker/metadata-action@v4
+        with:
+          images: |
+            68publishers/crawler
+          flavor: |
+            latest=false
+          tags: |
+            type=semver,pattern={{version}}-worker,value=${{ env.NEW_VERSION }}
+            type=semver,pattern={{major}}.{{minor}}-worker,value=${{ env.NEW_VERSION }},enable=${{ env.RELEASE_TAG != 'beta' }}
+            type=semver,pattern={{major}}-worker,value=${{ env.NEW_VERSION }},enable=${{ env.RELEASE_TAG != 'beta' }}
+            type=raw,value=latest-worker,enable=${{ github.ref == format('refs/heads/{0}', 'main') && env.RELEASE_TAG != 'beta' }}
+
+      - name: Build and push (all)
         uses: docker/build-push-action@v4
         with:
           context: .
           file: Dockerfile
-          target: prod
+          target: prod-all
           push: true
           platforms: linux/arm64/v8,linux/amd64
-          tags: ${{ steps.docker_meta_crawler.outputs.tags }}
-          labels: ${{ steps.docker_meta_crawler.outputs.labels }}
+          tags: ${{ steps.docker_meta_crawler_all.outputs.tags }}
+          labels: ${{ steps.docker_meta_crawler_all.outputs.labels }}
+
+      - name: Build and push (app)
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: Dockerfile
+          target: prod-app
+          push: true
+          platforms: linux/arm64/v8,linux/amd64
+          tags: ${{ steps.docker_meta_crawler_app.outputs.tags }}
+          labels: ${{ steps.docker_meta_crawler_app.outputs.labels }}
+
+      - name: Build and push (scheduler)
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: Dockerfile
+          target: prod-scheduler
+          push: true
+          platforms: linux/arm64/v8,linux/amd64
+          tags: ${{ steps.docker_meta_crawler_scheduler.outputs.tags }}
+          labels: ${{ steps.docker_meta_crawler_scheduler.outputs.labels }}
+
+      - name: Build and push (worker)
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: Dockerfile
+          target: prod-worker
+          push: true
+          platforms: linux/arm64/v8,linux/amd64
+          tags: ${{ steps.docker_meta_crawler_worker.outputs.tags }}
+          labels: ${{ steps.docker_meta_crawler_worker.outputs.labels }}
 
       - name: Push changes to repository
         env:

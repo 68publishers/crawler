@@ -5,9 +5,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
+### Added
+- Added separated docker images for development (`dev-app`, `dev-scheduler`, `dev-worker`).
+- Added separated docker images for production (`prod-app`, `prod-scheduler`, `prod-worker`). Existing all-in-one image has now target `prod-all`.
+
 ### Changed
 - Log files in `var/log` are now kept for 7 days only.
 - The crawler waits for the request queue to empty before exiting (until now, it only waited during an aborted scenario).
+- Changed Release GitHub Action. Images for specific entrypoints are now also released with pattern `68publishers/crawler:{$version}-{app|scheduler|worker}`.
 
 ## 0.4.1 - 2023-06-23
 ### Changed

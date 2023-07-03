@@ -4,7 +4,7 @@ services:
     app:
         build:
             context: .
-            target: dev
+            target: dev-app
         volumes:
             - .:/app
             - /app/node_modules
@@ -58,12 +58,11 @@ services:
     scheduler:
         build:
             context: .
-            target: dev
+            target: dev-scheduler
         volumes:
             - .:/app
             - /app/node_modules
         container_name: crawler-scheduler
-        entrypoint: ["npm", "run", "dev:scheduler"]
         ports:
             - "3002:3000"
         environment:
@@ -85,7 +84,7 @@ services:
     migrations:
         build:
             context: .
-            target: dev
+            target: dev-app
         volumes:
             - .:/app
             - /app/node_modules
