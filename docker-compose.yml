@@ -35,6 +35,7 @@ services:
             - .:/app
             - /app/node_modules
         container_name: crawler-worker
+        init: true
         ports:
             - "3001:3000"
         environment:

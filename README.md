@@ -84,6 +84,7 @@ And run the application:
 
 ```sh
 $ docker run \
+    -- init \
     --network <NETWORK> \
     -e APP_URL=<APPLICATION_URL> \
     -e DB_URL=postgres://<USER>:<PASSWORD>@<HOSTNAME>:<PORT>/<DB_NAME> \
