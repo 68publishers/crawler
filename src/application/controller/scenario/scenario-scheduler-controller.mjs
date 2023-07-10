@@ -29,10 +29,10 @@ export class ScenarioSchedulerController {
                 }
 
                 const userId = req.user.id;
-                const { name, flags, config, expression } = req.body;
+                const { name, flags, active, config, expression } = req.body;
 
                 try {
-                    const scenarioSchedulerId = await this.#scenarioSchedulerRepository.create(userId, name, flags || {}, expression, config);
+                    const scenarioSchedulerId = await this.#scenarioSchedulerRepository.create(userId, name, flags || {}, active, expression, config);
 
                     await this.#schedulerQueue.addRefreshJob();
 
@@ -67,7 +67,7 @@ export class ScenarioSchedulerController {
                 try {
                     const scenarioSchedulerId = req.params.scenarioSchedulerId;
                     const userId = req.user.id;
-                    const { name, flags, config, expression } = req.body;
+                    const { name, flags, active, config, expression } = req.body;
                     let scenarioScheduler = await this.#scenarioSchedulerRepository.get(scenarioSchedulerId);
 
                     if (null !== scenarioScheduler) {
@@ -89,11 +89,11 @@ export class ScenarioSchedulerController {
                             });
                         }
 
-                        await this.#scenarioSchedulerRepository.update(scenarioSchedulerId, userId, name, flags || {}, expression, config);
+                        await this.#scenarioSchedulerRepository.update(scenarioSchedulerId, userId, name, flags || {}, active, expression, config);
 
                         res.status(200);
                     } else {
-                        await this.#scenarioSchedulerRepository.create(userId, name, flags || {}, expression, config, scenarioSchedulerId);
+                        await this.#scenarioSchedulerRepository.create(userId, name, flags || {}, active, expression, config, scenarioSchedulerId);
 
                         res.status(201)
                             .header('Location', `${req.originalUrl}/${scenarioSchedulerId}`);
@@ -207,5 +207,65 @@ export class ScenarioSchedulerController {
                     .json(scenarioScheduler);
             },
         ];
+    }
+
+    activateScenarioScheduler() {
+        return [
+            ...this.#scenarioSchedulerValidator.activateScenarioSchedulerValidator(),
+            this.#createActivationMiddleware(true).bind(this),
+        ];
+    }
+
+    deactivateScenarioScheduler() {
+        return [
+            ...this.#scenarioSchedulerValidator.deactivateScenarioSchedulerValidator(),
+            this.#createActivationMiddleware(false).bind(this),
+        ];
+    }
+
+    #createActivationMiddleware(newState) {
+        return async (req, res, next) => {
+            const errors = validationResult(req);
+
+            if (!errors.isEmpty()) {
+                return res.status(400).json({
+                    message: 'The request data is not valid',
+                    errors: errors.array(),
+                });
+            }
+
+            const scenarioSchedulerId = req.params.scenarioSchedulerId;
+            let scenarioScheduler = null;
+
+            try {
+                scenarioScheduler = await this.#scenarioSchedulerRepository.get(scenarioSchedulerId);
+            } catch (err) {
+                return next(err);
+            }
+
+            if (null === scenarioScheduler) {
+                return res.status(404).json({
+                    message: 'Scenario scheduler not found',
+                });
+            }
+
+            if (newState !== scenarioScheduler.active) {
+                try {
+                    await this.#scenarioSchedulerRepository.setActive(scenarioSchedulerId, newState);
+                    scenarioScheduler = await this.#scenarioSchedulerRepository.get(scenarioSchedulerId);
+
+                    await this.#schedulerQueue.addRefreshJob();
+                } catch (err) {
+                    return next(err);
+                }
+            }
+
+            return res
+                .status(200)
+                .header('ETag', etag(JSON.stringify(scenarioScheduler), {
+                    weak: false,
+                }))
+                .json(scenarioScheduler);
+        };
     }
 }

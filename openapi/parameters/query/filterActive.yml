@@ -1,0 +1,5 @@
+name: filter[active]
+in: query
+required: false
+schema:
+  type: boolean

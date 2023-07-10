@@ -107,6 +107,27 @@
         }
       }
     },
+    "/api/scenarios/validate": {
+      "post": {
+        "tags": [
+          "Scenarios"
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/validateScenario"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/scenarioValidation"
+          },
+          "401": {
+            "$ref": "#/components/responses/unauthorizedError"
+          },
+          "500": {
+            "$ref": "#/components/responses/serverError"
+          }
+        }
+      }
+    },
     "/api/scenarios/{scenarioId}": {
       "get": {
         "tags": [
@@ -129,27 +150,6 @@
           },
           "404": {
             "$ref": "#/components/responses/scenarioNotFoundError"
-          },
-          "500": {
-            "$ref": "#/components/responses/serverError"
-          }
-        }
-      }
-    },
-    "/api/scenarios/validate": {
-      "post": {
-        "tags": [
-          "Scenarios"
-        ],
-        "requestBody": {
-          "$ref": "#/components/requestBodies/validateScenario"
-        },
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/scenarioValidation"
-          },
-          "401": {
-            "$ref": "#/components/responses/unauthorizedError"
           },
           "500": {
             "$ref": "#/components/responses/serverError"
@@ -224,6 +224,9 @@
           },
           {
             "$ref": "#/components/parameters/filterUpdatedAfter"
+          },
+          {
+            "$ref": "#/components/parameters/filterActive"
           }
         ],
         "responses": {
@@ -254,6 +257,27 @@
           },
           "400": {
             "$ref": "#/components/responses/scenarioSchedulerConfigValidationError"
+          },
+          "401": {
+            "$ref": "#/components/responses/unauthorizedError"
+          },
+          "500": {
+            "$ref": "#/components/responses/serverError"
+          }
+        }
+      }
+    },
+    "/api/scenario-schedulers/validate": {
+      "post": {
+        "tags": [
+          "Scenario schedulers"
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/validateScenarioScheduler"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/scenarioSchedulerValidation"
           },
           "401": {
             "$ref": "#/components/responses/unauthorizedError"
@@ -359,20 +383,51 @@
         }
       }
     },
-    "/api/scenario-schedulers/validate": {
-      "post": {
+    "/api/scenario-schedulers/{scenarioSchedulerId}/activate": {
+      "put": {
         "tags": [
           "Scenario schedulers"
         ],
-        "requestBody": {
-          "$ref": "#/components/requestBodies/validateScenarioScheduler"
-        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/scenarioSchedulerId"
+          }
+        ],
         "responses": {
           "200": {
-            "$ref": "#/components/responses/scenarioSchedulerValidation"
+            "$ref": "#/components/responses/getScenarioScheduler"
           },
-          "401": {
-            "$ref": "#/components/responses/unauthorizedError"
+          "400": {
+            "$ref": "#/components/responses/scenarioSchedulerPathParameterValidationError"
+          },
+          "404": {
+            "$ref": "#/components/responses/scenarioSchedulerNotFoundError"
+          },
+          "500": {
+            "$ref": "#/components/responses/serverError"
+          }
+        }
+      }
+    },
+    "/api/scenario-schedulers/{scenarioSchedulerId}/deactivate": {
+      "put": {
+        "tags": [
+          "Scenario schedulers"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/scenarioSchedulerId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/getScenarioScheduler"
+          },
+          "400": {
+            "$ref": "#/components/responses/scenarioSchedulerPathParameterValidationError"
+          },
+          "404": {
+            "$ref": "#/components/responses/scenarioSchedulerNotFoundError"
           },
           "500": {
             "$ref": "#/components/responses/serverError"
@@ -547,6 +602,14 @@
         "schema": {
           "type": "string",
           "format": "date-time"
+        }
+      },
+      "filterActive": {
+        "name": "filter[active]",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "boolean"
         }
       }
     },
@@ -1740,6 +1803,9 @@
                   "type": "string",
                   "format": "date-time"
                 },
+                "active": {
+                  "type": "boolean"
+                },
                 "expression": {
                   "type": "string"
                 },
@@ -1760,6 +1826,9 @@
           },
           "flags": {
             "$ref": "#/components/schemas/scenarioFlags"
+          },
+          "active": {
+            "type": "boolean"
           },
           "expression": {
             "type": "string"
@@ -1793,6 +1862,9 @@
           "updatedAt": {
             "type": "string",
             "format": "date-time"
+          },
+          "active": {
+            "type": "boolean"
           },
           "expression": {
             "type": "string"
@@ -2378,6 +2450,7 @@
           "name": "Example scenario",
           "createdAt": "2023-06-13T02:26:19.965Z",
           "updatedAt": "2023-06-14T03:17:27.888Z",
+          "active": true,
           "expression": "0 1 * * *",
           "flags": {
             "flagA": "valueA"
@@ -2442,6 +2515,7 @@
           "flags": {
             "flagA": "valueA"
           },
+          "active": true,
           "expression": "0 1 * * *",
           "config": {
             "options": {
@@ -2510,6 +2584,7 @@
               "name": "Test scenario 1",
               "createdAt": "2023-06-13T02:26:19.965Z",
               "updatedAt": "2023-06-14T03:38:22.666Z",
+              "active": true,
               "expression": "0 1 * * *",
               "flags": {
                 "flagA": "valueA"
@@ -2522,6 +2597,7 @@
               "name": "Test scenario 2",
               "createdAt": "2023-06-13T02:10:23.973Z",
               "updatedAt": "2023-06-14T01:23:08.777Z",
+              "active": true,
               "expression": "0 1 * * *",
               "flags": {}
             }
@@ -2546,6 +2622,7 @@
               "name": "Test scenario 1",
               "createdAt": "2023-06-13T02:26:19.965Z",
               "updatedAt": "2023-06-14T03:38:22.666Z",
+              "active": true,
               "expression": "0 1 * * *",
               "flags": {
                 "flagA": "valueA"
@@ -2558,6 +2635,7 @@
               "name": "Test scenario 2",
               "createdAt": "2023-06-13T02:10:23.973Z",
               "updatedAt": "2023-06-14T01:23:08.777Z",
+              "active": true,
               "expression": "0 1 * * *",
               "flags": {}
             }
@@ -2582,6 +2660,7 @@
               "name": "Test scenario 1",
               "createdAt": "2023-06-13T02:26:19.965Z",
               "updatedAt": "2023-06-14T03:38:22.666Z",
+              "active": true,
               "expression": "0 1 * * *",
               "flags": {
                 "flagA": "valueA"
@@ -2594,6 +2673,7 @@
               "name": "Test scenario 2",
               "createdAt": "2023-06-13T02:10:23.973Z",
               "updatedAt": "2023-06-14T01:23:08.777Z",
+              "active": true,
               "expression": "0 1 * * *",
               "flags": {}
             }

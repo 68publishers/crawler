@@ -34,3 +34,5 @@ filterFinishedBefore:
   $ref: ./query/filterFinishedBefore.yml
 filterFinishedAfter:
   $ref: ./query/filterFinishedAfter.yml
+filterActive:
+  $ref: ./query/filterActive.yml

@@ -5,6 +5,7 @@ value:
   name: Example scenario
   createdAt: '2023-06-13T02:26:19.965Z'
   updatedAt: '2023-06-14T03:17:27.888Z'
+  active: true
   expression: '0 1 * * *'
   flags:
     flagA: valueA

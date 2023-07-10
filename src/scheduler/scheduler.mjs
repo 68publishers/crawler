@@ -22,7 +22,9 @@ export class Scheduler {
         }
 
         const schedulers = await this.#scenarioSchedulerRepository.list({
-            filter: {},
+            filter: {
+                active: true,
+            },
             limit: null,
             offset: null,
         }, true);
@@ -43,7 +45,9 @@ export class Scheduler {
         }
 
         const schedulers = await this.#scenarioSchedulerRepository.list({
-            filter: {},
+            filter: {
+                active: true,
+            },
             limit: null,
             offset: null,
         }, true);

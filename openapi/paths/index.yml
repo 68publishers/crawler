@@ -4,13 +4,13 @@
   post:
     $ref: ./scenario/post.scenario.yml
 
-/api/scenarios/{scenarioId}:
-  get:
-    $ref: ./scenario/get.scenario.yml
-
 /api/scenarios/validate:
   post:
     $ref: ./scenario/post.scenarioValidate.yml
+
+/api/scenarios/{scenarioId}:
+  get:
+    $ref: ./scenario/get.scenario.yml
 
 /api/scenarios/{scenarioId}/abort:
   put:
@@ -22,6 +22,10 @@
   post:
     $ref: ./scenarioScheduler/post.scenarioScheduler.yml
 
+/api/scenario-schedulers/validate:
+  post:
+    $ref: ./scenarioScheduler/post.scenarioSchedulerValidate.yml
+
 /api/scenario-schedulers/{scenarioSchedulerId}:
   get:
     $ref: ./scenarioScheduler/get.scenarioScheduler.yml
@@ -30,6 +34,10 @@
   delete:
     $ref: ./scenarioScheduler/delete.scenarioScheduler.yml
 
-/api/scenario-schedulers/validate:
-  post:
-    $ref: ./scenarioScheduler/post.scenarioSchedulerValidate.yml
+/api/scenario-schedulers/{scenarioSchedulerId}/activate:
+  put:
+    $ref: ./scenarioScheduler/put.scenarioSchedulerActivate.yml
+
+/api/scenario-schedulers/{scenarioSchedulerId}/deactivate:
+  put:
+    $ref: ./scenarioScheduler/put.scenarioSchedulerDeactivate.yml

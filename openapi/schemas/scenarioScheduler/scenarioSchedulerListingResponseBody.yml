@@ -27,6 +27,8 @@ properties:
         updatedAt:
           type: string
           format: date-time
+        active:
+          type: boolean
         expression:
           type: string
         flags:

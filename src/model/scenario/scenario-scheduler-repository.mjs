@@ -7,7 +7,7 @@ export class ScenarioSchedulerRepository {
         this.#databaseClient = databaseClient;
     }
 
-    async create(userId, name, flags, expression, config, scenarioSchedulerId = undefined) {
+    async create(userId, name, flags, active, expression, config, scenarioSchedulerId = undefined) {
         scenarioSchedulerId = scenarioSchedulerId || uuid();
 
         await this.#databaseClient('scenario_scheduler')
@@ -16,6 +16,7 @@ export class ScenarioSchedulerRepository {
                 user_id: userId,
                 name: name,
                 flags: JSON.stringify(flags),
+                active: active,
                 expression: expression,
                 config: JSON.stringify(config),
             });
@@ -23,15 +24,32 @@ export class ScenarioSchedulerRepository {
         return scenarioSchedulerId;
     }
 
-    async update(scenarioSchedulerId, userId, name, flags, expression, config, transaction = undefined) {
+    async update(scenarioSchedulerId, userId, name, flags, active, expression, config, transaction = undefined) {
         let qb = this.#databaseClient('scenario_scheduler')
             .update({
                 user_id: userId,
                 name: name,
                 flags: flags,
+                active: active,
                 expression: expression,
                 updated_at: this.#databaseClient.raw('CURRENT_TIMESTAMP'),
                 config: JSON.stringify(config),
+            })
+            .where('id', scenarioSchedulerId)
+            .returning(['id']);
+
+        if (transaction) {
+            qb = qb.transacting(transaction);
+        }
+
+        return 0 < (await qb).length;
+    }
+
+    async setActive(scenarioSchedulerId, active, transaction = undefined) {
+        let qb = this.#databaseClient('scenario_scheduler')
+            .update({
+                active: active,
+                updated_at: this.#databaseClient.raw('CURRENT_TIMESTAMP'),
             })
             .where('id', scenarioSchedulerId)
             .returning(['id']);
@@ -60,6 +78,7 @@ export class ScenarioSchedulerRepository {
                 'scenario_scheduler.name',
                 'scenario_scheduler.created_at AS createdAt',
                 'scenario_scheduler.updated_at AS updatedAt',
+                'scenario_scheduler.active',
                 'scenario_scheduler.expression',
                 'scenario_scheduler.flags',
                 'scenario_scheduler.config',
@@ -80,6 +99,7 @@ export class ScenarioSchedulerRepository {
                 'scenario_scheduler.name',
                 'scenario_scheduler.created_at AS createdAt',
                 'scenario_scheduler.updated_at AS updatedAt',
+                'scenario_scheduler.active',
                 'scenario_scheduler.expression',
                 'scenario_scheduler.flags',
                 'scenario_scheduler.config',
@@ -96,6 +116,7 @@ export class ScenarioSchedulerRepository {
             'scenario_scheduler.name',
             'scenario_scheduler.created_at AS createdAt',
             'scenario_scheduler.updated_at AS updatedAt',
+            'scenario_scheduler.active',
             'scenario_scheduler.expression',
             'scenario_scheduler.flags',
         ];
@@ -137,6 +158,7 @@ export class ScenarioSchedulerRepository {
         ('createdAfter' in filter) && (qb = qb.andWhere('scenario_scheduler.created_at', '>', filter.createdAfter));
         ('updatedBefore' in filter) && (qb = qb.andWhere('scenario_scheduler.updated_at', '<', filter.updatedBefore));
         ('updatedAfter' in filter) && (qb = qb.andWhere('scenario_scheduler.updated_at', '>', filter.updatedAfter));
+        ('active' in filter) && (qb = qb.andWhere('scenario_scheduler.active', filter.active));
 
         return qb;
     }

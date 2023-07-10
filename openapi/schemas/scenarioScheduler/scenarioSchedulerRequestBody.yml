@@ -5,6 +5,8 @@ properties:
     maxLength: 255
   flags:
     $ref: ../scenario/scenarioFlags.yml
+  active:
+    type: boolean
   expression:
     type: string
   config:

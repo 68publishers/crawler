@@ -32,6 +32,7 @@ export class ScenarioSchedulerValidator {
             query('filter.createdAfter', 'The value must be a valid date.').optional().isISO8601({ strict: true }),
             query('filter.updatedBefore', 'The value must be a valid date.').optional().isISO8601({ strict: true }),
             query('filter.updatedAfter', 'The value must be a valid date.').optional().isISO8601({ strict: true }),
+            query('filter.active', 'The value must be a boolean.').optional().isBoolean(),
             query('limit', 'The value must be int that is greater than or equal to 1.').isInt({ min: 1 }),
             query('page', 'The value must be int that is greater than or equal to 1.').isInt({ min: 1 }),
         ];
@@ -39,6 +40,7 @@ export class ScenarioSchedulerValidator {
 
     createScenarioSchedulerValidator() {
         return [
+            body('active', 'The value must be a boolean.').isBoolean(),
             body('expression', 'The value must be valid crontab expression.').isString().bail().custom(expression => {
                 return validate(expression);
             }),
@@ -49,10 +51,23 @@ export class ScenarioSchedulerValidator {
     updateScenarioSchedulerValidator() {
         return [
             param('scenarioSchedulerId', 'The value must be a valid uuid.').isUUID(),
+            body('active', 'The value must be a boolean.').isBoolean(),
             body('expression', 'The value must be valid crontab expression.').isString().bail().custom(expression => {
                 return validate(expression);
             }),
             this.#scenarioValidator.postScenarioValidator(true),
+        ]
+    }
+
+    activateScenarioSchedulerValidator() {
+        return [
+            param('scenarioSchedulerId', 'The value must be a valid uuid.').isUUID(),
+        ]
+    }
+
+    deactivateScenarioSchedulerValidator() {
+        return [
+            param('scenarioSchedulerId', 'The value must be a valid uuid.').isUUID(),
         ]
     }
 }

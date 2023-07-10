@@ -12,6 +12,7 @@ parameters:
   - $ref: ../../parameters/query/filterCreatedAfter.yml
   - $ref: ../../parameters/query/filterUpdatedBefore.yml
   - $ref: ../../parameters/query/filterUpdatedAfter.yml
+  - $ref: ../../parameters/query/filterActive.yml
 responses:
   '200':
     $ref: ../../responses/scenarioScheduler/scenarioSchedulerListing.yml
