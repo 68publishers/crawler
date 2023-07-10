@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
+
+## 0.5.0 - 2023-07-10
 ### Added
 - Added field `active` for scenario schedulers. The field is required for POST/PUT endpoints, and it is also returned by GET endpoints.
 - Added endpoints `PUT /api/scenario-schedulers/:scenarioSchedulerId/activate` and `PUT /api/scenario-schedulers/:scenarioSchedulerId/activate`.
