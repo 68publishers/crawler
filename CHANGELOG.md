@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
+
+## 0.4.3 - 2023-07-10
 ### Changed
 - Changed pm2 configuration file for docker images `68publishers/crawler:{version}-app`. The application is launched in the `fork` mode instead of the `cluster` mode.
 
