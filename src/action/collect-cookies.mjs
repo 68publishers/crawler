@@ -11,6 +11,8 @@ export class CollectCookies extends AbstractAction {
         const client = await page.target().createCDPSession();
         const cookies = (await client.send('Storage.getCookies')).cookies;
 
+        await client.detach();
+
         for (let cookie of cookies) {
             const domain = cookie.domain.trim().replace(/^\./, '');
             const identity = sha256(cookie.name + '__' + domain);

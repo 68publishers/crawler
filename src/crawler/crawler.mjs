@@ -1,4 +1,5 @@
-import {PuppeteerCrawler, Configuration } from 'crawlee';
+import { Configuration } from 'crawlee';
+import { PuppeteerCrawler } from './puppeteer-crawler.mjs';
 import puppeteerExtra from 'puppeteer-extra';
 import StealthPlugin from 'puppeteer-extra-plugin-stealth';
 import { ExecutionContext } from '../action/execution-context.mjs';
@@ -174,14 +175,6 @@ export class Crawler {
                     if (viewportOptions) {
                         await page.setViewport(viewportOptions);
                     }
-
-                    let cookiesToTransfer = request.userData.transferredCookies;
-
-                    if (0 >= cookiesToTransfer.length) {
-                        return;
-                    }
-
-                    await page.setCookie(...cookiesToTransfer);
                 },
             ],
         };
