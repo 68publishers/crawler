@@ -82,7 +82,7 @@ export class Crawler {
             this.#cleanup(userDataDir, scenarioId);
         }
 
-        const result = await this.#scenarioRepository.get(scenarioId);
+        let result = await this.#scenarioRepository.get(scenarioId);
         let isAnyUrlSuccessfullyVisited = false;
 
         for (let visitedUrl of result.results.visitedUrls) {
@@ -96,18 +96,13 @@ export class Crawler {
         if (isAnyUrlSuccessfullyVisited) {
             await this.#scenarioRepository.markAdCompleted(scenarioId);
             await logger.info(`Scenario ${scenarioId} completed`);
-
-            result.status = 'completed';
         } else {
             const errorMessage = 'No url has been successfully crawled.';
             await this.#scenarioRepository.markAsFailed(scenarioId, errorMessage);
             await logger.error(new Error(`Scenario ${scenarioId} failed, reason: ${errorMessage}`));
-
-            result.status = 'failed';
-            result.error = errorMessage;
         }
 
-        return result;
+        return await this.#scenarioRepository.get(scenarioId);
     }
 
     async #doCrawl(scenarioId, config, logger, updateProgressHandler, userDataDir) {
@@ -304,10 +299,15 @@ export class Crawler {
                 await updateProgress(crawler);
             },
 
-            async errorHandler({ crawler, request }) {
+            async errorHandler({ crawler, request }, err) {
                 if ((await checkAbortion(crawler))) {
                     request.noRetry = true;
                 }
+
+                const scene = request.userData.scene || '?';
+                const currentUrl = request.url;
+
+                await logger.warning(`Failed to crawl URL ${currentUrl} (scene "${scene}"). The request has been reclaimed back to the queue. ${err.toString()}`);
             },
         }, configuration);
 
