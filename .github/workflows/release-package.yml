@@ -3,26 +3,152 @@ name: Release package
 on:
   workflow_dispatch:
     inputs:
-      release-type:
-        description: 'Release type (one of): patch, minor, major, prepatch, preminor, premajor, prerelease'
+      branch:
+        type: string
+        description: Git branch or tag
         required: true
+        default: main
+      version:
+        type: string
+        description: The version in semver format (e.g. "1.2.3")
+        required: true
+      latest:
+        type: boolean
+        description: Mark the version as latest
+        default: true
+      release:
+        type: boolean
+        description: Release the package
+        default: true
+      platforms:
+        type: string
+        description: Platforms (comma separated list)
+        required: true
+        default: linux/amd64,linux/arm64/v8
+      push_to_dockerhub:
+        type: boolean
+        description: Push to DockerHub registry
+        default: true
+      push_to_hpt:
+        type: boolean
+        description: Push to HPT registry
+        default: true
 
 env:
+  IMAGE_DOCKERHUB: 68publishers/crawler
+  IMAGE_HPT: registry.hptronic.cz/dev/cmp/crawler
+
   PUPPETEER_SKIP_DOWNLOAD: true
   PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: true
 
 jobs:
-  release:
+  setup:
     runs-on: ubuntu-latest
+    outputs:
+      platforms: ${{ steps.vars.outputs.platforms }}
+      prerelease: ${{ steps.version.outputs.prerelease }}
+    steps:
+      - name: Parse version
+        id: version
+        uses: release-kit/semver@v2
+        with:
+          string: ${{ github.event.inputs.version }}
+
+      - name: Dump inputs
+        run: |
+          echo "branch: ${{ github.event.inputs.branch }}"
+          echo "version: ${{ github.event.inputs.version }}"
+          echo "latest: ${{ github.event.inputs.latest }}"
+          echo "release: ${{ github.event.inputs.release }}"
+          echo "platforms: ${{ github.event.inputs.platforms }}"
+          echo "push_to_dockerhub: ${{ github.event.inputs.push_to_dockerhub }}"
+          echo "push_to_hpt: ${{ github.event.inputs.push_to_hpt }}"
+          echo "prerelease (resolved): ${{ steps.version.outputs.prerelease }}"
+
+      - name: Fail if all push options are disabled
+        if: ${{ github.event.inputs.push_to_dockerhub == 'false' && github.event.inputs.push_to_hpt == 'false' }}
+        run: |
+          echo "Error: At least one of the options push_to_dockerhub or push_to_hpt must be enabled."
+          exit 1
+
+      - name: Set platforms output
+        id: vars
+        run: echo "platforms=$(jq 'split(",")' -Rc <(echo '${{ github.event.inputs.platforms }}'))" >> $GITHUB_OUTPUT
+
+  prepare-release:
+    runs-on: ubuntu-latest
+    needs:
+      - setup
+    if: ${{ github.event.inputs.release == 'true' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.inputs.branch }}
 
       - name: Setup node
         uses: actions/setup-node@v3
         with:
           registry-url: https://registry.npmjs.org/
           node-version: 20
+
+      - name: Bump package.json version
+        run: |
+          npm --no-git-tag-version version ${{ github.event.inputs.version }}
+
+      - name: Update changelog
+        uses: superfaceai/release-changelog-action@v2
+        with:
+          path-to-changelog: CHANGELOG.md
+          version: v${{ github.event.inputs.version }}
+          operation: release
+
+      - name: Get version changelog
+        id: get-changelog
+        uses: superfaceai/release-changelog-action@v2
+        with:
+          path-to-changelog: CHANGELOG.md
+          version: v${{ github.event.inputs.version }}
+          operation: read
+
+      - name: Dump new version
+        run: |
+          echo "new version: $(npm pkg get version --raw)"
+
+      - name: Dump changelog notes
+        run: |
+          echo "${{ steps.get-changelog.outputs.changelog }}"
+
+      - name: Upload changed files
+        uses: actions/upload-artifact@v3
+        with:
+          name: repository-changes
+          path: |
+            package.json
+            package-lock.json
+            CHANGELOG.md
+          if-no-files-found: error
+          retention-days: 1
+
+  build:
+    name: Build Docker images with tags "${{ github.event.inputs.version }}", "${{ github.event.inputs.version }}-app", "${{ github.event.inputs.version }}-scheduler" and "${{ github.event.inputs.version }}-worker" for platform ${{ matrix.platform }}
+    runs-on: ubuntu-latest
+    needs:
+      - setup
+      - prepare-release
+    if: |
+      always() &&
+      needs.setup.result == 'success' &&
+      (needs.prepare-release.result == 'success' || needs.prepare-release.result == 'skipped')
+    strategy:
+      matrix:
+        platform: ${{ fromJson(needs.setup.outputs.platforms) }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.inputs.branch }}
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
@@ -31,168 +157,395 @@ jobs:
         id: buildx
         uses: docker/setup-buildx-action@v2
 
+      - name: Download repository changes
+        if: ${{ github.event.inputs.release == 'true' }}
+        uses: actions/download-artifact@v3
+        with:
+          name: repository-changes
+          path: .
+
+      - name: Login to DockerHub registry
+        uses: docker/login-action@v2
+        if: ${{ github.event.inputs.push_to_dockerhub == 'true' }}
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Login to HPT registry
+        uses: docker/login-action@v2
+        if: ${{ github.event.inputs.push_to_hpt == 'true' }}
+        with:
+          registry: registry.hptronic.cz
+          username: ${{ secrets.HPT_REGISTRY_USERNAME }}
+          password: ${{ secrets.HPT_REGISTRY_TOKEN }}
+
+      - name: Docker meta (all, DockerHub)
+        if: ${{ github.event.inputs.push_to_dockerhub == 'true' }}
+        id: docker_meta_crawler_all_dockerhub
+        uses: docker/metadata-action@v4
+        with:
+          images: |
+            name=${{ env.IMAGE_DOCKERHUB }}
+          flavor: |
+            latest=false
+          tags: |
+            type=semver,pattern={{version}},value=${{ github.event.inputs.version }}
+            type=raw,value=latest,enable=${{ github.event.inputs.latest == 'true' }}
+
+      - name: Docker meta (all, HPT)
+        if: ${{ github.event.inputs.push_to_hpt == 'true' }}
+        id: docker_meta_crawler_all_hpt
+        uses: docker/metadata-action@v4
+        with:
+          images: |
+            name=${{ env.IMAGE_HPT }}
+          flavor: |
+            latest=false
+          tags: |
+            type=semver,pattern={{version}},value=${{ github.event.inputs.version }}
+            type=raw,value=latest,enable=${{ github.event.inputs.latest == 'true' }}
+
+      - name: Docker meta (app, DockerHub)
+        if: ${{ github.event.inputs.push_to_dockerhub == 'true' }}
+        id: docker_meta_crawler_app_dockerhub
+        uses: docker/metadata-action@v4
+        with:
+          images: |
+            name=${{ env.IMAGE_DOCKERHUB }}
+          flavor: |
+            latest=false
+          tags: |
+            type=semver,pattern={{version}}-app,value=${{ github.event.inputs.version }}
+            type=raw,value=latest-app,enable=${{ github.event.inputs.latest == 'true' }}
+
+      - name: Docker meta (app, HPT)
+        if: ${{ github.event.inputs.push_to_hpt == 'true' }}
+        id: docker_meta_crawler_app_hpt
+        uses: docker/metadata-action@v4
+        with:
+          images: |
+            name=${{ env.IMAGE_HPT }}
+          flavor: |
+            latest=false
+          tags: |
+            type=semver,pattern={{version}}-app,value=${{ github.event.inputs.version }}
+            type=raw,value=latest-app,enable=${{ github.event.inputs.latest == 'true' }}
+
+      - name: Docker meta (scheduler, DockerHub)
+        if: ${{ github.event.inputs.push_to_dockerhub == 'true' }}
+        id: docker_meta_crawler_scheduler_dockerhub
+        uses: docker/metadata-action@v4
+        with:
+          images: |
+            name=${{ env.IMAGE_DOCKERHUB }}
+          flavor: |
+            latest=false
+          tags: |
+            type=semver,pattern={{version}}-scheduler,value=${{ github.event.inputs.version }}
+            type=raw,value=latest-scheduler,enable=${{ github.event.inputs.latest == 'true' }}
+
+      - name: Docker meta (scheduler, HPT)
+        if: ${{ github.event.inputs.push_to_hpt == 'true' }}
+        id: docker_meta_crawler_scheduler_hpt
+        uses: docker/metadata-action@v4
+        with:
+          images: |
+            name=${{ env.IMAGE_HPT }}
+          flavor: |
+            latest=false
+          tags: |
+            type=semver,pattern={{version}}-scheduler,value=${{ github.event.inputs.version }}
+            type=raw,value=latest-scheduler,enable=${{ github.event.inputs.latest == 'true' }}
+
+      - name: Docker meta (worker, DockerHub)
+        if: ${{ github.event.inputs.push_to_dockerhub == 'true' }}
+        id: docker_meta_crawler_worker_dockerhub
+        uses: docker/metadata-action@v4
+        with:
+          images: |
+            name=${{ env.IMAGE_DOCKERHUB }}
+          flavor: |
+            latest=false
+          tags: |
+            type=semver,pattern={{version}}-worker,value=${{ github.event.inputs.version }}
+            type=raw,value=latest-worker,enable=${{ github.event.inputs.latest == 'true' }}
+
+      - name: Docker meta (worker, HPT)
+        if: ${{ github.event.inputs.push_to_hpt == 'true' }}
+        id: docker_meta_crawler_worker_hpt
+        uses: docker/metadata-action@v4
+        with:
+          images: |
+            name=${{ env.IMAGE_HPT }}
+          flavor: |
+            latest=false
+          tags: |
+            type=semver,pattern={{version}}-worker,value=${{ github.event.inputs.version }}
+            type=raw,value=latest-worker,enable=${{ github.event.inputs.latest == 'true' }}
+
+      - name: Build and push by digest (all, DockerHub)
+        if: ${{ github.event.inputs.push_to_dockerhub == 'true' }}
+        id: build_all_dockerhub
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./Dockerfile
+          target: prod-all
+          platforms: ${{ matrix.platform }}
+          labels: ${{ steps.docker_meta_crawler_all_dockerhub.outputs.labels }}
+          outputs: type=image,name=${{ env.IMAGE_DOCKERHUB }},push-by-digest=true,name-canonical=true,push=true
+          provenance: false
+
+      - name: Build and push by digest (all, HPT)
+        if: ${{ github.event.inputs.push_to_hpt == 'true' }}
+        id: build_all_hpt
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./Dockerfile
+          target: prod-all
+          platforms: ${{ matrix.platform }}
+          labels: ${{ steps.docker_meta_crawler_all_hpt.outputs.labels }}
+          outputs: type=image,name=${{ env.IMAGE_HPT }},push-by-digest=true,name-canonical=true,push=true
+          provenance: false
+
+      - name: Build and push by digest (app, DockerHub)
+        if: ${{ github.event.inputs.push_to_dockerhub == 'true' }}
+        id: build_app_dockerhub
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./Dockerfile
+          target: prod-app
+          platforms: ${{ matrix.platform }}
+          labels: ${{ steps.docker_meta_crawler_app_dockerhub.outputs.labels }}
+          outputs: type=image,name=${{ env.IMAGE_DOCKERHUB }},push-by-digest=true,name-canonical=true,push=true
+          provenance: false
+
+      - name: Build and push by digest (app, HPT)
+        if: ${{ github.event.inputs.push_to_hpt == 'true' }}
+        id: build_app_hpt
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./Dockerfile
+          target: prod-app
+          platforms: ${{ matrix.platform }}
+          labels: ${{ steps.docker_meta_crawler_app_hpt.outputs.labels }}
+          outputs: type=image,name=${{ env.IMAGE_HPT }},push-by-digest=true,name-canonical=true,push=true
+          provenance: false
+
+      - name: Build and push by digest (scheduler, DockerHub)
+        if: ${{ github.event.inputs.push_to_dockerhub == 'true' }}
+        id: build_scheduler_dockerhub
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./Dockerfile
+          target: prod-scheduler
+          platforms: ${{ matrix.platform }}
+          labels: ${{ steps.docker_meta_crawler_scheduler_dockerhub.outputs.labels }}
+          outputs: type=image,name=${{ env.IMAGE_DOCKERHUB }},push-by-digest=true,name-canonical=true,push=true
+          provenance: false
+
+      - name: Build and push by digest (scheduler, HPT)
+        if: ${{ github.event.inputs.push_to_hpt == 'true' }}
+        id: build_scheduler_hpt
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./Dockerfile
+          target: prod-scheduler
+          platforms: ${{ matrix.platform }}
+          labels: ${{ steps.docker_meta_crawler_scheduler_hpt.outputs.labels }}
+          outputs: type=image,name=${{ env.IMAGE_HPT }},push-by-digest=true,name-canonical=true,push=true
+          provenance: false
+
+      - name: Build and push by digest (worker, DockerHub)
+        if: ${{ github.event.inputs.push_to_dockerhub == 'true' }}
+        id: build_worker_dockerhub
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./Dockerfile
+          target: prod-worker
+          platforms: ${{ matrix.platform }}
+          labels: ${{ steps.docker_meta_crawler_worker_dockerhub.outputs.labels }}
+          outputs: type=image,name=${{ env.IMAGE_DOCKERHUB }},push-by-digest=true,name-canonical=true,push=true
+          provenance: false
+
+      - name: Build and push by digest (worker, HPT)
+        if: ${{ github.event.inputs.push_to_hpt == 'true' }}
+        id: build_worker_hpt
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./Dockerfile
+          target: prod-worker
+          platforms: ${{ matrix.platform }}
+          labels: ${{ steps.docker_meta_crawler_worker_hpt.outputs.labels }}
+          outputs: type=image,name=${{ env.IMAGE_HPT }},push-by-digest=true,name-canonical=true,push=true
+          provenance: false
+
+      - name: Export digests (DockerHub)
+        if: ${{ github.event.inputs.push_to_dockerhub == 'true' }}
+        run: |
+          mkdir -p /tmp/digests/dockerhub/outputs
+          mkdir -p /tmp/digests/dockerhub/images/all
+          mkdir -p /tmp/digests/dockerhub/images/app
+          mkdir -p /tmp/digests/dockerhub/images/scheduler
+          mkdir -p /tmp/digests/dockerhub/images/worker
+          digest_all="${{ steps.build_all_dockerhub.outputs.digest }}"
+          digest_app="${{ steps.build_app_dockerhub.outputs.digest }}"
+          digest_scheduler="${{ steps.build_scheduler_dockerhub.outputs.digest }}"
+          digest_worker="${{ steps.build_worker_dockerhub.outputs.digest }}"
+          touch "/tmp/digests/dockerhub/images/all/${digest_all#sha256:}"
+          touch "/tmp/digests/dockerhub/images/app/${digest_app#sha256:}"
+          touch "/tmp/digests/dockerhub/images/scheduler/${digest_scheduler#sha256:}"
+          touch "/tmp/digests/dockerhub/images/worker/${digest_worker#sha256:}"
+          echo "$ALL_OUTPUT" > "/tmp/digests/dockerhub/outputs/all"
+          echo "$APP_OUTPUT" > "/tmp/digests/dockerhub/outputs/app"
+          echo "$SCHEDULER_OUTPUT" > "/tmp/digests/dockerhub/outputs/scheduler"
+          echo "$WORKER_OUTPUT" > "/tmp/digests/dockerhub/outputs/worker"
+        env:
+          ALL_OUTPUT: ${{ steps.docker_meta_crawler_all_dockerhub.outputs.json }}
+          APP_OUTPUT: ${{ steps.docker_meta_crawler_app_dockerhub.outputs.json }}
+          SCHEDULER_OUTPUT: ${{ steps.docker_meta_crawler_scheduler_dockerhub.outputs.json }}
+          WORKER_OUTPUT: ${{ steps.docker_meta_crawler_worker_dockerhub.outputs.json }}
+
+      - name: Export digests (HPT)
+        if: ${{ github.event.inputs.push_to_hpt == 'true' }}
+        run: |
+          mkdir -p /tmp/digests/hpt/outputs
+          mkdir -p /tmp/digests/hpt/images/all
+          mkdir -p /tmp/digests/hpt/images/app
+          mkdir -p /tmp/digests/hpt/images/scheduler
+          mkdir -p /tmp/digests/hpt/images/worker
+          digest_all="${{ steps.build_all_hpt.outputs.digest }}"
+          digest_app="${{ steps.build_app_hpt.outputs.digest }}"
+          digest_scheduler="${{ steps.build_scheduler_hpt.outputs.digest }}"
+          digest_worker="${{ steps.build_worker_hpt.outputs.digest }}"
+          touch "/tmp/digests/hpt/images/all/${digest_all#sha256:}"
+          touch "/tmp/digests/hpt/images/app/${digest_app#sha256:}"
+          touch "/tmp/digests/hpt/images/scheduler/${digest_scheduler#sha256:}"
+          touch "/tmp/digests/hpt/images/worker/${digest_worker#sha256:}"
+          echo "$ALL_OUTPUT" > "/tmp/digests/hpt/outputs/all"
+          echo "$APP_OUTPUT" > "/tmp/digests/hpt/outputs/app"
+          echo "$SCHEDULER_OUTPUT" > "/tmp/digests/hpt/outputs/scheduler"
+          echo "$WORKER_OUTPUT" > "/tmp/digests/hpt/outputs/worker"
+        env:
+          ALL_OUTPUT: ${{ steps.docker_meta_crawler_all_hpt.outputs.json }}
+          APP_OUTPUT: ${{ steps.docker_meta_crawler_app_hpt.outputs.json }}
+          SCHEDULER_OUTPUT: ${{ steps.docker_meta_crawler_scheduler_hpt.outputs.json }}
+          WORKER_OUTPUT: ${{ steps.docker_meta_crawler_worker_hpt.outputs.json }}
+
+      - name: Upload digest
+        uses: actions/upload-artifact@v3
+        with:
+          name: digests
+          path: /tmp/digests/*
+          if-no-files-found: error
+          retention-days: 1
+
+  merge:
+    runs-on: ubuntu-latest
+    needs:
+      - build
+    if: |
+      always() &&
+      needs.build.result == 'success'
+    steps:
+      - name: Download digests
+        uses: actions/download-artifact@v3
+        with:
+          name: digests
+          path: /tmp/digests
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to DockerHub registry
+        uses: docker/login-action@v2
+        if: ${{ github.event.inputs.push_to_dockerhub == 'true' }}
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Login to HPT registry
+        uses: docker/login-action@v2
+        if: ${{ github.event.inputs.push_to_hpt == 'true' }}
+        with:
+          registry: registry.hptronic.cz
+          username: ${{ secrets.HPT_REGISTRY_USERNAME }}
+          password: ${{ secrets.HPT_REGISTRY_TOKEN }}
+
+      - name: Create manifest list and push (DockerHub)
+        if: ${{ github.event.inputs.push_to_dockerhub == 'true' }}
+        working-directory: /tmp/digests/dockerhub/images
+        run: >
+          for DIR in *;
+          do
+            cd "$DIR" && docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< cat "/tmp/digests/dockerhub/outputs/$DIR") $(printf "${{ env.IMAGE_DOCKERHUB }}@sha256:%s " *) && cd ..
+          done
+
+      - name: Create manifest list and push (HPT)
+        if: ${{ github.event.inputs.push_to_hpt == 'true' }}
+        working-directory: /tmp/digests/hpt/images
+        run: >
+          for DIR in *;
+          do
+            cd "$DIR" && docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< cat "/tmp/digests/hpt/outputs/$DIR") $(printf "${{ env.IMAGE_HPT }}@sha256:%s " *) && cd ..
+          done
+
+  release:
+    runs-on: ubuntu-latest
+    needs:
+      - setup
+      - merge
+      - prepare-release
+    if: |
+      always() &&
+      needs.setup.result == 'success' &&
+      needs.merge.result == 'success' &&
+      needs.prepare-release.result == 'success'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.inputs.branch }}
+
+      - name: Download repository changes
+        uses: actions/download-artifact@v3
+        with:
+          name: repository-changes
+          path: .
+
       - name: Git configuration
         run: |
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config --global user.name "GitHub Actions"
-
-      - name: Bump release version
-        if: startsWith(github.event.inputs.release-type, 'pre') != true
-        run: |
-          echo "NEW_VERSION=$(npm --no-git-tag-version version $RELEASE_TYPE)" >> $GITHUB_ENV
-          echo "RELEASE_TAG=latest" >> $GITHUB_ENV
-        env:
-          RELEASE_TYPE: ${{ github.event.inputs.release-type }}
-
-      - name: Bump pre-release version
-        if: startsWith(github.event.inputs.release-type, 'pre')
-        run: |
-          echo "NEW_VERSION=$(npm --no-git-tag-version --preid=beta version $RELEASE_TYPE
-          echo "RELEASE_TAG=beta" >> $GITHUB_ENV
-        env:
-          RELEASE_TYPE: ${{ github.event.inputs.release-type }}
-
-      - name: Update changelog
-        uses: superfaceai/release-changelog-action@v2
-        with:
-          path-to-changelog: CHANGELOG.md
-          version: ${{ env.NEW_VERSION }}
-          operation: release
 
       - name: 'Commit CHANGELOG.md, package.json, package-lock.json and create tag'
         run: |
           git add "package.json"
           git add "package-lock.json"
           git add "CHANGELOG.md"
-          git commit -m "chore: release ${{ env.NEW_VERSION }}"
-          git tag ${{ env.NEW_VERSION }}
+          git commit -m "chore: release v${{ github.event.inputs.version }}"
+          git tag v${{ github.event.inputs.version }}
 
-      - name: Login to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Docker meta (all)
-        id: docker_meta_crawler_all
-        uses: docker/metadata-action@v4
-        with:
-          images: |
-            68publishers/crawler
-          flavor: |
-            latest=false
-          tags: |
-            type=ref,event=pr
-            type=semver,pattern={{version}},value=${{ env.NEW_VERSION }}
-            type=semver,pattern={{major}}.{{minor}},value=${{ env.NEW_VERSION }},enable=${{ env.RELEASE_TAG != 'beta' }}
-            type=semver,pattern={{major}},value=${{ env.NEW_VERSION }},enable=${{ env.RELEASE_TAG != 'beta' }}
-            type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') && env.RELEASE_TAG != 'beta' }}
-
-      - name: Docker meta (app)
-        id: docker_meta_crawler_app
-        uses: docker/metadata-action@v4
-        with:
-          images: |
-            68publishers/crawler
-          flavor: |
-            latest=false
-          tags: |
-            type=semver,pattern={{version}}-app,value=${{ env.NEW_VERSION }}
-            type=semver,pattern={{major}}.{{minor}}-app,value=${{ env.NEW_VERSION }},enable=${{ env.RELEASE_TAG != 'beta' }}
-            type=semver,pattern={{major}}-app,value=${{ env.NEW_VERSION }},enable=${{ env.RELEASE_TAG != 'beta' }}
-            type=raw,value=latest-app,enable=${{ github.ref == format('refs/heads/{0}', 'main') && env.RELEASE_TAG != 'beta' }}
-
-      - name: Docker meta (scheduler)
-        id: docker_meta_crawler_scheduler
-        uses: docker/metadata-action@v4
-        with:
-          images: |
-            68publishers/crawler
-          flavor: |
-            latest=false
-          tags: |
-            type=semver,pattern={{version}}-scheduler,value=${{ env.NEW_VERSION }}
-            type=semver,pattern={{major}}.{{minor}}-scheduler,value=${{ env.NEW_VERSION }},enable=${{ env.RELEASE_TAG != 'beta' }}
-            type=semver,pattern={{major}}-scheduler,value=${{ env.NEW_VERSION }},enable=${{ env.RELEASE_TAG != 'beta' }}
-            type=raw,value=latest-scheduler,enable=${{ github.ref == format('refs/heads/{0}', 'main') && env.RELEASE_TAG != 'beta' }}
-
-      - name: Docker meta (worker)
-        id: docker_meta_crawler_worker
-        uses: docker/metadata-action@v4
-        with:
-          images: |
-            68publishers/crawler
-          flavor: |
-            latest=false
-          tags: |
-            type=semver,pattern={{version}}-worker,value=${{ env.NEW_VERSION }}
-            type=semver,pattern={{major}}.{{minor}}-worker,value=${{ env.NEW_VERSION }},enable=${{ env.RELEASE_TAG != 'beta' }}
-            type=semver,pattern={{major}}-worker,value=${{ env.NEW_VERSION }},enable=${{ env.RELEASE_TAG != 'beta' }}
-            type=raw,value=latest-worker,enable=${{ github.ref == format('refs/heads/{0}', 'main') && env.RELEASE_TAG != 'beta' }}
-
-      - name: Build and push (all)
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          file: Dockerfile
-          target: prod-all
-          push: true
-          platforms: linux/arm64/v8,linux/amd64
-          tags: ${{ steps.docker_meta_crawler_all.outputs.tags }}
-          labels: ${{ steps.docker_meta_crawler_all.outputs.labels }}
-
-      - name: Build and push (app)
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          file: Dockerfile
-          target: prod-app
-          push: true
-          platforms: linux/arm64/v8,linux/amd64
-          tags: ${{ steps.docker_meta_crawler_app.outputs.tags }}
-          labels: ${{ steps.docker_meta_crawler_app.outputs.labels }}
-
-      - name: Build and push (scheduler)
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          file: Dockerfile
-          target: prod-scheduler
-          push: true
-          platforms: linux/arm64/v8,linux/amd64
-          tags: ${{ steps.docker_meta_crawler_scheduler.outputs.tags }}
-          labels: ${{ steps.docker_meta_crawler_scheduler.outputs.labels }}
-
-      - name: Build and push (worker)
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          file: Dockerfile
-          target: prod-worker
-          push: true
-          platforms: linux/arm64/v8,linux/amd64
-          tags: ${{ steps.docker_meta_crawler_worker.outputs.tags }}
-          labels: ${{ steps.docker_meta_crawler_worker.outputs.labels }}
-
-      - name: Push changes to repository
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          git push origin && git push --tags
-
-      - id: get-changelog
-        name: Get version changelog
-        uses: superfaceai/release-changelog-action@v1
+      - name: Get version changelog
+        uses: superfaceai/release-changelog-action@v2
+        id: get-changelog
         with:
           path-to-changelog: CHANGELOG.md
-          version: ${{ env.NEW_VERSION }}
+          version: v${{ github.event.inputs.version }}
           operation: read
 
       - name: Update GitHub release documentation
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ env.NEW_VERSION }}
+          tag_name: v${{ github.event.inputs.version }}
           body: ${{ steps.get-changelog.outputs.changelog }}
-          prerelease: ${{ startsWith(github.event.inputs.release-type, 'pre') }}
+          prerelease: ${{ needs.setup.outputs.prerelease != '' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
