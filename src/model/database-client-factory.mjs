@@ -9,6 +9,15 @@ export function createDatabaseClient({ dbUrl }) {
             max: 10,
             acquireTimeoutMillis: 60000,
             idleTimeoutMillis: 600000,
+            afterCreate: async (connection, done) => {
+                try {
+                    await connection.query('SET timezone="UTC";');
+
+                    done(null, connection);
+                } catch (err) {
+                    done(err, connection);
+                }
+            },
         },
     });
 }
