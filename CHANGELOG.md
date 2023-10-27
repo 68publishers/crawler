@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## 0.5.4 - 2023-10-27
 ### Added
 - Added the scenario option `config.options.proxyUrls`.
 - Added action `evaluate`.
