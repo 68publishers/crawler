@@ -1,4 +1,4 @@
-import { Configuration } from 'crawlee';
+import { Configuration, ProxyConfiguration } from 'crawlee';
 import { PuppeteerCrawler } from './puppeteer-crawler.mjs';
 import puppeteerExtra from 'puppeteer-extra';
 import StealthPlugin from 'puppeteer-extra-plugin-stealth';
@@ -36,7 +36,9 @@ export class Crawler {
      *     },
      *     callbackUri?: string,
      *     options?: {
+     *         maxConcurrency?: number,
      *         maxRequests?: number,
+     *         maxRequestRetries?: number,
      *         viewport?: {
      *             width?: number,
      *             height?: number,
@@ -45,7 +47,9 @@ export class Crawler {
      *             maxPoolSize?: number,
      *             maxSessionUsageCount?: number,
      *             transferredCookies?: array<string>,
-     *         }
+     *         },
+     *         waitUntil?: string,
+     *         proxyUrls?: array<string>,
      *     },
      *     scenes: Object.<string, array<{
      *         action: string,
@@ -188,6 +192,12 @@ export class Crawler {
 
         if ('maxSessionUsageCount' in scenarioSessionOptions) {
             crawlerOptions.sessionPoolOptions.sessionOptions.maxUsageCount = scenarioSessionOptions.maxSessionUsageCount;
+        }
+
+        if ('proxyUrls' in scenarioOptions && Array.isArray(scenarioOptions.proxyUrls)) {
+            crawlerOptions.proxyConfiguration = new ProxyConfiguration({
+                proxyUrls: scenarioOptions.proxyUrls,
+            });
         }
 
         const saveResult = async (group, identity, data, mergeOnConflict = true) => {

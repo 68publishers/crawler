@@ -12,6 +12,7 @@ export class CollectData extends AbstractAction {
             'static',
             'selector.innerText',
             'selector.attribute',
+            'evaluate',
         ];
     }
 
@@ -56,6 +57,10 @@ export class CollectData extends AbstractAction {
                 yield `the option "${dataKey}.attribute" is required for the selector.attribute strategy and must be a non empty string`;
             }
 
+            if ('evaluate' === dataDef.strategy && (!('script' in dataDef) || 'string' !== typeof dataDef.script || '' === dataDef.script)) {
+                yield `the option "${dataKey}.script" is required for the ${dataDef.strategy} strategy and must be a non empty string`;
+            }
+
             if ('multiple' in dataDef && 'boolean' !== typeof dataDef.multiple) {
                 yield `the optional option "${dataKey}.multiple" must be a bool`;
             }
@@ -76,10 +81,24 @@ export class CollectData extends AbstractAction {
 
         for (let dataKey in options) {
             const dataDef = options[dataKey];
-            const value = await this.#getDataValue(dataDef, request, page);
+            let value = undefined;
+
+            try {
+                value = await this.#getDataValue(dataDef, request, page);
+            } catch (err) {
+                value = err;
+            }
 
             if (undefined === value) {
                 await logger.warning(`Unable to collect value for "${request.userData.identity}"."${dataKey}"`);
+
+                continue;
+            } else if (value instanceof Error) {
+                value.message = `Unable to collect value for "${request.userData.identity}"."${dataKey}": ${value.message}`;
+
+                await logger.warning(value);
+
+                continue;
             }
 
             data.values[dataKey] = value;
@@ -121,6 +140,8 @@ export class CollectData extends AbstractAction {
 
                     return dataDef.multiple ? values : (0 < values.length ? values.shift() : undefined);
                 }, dataDef);
+            case 'evaluate':
+                return await page.evaluate(dataDef.script);
             default:
                 return undefined;
         }

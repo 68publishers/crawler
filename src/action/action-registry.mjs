@@ -5,6 +5,7 @@ import { CollectData } from './collect-data.mjs';
 import { Delay } from './delay.mjs';
 import { EnqueueLinks } from './enqueue-links.mjs';
 import { EnqueueLinksByClicking } from './enqueue-links-by-clicking.mjs';
+import { Evaluate } from './evaluate.mjs';
 import { Focus } from './focus.mjs';
 import { Hover } from './hover.mjs';
 import { KeyboardPress } from './keyboard-press.mjs';
@@ -29,6 +30,7 @@ export class ActionRegistry {
         this.#addAction(new Delay());
         this.#addAction(new EnqueueLinks());
         this.#addAction(new EnqueueLinksByClicking());
+        this.#addAction(new Evaluate());
         this.#addAction(new Focus());
         this.#addAction(new Hover());
         this.#addAction(new KeyboardPress());

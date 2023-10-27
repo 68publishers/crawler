@@ -73,6 +73,8 @@ export class ScenarioValidator {
             body('config.options.session.transferredCookies', 'The value must be an array of cookie names.').optional().isArray(),
             body('config.options.session.transferredCookies.*', 'The value must be a cookie name.').optional().isString(),
             body('config.options.waitUntil', 'The value must be one of these: ["load", "domcontentloaded", "networkidle0", "networkidle2"].').optional().isString().isIn(['load', 'domcontentloaded', 'networkidle0', 'networkidle2']),
+            body('config.options.proxyUrls', 'The value must be an array of proxy URLs.').optional().isArray(),
+            body('config.options.proxyUrls.*', 'The value must be a valid proxy URL.').optional().isURL(),
             body('config.scenes', 'The value must be a non empty object with string keys.').isObject().bail().custom(scenes => {
                 sceneNames = Object.keys(scenes);
 
