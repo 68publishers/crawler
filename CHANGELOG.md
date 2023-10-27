@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Added
+- Added the scenario option `config.options.proxyUrls`.
+- Added action `evaluate`.
+- Added strategy `evaluate` in the action `collectData`.
+
 ## 0.5.3 - 2023-10-23
 ### Changed
 - Database connections now always have UTC timezone.
