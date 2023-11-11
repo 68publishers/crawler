@@ -10,7 +10,7 @@ export class CallbackUriNotifier {
             const res = await new Promise ((resolve, reject) => {
                 const headers = {
                     'Content-Type': 'application/json',
-                    'Content-Length': data.length,
+                    'Content-Length': Buffer.byteLength(data, 'utf8'),
                 };
 
                 if (Array.isArray(authCredentials) && 2 === authCredentials.length) {
