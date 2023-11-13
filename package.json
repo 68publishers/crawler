@@ -11,12 +11,13 @@
     "dev:scheduler": "nodemon --ignore 'var/*' --ignore 'public/*' ./src/scheduler.mjs",
     "migrations:up": "./node_modules/.bin/knex --knexfile ./knexfile.mjs migrate:latest",
     "migrations:create": "./node_modules/.bin/knex --knexfile ./knexfile.mjs migrate:make",
-    "eslint:fix": "eslint ./src --ext .js,.mjs,.cjs --fix",
-    "eslint": "eslint ./src --ext .js,.mjs,.cjs",
+    "eslint:fix": "eslint ./src ./tests --ext .js,.mjs,.cjs --fix",
+    "eslint": "eslint ./src ./tests --ext .js,.mjs,.cjs",
     "user:list": "node ./src/console/console.mjs user:list",
     "user:create": "node ./src/console/console.mjs user:create",
     "user:delete": "node ./src/console/console.mjs user:delete",
-    "openapi:bundle": "npx swagger-cli bundle ./openapi/schema.yml --outfile ./public/openapi.json"
+    "openapi:bundle": "npx swagger-cli bundle ./openapi/schema.yml --outfile ./public/openapi.json",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
   "dependencies": {
     "@bull-board/api": "^5.2.0",
@@ -52,6 +53,9 @@
     "winston-transport-sentry-node": "^2.7.0"
   },
   "devDependencies": {
+    "eslint-plugin-jest": "^27.6.0",
+    "jest": "^29.7.0",
+    "nock": "^13.3.8",
     "nodemon": "^2.0.22",
     "swagger-cli": "^4.0.4"
   },
@@ -63,5 +67,14 @@
   "bugs": {
     "url": "https://github.com/68publishers/crawler/issues"
   },
-  "homepage": "https://github.com/68publishers/crawler#readme"
+  "homepage": "https://github.com/68publishers/crawler#readme",
+  "jest": {
+    "testMatch": [
+      "**/tests/unit/**/?(*.)+(spec|test).mjs?(x)"
+    ],
+    "moduleFileExtensions": [
+      "mjs",
+      "js"
+    ]
+  }
 }
