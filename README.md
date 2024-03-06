@@ -116,6 +116,7 @@ $ docker exec -it 68publishers_crawler npm run user:create
 | REDIS_HOST          | yes      | -                           | Redis hostname                                                                                                          |
 | REDIS_PORT          | yes      | -                           | Redis port                                                                                                              |
 | REDIS_AUTH          | no       | -                           | Optional redis password                                                                                                 |
+| REDIS_DB            | no       | `0`                         | Redis database number                                                                                                   |
 | WORKER_PROCESSES    | no       | `5`                         | Number of workers that process the queue of running scenarios                                                           |
 | CRAWLEE_STORAGE_DIR | no       | `./var/crawlee`             | Directory where crawler stores runtime data                                                                             |
 | CHROME_PATH         | no       | `/usr/bin/chromium-browser` | Path to Chromium executable file                                                                                        |
