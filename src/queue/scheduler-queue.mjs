@@ -7,11 +7,13 @@ export class SchedulerQueue {
         redisHost,
         redisPort,
         redisAuth = undefined,
+        redisDb = 0,
     }) {
         const options = {
             connection: {
                 host: redisHost,
-                port: parseInt(redisPort),
+                port: redisPort,
+                db: redisDb,
             },
         };
 

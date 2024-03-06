@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Added
+- Added optional ENV variable `REDIS_DB`.
+
 ## 0.5.5 - 2023-11-13
 ### Fixed
 - Fixed Content-Length calculation method in POST requests to `callbackUri`.

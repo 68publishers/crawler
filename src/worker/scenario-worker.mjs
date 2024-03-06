@@ -21,6 +21,7 @@ export class ScenarioWorker {
         redisHost,
         redisPort,
         redisAuth = undefined,
+        redisDb = 0,
     }) {
         if (1 > numberOfWorkerProcesses) {
             throw new Error('Argument "numberOfWorkerProcesses" must be integer greater than or equal to 1.');
@@ -31,7 +32,8 @@ export class ScenarioWorker {
         this.#numberOfWorkerProcesses = numberOfWorkerProcesses;
         this.#redisConfig = {
             host: redisHost,
-            port: parseInt(redisPort),
+            port: redisPort,
+            db: redisDb,
         };
 
         if ('string' === typeof redisAuth) {

@@ -16,12 +16,14 @@ export class SchedulerWorker {
         redisHost,
         redisPort,
         redisAuth = undefined,
+        redisDb = 0,
     }) {
         this.#scheduler = scheduler;
         this.#logger = logger;
         this.#redisConfig = {
             host: redisHost,
-            port: parseInt(redisPort),
+            port: redisPort,
+            db: redisDb,
         };
 
         if ('string' === typeof redisAuth) {
